@@ -9,19 +9,13 @@ MERGED from [androidx.navigation:navigation-runtime:2.8.4] /home/zieloo/.gradle/
 MERGED from [androidx.navigation:navigation-common-ktx:2.8.4] /home/zieloo/.gradle/caches/8.9/transforms/0b86aa6db0f0b2935cbca64772b73e1f/transformed/navigation-common-ktx-2.8.4/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-runtime-ktx:2.8.4] /home/zieloo/.gradle/caches/8.9/transforms/b3f6903ba3db433b5300147e9507410e/transformed/navigation-runtime-ktx-2.8.4/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-compose:2.8.4] /home/zieloo/.gradle/caches/8.9/transforms/b545861964a932bc0dedbda96726d6ab/transformed/navigation-compose-2.8.4/AndroidManifest.xml:2:1-7:12
-MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:2:1-8:12
-MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:2:1-7:12
-MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:17:1-31:12
-MERGED from [androidx.work:work-runtime-ktx:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/535e0a613eac8f145c05a82a14f537e7/transformed/work-runtime-ktx-2.10.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:17:1-145:12
-MERGED from [androidx.room:room-ktx:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/879ca41340b5f1dff6539173fa2aa721/transformed/room-ktx-2.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material3:material3-android:1.3.1] /home/zieloo/.gradle/caches/8.9/transforms/c4a984462137bf49e0b919debfdeec54/transformed/material3-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.material:material-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/91d7a62260045e8f6a1d70857695aaf8/transformed/material-release/AndroidManifest.xml:2:1-7:12
-MERGED from [androidx.compose.animation:animation-core-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/eb06f282c43d8a39ed8164f9fa6bbce5/transformed/animation-core-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.material:material-ripple-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/127bd2db78f2ed794b63a83730fb35b8/transformed/material-ripple-release/AndroidManifest.xml:2:1-7:12
-MERGED from [androidx.compose.animation:animation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/76811b257296d102898479245a69216b/transformed/animation-release/AndroidManifest.xml:2:1-7:12
-MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/fc5ecbe9ea8165b7226a50dd65679bae/transformed/foundation-layout-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.foundation:foundation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/af06d53c7b42ce71aaa69450657774ae/transformed/foundation-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/fc5ecbe9ea8165b7226a50dd65679bae/transformed/foundation-layout-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-core-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/eb06f282c43d8a39ed8164f9fa6bbce5/transformed/animation-core-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/76811b257296d102898479245a69216b/transformed/animation-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/5102558a5396c9b1da07732a65d65709/transformed/ui-tooling-data-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.ui:ui-unit-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/ad52c3843bd3d2dd7e0eaabc35f8b3c5/transformed/ui-unit-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.ui:ui-graphics-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/b422c96e2c8443fcb8066eec2f719b70/transformed/ui-graphics-release/AndroidManifest.xml:2:1-7:12
@@ -30,6 +24,13 @@ MERGED from [androidx.compose.ui:ui-util-android:1.7.5] /home/zieloo/.gradle/cac
 MERGED from [androidx.compose.ui:ui-text-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/5087673fc91cae2c28bbf22a64c5e81a/transformed/ui-text-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/08c6c0eeb131648d75a4edd0ca242481/transformed/ui-tooling-preview-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:2:1-8:12
+MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.work:work-runtime-ktx:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/535e0a613eac8f145c05a82a14f537e7/transformed/work-runtime-ktx-2.10.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:17:1-145:12
+MERGED from [androidx.room:room-ktx:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/879ca41340b5f1dff6539173fa2aa721/transformed/room-ktx-2.6.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/c5885a805201a0169dd55bedf2045dd2/transformed/runtime-saveable-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.runtime:runtime-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/3debba31113371469645c4acf6baa7f0/transformed/runtime-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] /home/zieloo/.gradle/caches/8.9/transforms/4f82d9ac79f41850eb39ca1ac49a8e4a/transformed/savedstate-ktx-1.2.1/AndroidManifest.xml:17:1-22:12
@@ -106,6 +107,10 @@ ADDED from /home/zieloo/projects/weather_android/app/src/main/AndroidManifest.xm
 application
 ADDED from /home/zieloo/projects/weather_android/app/src/main/AndroidManifest.xml:9:5-24:19
 INJECTED from /home/zieloo/projects/weather_android/app/src/main/AndroidManifest.xml:9:5-24:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:22:5-26:19
 MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:6:5-20
 MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:6:5-20
 MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:4:5-6:19
@@ -114,8 +119,6 @@ MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/t
 MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:23:5-29:19
 MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:28:5-143:19
 MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:28:5-143:19
-MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
-MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] /home/zieloo/.gradle/caches/8.9/transforms/c54c1962cecbbc66f8086bfb65ec3cc3/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] /home/zieloo/.gradle/caches/8.9/transforms/c54c1962cecbbc66f8086bfb65ec3cc3/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.lifecycle:lifecycle-process:2.8.7] /home/zieloo/.gradle/caches/8.9/transforms/38c7b2a183c06c7270da006976e4e7dc/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:23:5-33:19
@@ -176,32 +179,20 @@ MERGED from [androidx.navigation:navigation-runtime-ktx:2.8.4] /home/zieloo/.gra
 MERGED from [androidx.navigation:navigation-runtime-ktx:2.8.4] /home/zieloo/.gradle/caches/8.9/transforms/b3f6903ba3db433b5300147e9507410e/transformed/navigation-runtime-ktx-2.8.4/AndroidManifest.xml:5:5-44
 MERGED from [androidx.navigation:navigation-compose:2.8.4] /home/zieloo/.gradle/caches/8.9/transforms/b545861964a932bc0dedbda96726d6ab/transformed/navigation-compose-2.8.4/AndroidManifest.xml:5:5-44
 MERGED from [androidx.navigation:navigation-compose:2.8.4] /home/zieloo/.gradle/caches/8.9/transforms/b545861964a932bc0dedbda96726d6ab/transformed/navigation-compose-2.8.4/AndroidManifest.xml:5:5-44
-MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:4:5-44
-MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:4:5-44
-MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:3:5-44
-MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:3:5-44
-MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:21:5-44
-MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:21:5-44
-MERGED from [androidx.work:work-runtime-ktx:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/535e0a613eac8f145c05a82a14f537e7/transformed/work-runtime-ktx-2.10.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.work:work-runtime-ktx:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/535e0a613eac8f145c05a82a14f537e7/transformed/work-runtime-ktx-2.10.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:21:5-44
-MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:21:5-44
-MERGED from [androidx.room:room-ktx:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/879ca41340b5f1dff6539173fa2aa721/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
-MERGED from [androidx.room:room-ktx:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/879ca41340b5f1dff6539173fa2aa721/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.material3:material3-android:1.3.1] /home/zieloo/.gradle/caches/8.9/transforms/c4a984462137bf49e0b919debfdeec54/transformed/material3-release/AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.material3:material3-android:1.3.1] /home/zieloo/.gradle/caches/8.9/transforms/c4a984462137bf49e0b919debfdeec54/transformed/material3-release/AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.material:material-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/91d7a62260045e8f6a1d70857695aaf8/transformed/material-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/91d7a62260045e8f6a1d70857695aaf8/transformed/material-release/AndroidManifest.xml:5:5-44
-MERGED from [androidx.compose.animation:animation-core-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/eb06f282c43d8a39ed8164f9fa6bbce5/transformed/animation-core-release/AndroidManifest.xml:5:5-44
-MERGED from [androidx.compose.animation:animation-core-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/eb06f282c43d8a39ed8164f9fa6bbce5/transformed/animation-core-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-ripple-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/127bd2db78f2ed794b63a83730fb35b8/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.material:material-ripple-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/127bd2db78f2ed794b63a83730fb35b8/transformed/material-ripple-release/AndroidManifest.xml:5:5-44
-MERGED from [androidx.compose.animation:animation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/76811b257296d102898479245a69216b/transformed/animation-release/AndroidManifest.xml:5:5-44
-MERGED from [androidx.compose.animation:animation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/76811b257296d102898479245a69216b/transformed/animation-release/AndroidManifest.xml:5:5-44
-MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/fc5ecbe9ea8165b7226a50dd65679bae/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
-MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/fc5ecbe9ea8165b7226a50dd65679bae/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.foundation:foundation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/af06d53c7b42ce71aaa69450657774ae/transformed/foundation-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.foundation:foundation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/af06d53c7b42ce71aaa69450657774ae/transformed/foundation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/fc5ecbe9ea8165b7226a50dd65679bae/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/fc5ecbe9ea8165b7226a50dd65679bae/transformed/foundation-layout-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/eb06f282c43d8a39ed8164f9fa6bbce5/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/eb06f282c43d8a39ed8164f9fa6bbce5/transformed/animation-core-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/76811b257296d102898479245a69216b/transformed/animation-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/76811b257296d102898479245a69216b/transformed/animation-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/5102558a5396c9b1da07732a65d65709/transformed/ui-tooling-data-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.ui:ui-tooling-data-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/5102558a5396c9b1da07732a65d65709/transformed/ui-tooling-data-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.ui:ui-unit-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/ad52c3843bd3d2dd7e0eaabc35f8b3c5/transformed/ui-unit-release/AndroidManifest.xml:5:5-44
@@ -218,6 +209,20 @@ MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.5] /home/zieloo/
 MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/08c6c0eeb131648d75a4edd0ca242481/transformed/ui-tooling-preview-release/AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:4:5-44
+MERGED from [com.google.android.gms:play-services-location:21.3.0] /home/zieloo/.gradle/caches/8.9/transforms/4ae8d3840bab33412659f8ccda92f43c/transformed/play-services-location-21.3.0/AndroidManifest.xml:4:5-44
+MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:3:5-44
+MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-runtime:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/7850d591d26e706a77286f0265e44740/transformed/room-runtime-2.6.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.work:work-runtime-ktx:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/535e0a613eac8f145c05a82a14f537e7/transformed/work-runtime-ktx-2.10.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.work:work-runtime-ktx:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/535e0a613eac8f145c05a82a14f537e7/transformed/work-runtime-ktx-2.10.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-ktx:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/879ca41340b5f1dff6539173fa2aa721/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-ktx:2.6.1] /home/zieloo/.gradle/caches/8.9/transforms/879ca41340b5f1dff6539173fa2aa721/transformed/room-ktx-2.6.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/c5885a805201a0169dd55bedf2045dd2/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/c5885a805201a0169dd55bedf2045dd2/transformed/runtime-saveable-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.runtime:runtime-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/3debba31113371469645c4acf6baa7f0/transformed/runtime-release/AndroidManifest.xml:5:5-44
@@ -316,6 +321,18 @@ MERGED from [androidx.interpolator:interpolator:1.0.0] /home/zieloo/.gradle/cach
 		INJECTED from /home/zieloo/projects/weather_android/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
 		INJECTED from /home/zieloo/projects/weather_android/app/src/main/AndroidManifest.xml
+activity#androidx.compose.ui.tooling.PreviewActivity
+ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+activity#androidx.activity.ComponentActivity
+ADDED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:23:9-25:39
+	android:exported
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:25:13-36
+	android:name
+		ADDED from [androidx.compose.ui:ui-test-manifest:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/e38bc0cb62a1c5e5047e72dda56e9662/transformed/ui-test-manifest-1.7.5/AndroidManifest.xml:24:13-63
 activity#com.google.android.gms.common.api.GoogleApiActivity
 ADDED from [com.google.android.gms:play-services-base:18.5.0] /home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/AndroidManifest.xml:5:9-173
 	android:exported
@@ -572,12 +589,6 @@ action#androidx.work.diagnostics.REQUEST_DIAGNOSTICS
 ADDED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:140:17-88
 	android:name
 		ADDED from [androidx.work:work-runtime:2.10.0] /home/zieloo/.gradle/caches/8.9/transforms/b94fb814a6cc3e249f44ff7b9181473b/transformed/work-runtime-2.10.0/AndroidManifest.xml:140:25-85
-activity#androidx.compose.ui.tooling.PreviewActivity
-ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
-	android:exported
-		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
-	android:name
-		ADDED from [androidx.compose.ui:ui-tooling-android:1.7.5] /home/zieloo/.gradle/caches/8.9/transforms/693578751333eeca2441f5309db363e2/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
 meta-data#androidx.emoji2.text.EmojiCompatInitializer
 ADDED from [androidx.emoji2:emoji2:1.3.0] /home/zieloo/.gradle/caches/8.9/transforms/c54c1962cecbbc66f8086bfb65ec3cc3/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
 	android:value

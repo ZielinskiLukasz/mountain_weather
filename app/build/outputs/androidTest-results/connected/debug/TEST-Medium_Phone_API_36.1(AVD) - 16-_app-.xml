@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.example.mountainweather.ErrorContentTest" tests="9" failures="0" errors="0" skipped="0" time="12.905" timestamp="2026-02-22T14:02:19" hostname="localhost">
+  <properties>
+    <property name="device" value="Medium_Phone_API_36.1(AVD) - 16" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="errorContent_displaysMessage" classname="com.example.mountainweather.ErrorContentTest" time="0.955" />
+  <testcase name="errorContent_retryButtonClickable" classname="com.example.mountainweather.ErrorContentTest" time="0.726" />
+  <testcase name="settingsScreen_displaysNetworkSection" classname="com.example.mountainweather.SettingsScreenTest" time="0.781" />
+  <testcase name="settingsScreen_displaysForecastToggles" classname="com.example.mountainweather.SettingsScreenTest" time="1.735" />
+  <testcase name="settingsScreen_displaysBackgroundSyncSection" classname="com.example.mountainweather.SettingsScreenTest" time="1.708" />
+  <testcase name="weatherContent_displaysTemperature" classname="com.example.mountainweather.WeatherScreenTest" time="1.658" />
+  <testcase name="weatherContent_displaysLocationName" classname="com.example.mountainweather.WeatherScreenTest" time="1.683" />
+  <testcase name="offlineBanner_displayedWhenOffline" classname="com.example.mountainweather.WeatherScreenTest" time="1.633" />
+  <testcase name="weatherContent_displaysWindSpeed" classname="com.example.mountainweather.WeatherScreenTest" time="1.658" />
+</testsuite>

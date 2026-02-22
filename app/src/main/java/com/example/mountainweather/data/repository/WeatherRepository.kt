@@ -8,6 +8,7 @@ import com.example.mountainweather.data.local.HourlyForecastEntity
 import com.example.mountainweather.data.local.WeatherDao
 import com.example.mountainweather.data.local.WeatherEntity
 import kotlinx.coroutines.flow.Flow
+import java.util.Locale
 
 class WeatherRepository(
     private val api: OpenMeteoApi,
@@ -125,7 +126,7 @@ class WeatherRepository(
 
     companion object {
         fun locationKey(lat: Double, lon: Double): String =
-            "%.2f_%.2f".format(lat, lon)
+            String.format(Locale.US, "%.2f_%.2f", lat, lon)
     }
 }
 
