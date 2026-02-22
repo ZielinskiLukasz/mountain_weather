@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pogoda Górska</string>
+
+    <!-- Home screen -->
+    <string name="feels_like">Odczuwalna: %1$s°C</string>
+    <string name="loading_weather">Pobieranie pogody…</string>
+    <string name="update_time">Aktualizacja: %1$s</string>
+    <string name="offline_data">Dane offline z: %1$s</string>
+
+    <!-- Detail card -->
+    <string name="wind">Wiatr</string>
+    <string name="humidity">Wilgotność</string>
+    <string name="precipitation">Opady</string>
+    <string name="pressure">Ciśnienie</string>
+
+    <!-- Location screen -->
+    <string name="search_city">Szukaj miasta…</string>
+    <string name="use_gps">Użyj aktualnej pozycji</string>
+    <string name="no_results">Brak wyników</string>
+    <string name="location_permission_needed">Wymagane uprawnienie do lokalizacji</string>
+    <string name="gps_locating">Pobieranie lokalizacji…</string>
+
+    <!-- Saved locations -->
+    <string name="favorites">Ulubione</string>
+    <string name="recent_locations">Ostatnie</string>
+    <string name="no_saved_locations">Brak zapisanych lokalizacji</string>
+    <string name="added_to_favorites">Dodano do ulubionych</string>
+    <string name="removed_from_favorites">Usunięto z ulubionych</string>
+    <string name="location_deleted">Lokalizacja usunięta</string>
+
+    <!-- Error -->
+    <string name="connection_error">Błąd połączenia</string>
+    <string name="retry">Ponów próbę</string>
+    <string name="unknown_error">Nieznany błąd</string>
+    <string name="refresh_error">Błąd odświeżania</string>
+
+    <!-- Weather codes -->
+    <string name="wc_clear">Bezchmurnie</string>
+    <string name="wc_mainly_clear">Przeważnie bezchmurnie</string>
+    <string name="wc_partly_cloudy">Częściowe zachmurzenie</string>
+    <string name="wc_overcast">Pochmurno</string>
+    <string name="wc_fog">Mgła</string>
+    <string name="wc_light_drizzle">Lekka mżawka</string>
+    <string name="wc_moderate_drizzle">Umiarkowana mżawka</string>
+    <string name="wc_dense_drizzle">Gęsta mżawka</string>
+    <string name="wc_freezing_drizzle">Marznąca mżawka</string>
+    <string name="wc_light_rain">Lekki deszcz</string>
+    <string name="wc_moderate_rain">Umiarkowany deszcz</string>
+    <string name="wc_heavy_rain">Silny deszcz</string>
+    <string name="wc_freezing_rain">Marznący deszcz</string>
+    <string name="wc_light_snow">Lekki śnieg</string>
+    <string name="wc_moderate_snow">Umiarkowany śnieg</string>
+    <string name="wc_heavy_snow">Intensywny śnieg</string>
+    <string name="wc_snow_grains">Ziarna śniegu</string>
+    <string name="wc_light_showers">Lekkie przelotne opady</string>
+    <string name="wc_moderate_showers">Umiarkowane przelotne opady</string>
+    <string name="wc_violent_showers">Gwałtowne przelotne opady</string>
+    <string name="wc_light_snow_showers">Lekkie opady śniegu</string>
+    <string name="wc_heavy_snow_showers">Intensywne opady śniegu</string>
+    <string name="wc_thunderstorm">Burza</string>
+    <string name="wc_thunderstorm_hail">Burza z gradem</string>
+    <string name="wc_unknown">Nieznane</string>
+</resources>

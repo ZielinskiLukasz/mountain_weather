@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="app_name">Mountain Weather</string>
+    <string name="connection_error">Connection error</string>
+    <string name="favorites">Favorites</string>
+    <string name="feels_like">Feels like: %1$s°C</string>
+    <string name="gps_locating">Getting location…</string>
+    <string name="humidity">Humidity</string>
+    <string name="loading_weather">Loading weather…</string>
+    <string name="location_deleted">Location deleted</string>
+    <string name="location_permission_needed">Location permission is needed for GPS</string>
+    <string name="no_results">No results found</string>
+    <string name="no_saved_locations">No saved locations yet</string>
+    <string name="offline_data">Offline data from: %1$s</string>
+    <string name="precipitation">Precipitation</string>
+    <string name="pressure">Pressure</string>
+    <string name="recent_locations">Recent</string>
+    <string name="refresh_error">Refresh failed</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="retry">Retry</string>
+    <string name="search_city">Search city…</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="update_time">Updated: %1$s</string>
+    <string name="use_gps">Use current location</string>
+    <string name="wc_clear">Clear sky</string>
+    <string name="wc_dense_drizzle">Dense drizzle</string>
+    <string name="wc_fog">Fog</string>
+    <string name="wc_freezing_drizzle">Freezing drizzle</string>
+    <string name="wc_freezing_rain">Freezing rain</string>
+    <string name="wc_heavy_rain">Heavy rain</string>
+    <string name="wc_heavy_snow">Heavy snow</string>
+    <string name="wc_heavy_snow_showers">Heavy snow showers</string>
+    <string name="wc_light_drizzle">Light drizzle</string>
+    <string name="wc_light_rain">Light rain</string>
+    <string name="wc_light_showers">Light showers</string>
+    <string name="wc_light_snow">Light snow</string>
+    <string name="wc_light_snow_showers">Light snow showers</string>
+    <string name="wc_mainly_clear">Mainly clear</string>
+    <string name="wc_moderate_drizzle">Moderate drizzle</string>
+    <string name="wc_moderate_rain">Moderate rain</string>
+    <string name="wc_moderate_showers">Moderate showers</string>
+    <string name="wc_moderate_snow">Moderate snow</string>
+    <string name="wc_overcast">Overcast</string>
+    <string name="wc_partly_cloudy">Partly cloudy</string>
+    <string name="wc_snow_grains">Snow grains</string>
+    <string name="wc_thunderstorm">Thunderstorm</string>
+    <string name="wc_thunderstorm_hail">Thunderstorm with hail</string>
+    <string name="wc_unknown">Unknown</string>
+    <string name="wc_violent_showers">Violent showers</string>
+    <string name="wind">Wind</string>
+    <style name="Theme.MountainWeather" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
