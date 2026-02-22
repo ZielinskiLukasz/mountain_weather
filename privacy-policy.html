@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountain Weather — Privacy Policy</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #222; }
+        h1 { font-size: 1.8em; margin-bottom: 0.2em; }
+        h2 { font-size: 1.3em; margin-top: 2em; color: #444; }
+        .date { color: #888; font-size: 0.9em; }
+        ul { padding-left: 1.5em; }
+        a { color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+<h1>Privacy Policy</h1>
+<p class="date">Effective date: February 22, 2026</p>
+
+<p><strong>Mountain Weather</strong> ("the App") is a free, open-source weather application designed for use in areas with limited connectivity. This policy describes how the App handles your data.</p>
+
+<h2>1. Data We Collect</h2>
+
+<h3>Location Data</h3>
+<ul>
+    <li>The App may request access to your device's GPS location <strong>only when you explicitly tap "Use current location"</strong>.</li>
+    <li>Location coordinates are used solely to fetch weather data from the Open-Meteo API and are stored locally on your device as part of saved/favorite locations.</li>
+    <li>Location data is <strong>never</strong> transmitted to any server other than the Open-Meteo weather API.</li>
+</ul>
+
+<h3>Weather Data</h3>
+<ul>
+    <li>The App fetches weather forecasts from the <a href="https://open-meteo.com/">Open-Meteo API</a>, a free and open-source weather service.</li>
+    <li>Only geographic coordinates (latitude, longitude) are sent to Open-Meteo. No personal information is included in these requests.</li>
+</ul>
+
+<h3>Locally Stored Data</h3>
+<ul>
+    <li>Saved locations (favorites, recent cities)</li>
+    <li>Cached weather data (for offline access)</li>
+    <li>User preferences (forecast type, sync interval)</li>
+</ul>
+<p>All of the above is stored <strong>exclusively on your device</strong> using Android Room Database and DataStore. None of this data leaves your device except as described above.</p>
+
+<h2>2. Data We Do NOT Collect</h2>
+<ul>
+    <li>We do <strong>not</strong> collect personal information (name, email, phone number).</li>
+    <li>We do <strong>not</strong> use analytics, tracking, or advertising SDKs.</li>
+    <li>We do <strong>not</strong> create user accounts or profiles.</li>
+    <li>We do <strong>not</strong> share any data with third parties.</li>
+    <li>We do <strong>not</strong> use cookies.</li>
+</ul>
+
+<h2>3. Permissions</h2>
+<table>
+    <tr><td><strong>INTERNET</strong></td><td>Required to fetch weather data from Open-Meteo API</td></tr>
+    <tr><td><strong>ACCESS_NETWORK_STATE</strong></td><td>Used to detect connectivity for resilient sync and background updates</td></tr>
+    <tr><td><strong>ACCESS_FINE_LOCATION</strong></td><td>Optional — used only when you request GPS-based location</td></tr>
+    <tr><td><strong>ACCESS_COARSE_LOCATION</strong></td><td>Optional — fallback for approximate location</td></tr>
+</table>
+
+<h2>4. Third-Party Services</h2>
+<p>The App uses the following third-party service:</p>
+<ul>
+    <li><strong>Open-Meteo API</strong> (<a href="https://open-meteo.com/">open-meteo.com</a>) — weather data provider. Their privacy policy is available at <a href="https://open-meteo.com/en/terms">open-meteo.com/en/terms</a>.</li>
+    <li><strong>Google Play Services Location</strong> — used for GPS positioning when requested by the user. Subject to <a href="https://policies.google.com/privacy">Google's Privacy Policy</a>.</li>
+</ul>
+
+<h2>5. Data Retention</h2>
+<p>All data is stored locally on your device. You can clear all App data at any time through Android Settings → Apps → Mountain Weather → Clear Data, or by uninstalling the App.</p>
+
+<h2>6. Children's Privacy</h2>
+<p>The App does not knowingly collect any data from children. The App does not collect personal data from any user.</p>
+
+<h2>7. Changes to This Policy</h2>
+<p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</p>
+
+<h2>8. Contact</h2>
+<p>If you have questions about this Privacy Policy, please open an issue on the project's repository or contact the developer.</p>
+
+</body>
+</html>
