@@ -2,6 +2,8 @@
 <resources>
     <string name="added_to_favorites">Dodano do ulubionych</string>
     <string name="app_name">Pogoda Górska</string>
+    <string name="background_sync">Synchronizacja w tle</string>
+    <string name="background_sync_desc">Okresowe odświeżanie pogody dla ulubionych lokalizacji w tle (co ~3h, tylko z siecią)</string>
     <string name="connection_error">Błąd połączenia</string>
     <string name="daily_forecast">Prognoza dzienna</string>
     <string name="favorites">Ulubione</string>
@@ -13,6 +15,7 @@
     <string name="loading_weather">Pobieranie pogody…</string>
     <string name="location_deleted">Lokalizacja usunięta</string>
     <string name="location_permission_needed">Wymagane uprawnienie do lokalizacji</string>
+    <string name="network_section">Sieć</string>
     <string name="no_results">Brak wyników</string>
     <string name="no_saved_locations">Brak zapisanych lokalizacji</string>
     <string name="offline_data">Dane offline z: %1$s</string>
@@ -21,6 +24,8 @@
     <string name="recent_locations">Ostatnie</string>
     <string name="refresh_error">Błąd odświeżania</string>
     <string name="removed_from_favorites">Usunięto z ulubionych</string>
+    <string name="resilient_sync">Odporna synchronizacja</string>
+    <string name="resilient_sync_desc">Automatyczne ponawianie z rosnącym opóźnieniem i wyłącznikiem obwodu dla niestabilnych połączeń (góry, słaby zasięg)</string>
     <string name="retry">Ponów próbę</string>
     <string name="search_city">Szukaj miasta…</string>
     <string name="settings">Ustawienia</string>

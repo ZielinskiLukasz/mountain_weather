@@ -41,6 +41,11 @@
     <string name="show_daily_3">Dzienna (3 dni)</string>
     <string name="show_daily_5">Dzienna (5 dni)</string>
     <string name="settings_info">Pobierane są tylko zaznaczone prognozy</string>
+    <string name="network_section">Sieć</string>
+    <string name="resilient_sync">Odporna synchronizacja</string>
+    <string name="resilient_sync_desc">Automatyczne ponawianie z rosnącym opóźnieniem i wyłącznikiem obwodu dla niestabilnych połączeń (góry, słaby zasięg)</string>
+    <string name="background_sync">Synchronizacja w tle</string>
+    <string name="background_sync_desc">Okresowe odświeżanie pogody dla ulubionych lokalizacji w tle (co ~3h, tylko z siecią)</string>
 
     <!-- Error -->
     <string name="connection_error">Błąd połączenia</string>

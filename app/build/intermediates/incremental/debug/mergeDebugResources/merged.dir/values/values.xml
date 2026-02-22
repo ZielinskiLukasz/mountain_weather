@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2" xmlns:ns2="http://schemas.android.com/tools">
     <attr format="reference" name="nestedScrollViewStyle"/>
+    <bool name="enable_system_alarm_service_default">true</bool>
+    <bool name="enable_system_foreground_service_default">true</bool>
+    <bool name="enable_system_job_service_default">false</bool>
+    <bool name="workmanager_test_configuration">false</bool>
     <color name="androidx_core_ripple_material_light">#1f000000</color>
     <color name="androidx_core_secondary_text_default_material_light">#8a000000</color>
     <color name="call_notification_answer_color">#1d873b</color>
@@ -111,6 +115,8 @@
     <string name="added_to_favorites">Added to favorites</string>
     <string name="androidx_startup" translatable="false">androidx.startup</string>
     <string name="app_name">Mountain Weather</string>
+    <string name="background_sync">Background sync</string>
+    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (every ~3h, only on network)</string>
     <string name="call_notification_answer_action">Answer</string>
     <string name="call_notification_answer_video_action">Video</string>
     <string name="call_notification_decline_action">Decline</string>
@@ -216,6 +222,7 @@
     <string name="m3c_tooltip_long_press_label">Show tooltip</string>
     <string name="m3c_tooltip_pane_description">Tooltip</string>
     <string name="navigation_menu">"Navigation menu"</string>
+    <string name="network_section">Network</string>
     <string name="no_results">No results found</string>
     <string name="no_saved_locations">No saved locations yet</string>
     <string name="not_selected">Not selected</string>
@@ -227,6 +234,8 @@
     <string name="recent_locations">Recent</string>
     <string name="refresh_error">Refresh failed</string>
     <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="resilient_sync">Resilient sync</string>
+    <string name="resilient_sync_desc">Auto-retry with exponential backoff and circuit breaker for unstable connections (mountains, poor signal)</string>
     <string name="retry">Retry</string>
     <string name="search_city">Search city…</string>
     <string name="selected">Selected</string>

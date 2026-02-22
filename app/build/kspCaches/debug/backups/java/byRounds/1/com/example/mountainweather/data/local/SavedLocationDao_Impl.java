@@ -267,6 +267,69 @@ public final class SavedLocationDao_Impl implements SavedLocationDao {
   }
 
   @Override
+  public Object getFavorites(final Continuation<? super List<SavedLocationEntity>> $completion) {
+    final String _sql = "SELECT * FROM saved_locations WHERE isFavorite = 1 ORDER BY name ASC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<SavedLocationEntity>>() {
+      @Override
+      @NonNull
+      public List<SavedLocationEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
+          final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
+          final int _cursorIndexOfCountry = CursorUtil.getColumnIndexOrThrow(_cursor, "country");
+          final int _cursorIndexOfRegion = CursorUtil.getColumnIndexOrThrow(_cursor, "region");
+          final int _cursorIndexOfIsFavorite = CursorUtil.getColumnIndexOrThrow(_cursor, "isFavorite");
+          final int _cursorIndexOfLastUsedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastUsedAt");
+          final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
+          final List<SavedLocationEntity> _result = new ArrayList<SavedLocationEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final SavedLocationEntity _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpName;
+            _tmpName = _cursor.getString(_cursorIndexOfName);
+            final double _tmpLatitude;
+            _tmpLatitude = _cursor.getDouble(_cursorIndexOfLatitude);
+            final double _tmpLongitude;
+            _tmpLongitude = _cursor.getDouble(_cursorIndexOfLongitude);
+            final String _tmpCountry;
+            if (_cursor.isNull(_cursorIndexOfCountry)) {
+              _tmpCountry = null;
+            } else {
+              _tmpCountry = _cursor.getString(_cursorIndexOfCountry);
+            }
+            final String _tmpRegion;
+            if (_cursor.isNull(_cursorIndexOfRegion)) {
+              _tmpRegion = null;
+            } else {
+              _tmpRegion = _cursor.getString(_cursorIndexOfRegion);
+            }
+            final boolean _tmpIsFavorite;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsFavorite);
+            _tmpIsFavorite = _tmp != 0;
+            final long _tmpLastUsedAt;
+            _tmpLastUsedAt = _cursor.getLong(_cursorIndexOfLastUsedAt);
+            final long _tmpCreatedAt;
+            _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
+            _item = new SavedLocationEntity(_tmpId,_tmpName,_tmpLatitude,_tmpLongitude,_tmpCountry,_tmpRegion,_tmpIsFavorite,_tmpLastUsedAt,_tmpCreatedAt);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<SavedLocationEntity>> observeRecent(final int limit) {
     final String _sql = "SELECT * FROM saved_locations WHERE isFavorite = 0 ORDER BY lastUsedAt DESC LIMIT ?";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);

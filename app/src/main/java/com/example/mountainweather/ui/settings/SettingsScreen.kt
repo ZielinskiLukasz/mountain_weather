@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.example.mountainweather.R
 import com.example.mountainweather.data.repository.ForecastSettings
 import com.example.mountainweather.data.repository.SettingsRepository
+import com.example.mountainweather.data.sync.SyncScheduler
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,6 +37,7 @@ fun SettingsScreen(
 ) {
     val settings by settingsRepo.forecastSettings.collectAsState(initial = ForecastSettings())
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -96,6 +99,49 @@ fun SettingsScreen(
                 text = stringResource(R.string.settings_info),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = stringResource(R.string.network_section),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SettingsToggle(
+                label = stringResource(R.string.resilient_sync),
+                checked = settings.resilientSync,
+                onCheckedChange = { scope.launch { settingsRepo.setResilientSync(it) } }
+            )
+
+            Text(
+                text = stringResource(R.string.resilient_sync_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SettingsToggle(
+                label = stringResource(R.string.background_sync),
+                checked = settings.backgroundSync,
+                onCheckedChange = { enabled ->
+                    scope.launch {
+                        settingsRepo.setBackgroundSync(enabled)
+                        if (enabled) SyncScheduler.enable(context) else SyncScheduler.disable(context)
+                    }
+                }
+            )
+
+            Text(
+                text = stringResource(R.string.background_sync_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
     }

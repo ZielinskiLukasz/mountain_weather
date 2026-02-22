@@ -2,6 +2,8 @@ R_DEF: Internal format may change without notice
 local
 string added_to_favorites
 string app_name
+string background_sync
+string background_sync_desc
 string connection_error
 string daily_forecast
 string favorites
@@ -13,6 +15,7 @@ string humidity
 string loading_weather
 string location_deleted
 string location_permission_needed
+string network_section
 string no_results
 string no_saved_locations
 string offline_data
@@ -21,6 +24,8 @@ string pressure
 string recent_locations
 string refresh_error
 string removed_from_favorites
+string resilient_sync
+string resilient_sync_desc
 string retry
 string search_city
 string settings

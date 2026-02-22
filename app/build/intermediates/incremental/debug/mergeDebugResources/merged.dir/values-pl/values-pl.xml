@@ -2,6 +2,8 @@
 <resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
     <string name="added_to_favorites">Dodano do ulubionych</string>
     <string name="app_name">Pogoda Górska</string>
+    <string name="background_sync">Synchronizacja w tle</string>
+    <string name="background_sync_desc">Okresowe odświeżanie pogody dla ulubionych lokalizacji w tle (co ~3h, tylko z siecią)</string>
     <string msgid="881409763997275156" name="call_notification_answer_action">"Odbierz"</string>
     <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Wideo"</string>
     <string msgid="3229508546291798546" name="call_notification_decline_action">"Odrzuć"</string>
@@ -103,6 +105,7 @@
     <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"Pokaż etykietkę"</string>
     <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"Etykietka"</string>
     <string msgid="542007171693138492" name="navigation_menu">"Menu nawigacyjne"</string>
+    <string name="network_section">Sieć</string>
     <string name="no_results">Brak wyników</string>
     <string name="no_saved_locations">Brak zapisanych lokalizacji</string>
     <string msgid="6610465462668679431" name="not_selected">"Nie wybrano"</string>
@@ -114,6 +117,8 @@
     <string name="recent_locations">Ostatnie</string>
     <string name="refresh_error">Błąd odświeżania</string>
     <string name="removed_from_favorites">Usunięto z ulubionych</string>
+    <string name="resilient_sync">Odporna synchronizacja</string>
+    <string name="resilient_sync_desc">Automatyczne ponawianie z rosnącym opóźnieniem i wyłącznikiem obwodu dla niestabilnych połączeń (góry, słaby zasięg)</string>
     <string name="retry">Ponów próbę</string>
     <string name="search_city">Szukaj miasta…</string>
     <string msgid="6043586758067023" name="selected">"Wybrano"</string>

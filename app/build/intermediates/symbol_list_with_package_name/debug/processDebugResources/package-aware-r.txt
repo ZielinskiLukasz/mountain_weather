@@ -44,6 +44,10 @@ attr startDestination
 attr targetPackage
 attr ttcIndex
 attr uri
+bool enable_system_alarm_service_default
+bool enable_system_foreground_service_default
+bool enable_system_job_service_default
+bool workmanager_test_configuration
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
 color call_notification_answer_color
@@ -238,6 +242,8 @@ layout notification_template_part_time
 string added_to_favorites
 string androidx_startup
 string app_name
+string background_sync
+string background_sync_desc
 string call_notification_answer_action
 string call_notification_answer_video_action
 string call_notification_decline_action
@@ -339,6 +345,7 @@ string m3c_time_picker_pm
 string m3c_tooltip_long_press_label
 string m3c_tooltip_pane_description
 string navigation_menu
+string network_section
 string no_results
 string no_saved_locations
 string not_selected
@@ -350,6 +357,8 @@ string range_start
 string recent_locations
 string refresh_error
 string removed_from_favorites
+string resilient_sync
+string resilient_sync_desc
 string retry
 string search_city
 string selected

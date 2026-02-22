@@ -2,6 +2,8 @@
 <resources>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="app_name">Mountain Weather</string>
+    <string name="background_sync">Background sync</string>
+    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (every ~3h, only on network)</string>
     <string name="connection_error">Connection error</string>
     <string name="daily_forecast">Daily forecast</string>
     <string name="favorites">Favorites</string>
@@ -13,6 +15,7 @@
     <string name="loading_weather">Loading weather…</string>
     <string name="location_deleted">Location deleted</string>
     <string name="location_permission_needed">Location permission is needed for GPS</string>
+    <string name="network_section">Network</string>
     <string name="no_results">No results found</string>
     <string name="no_saved_locations">No saved locations yet</string>
     <string name="offline_data">Offline data from: %1$s</string>
@@ -21,6 +24,8 @@
     <string name="recent_locations">Recent</string>
     <string name="refresh_error">Refresh failed</string>
     <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="resilient_sync">Resilient sync</string>
+    <string name="resilient_sync_desc">Auto-retry with exponential backoff and circuit breaker for unstable connections (mountains, poor signal)</string>
     <string name="retry">Retry</string>
     <string name="search_city">Search city…</string>
     <string name="settings">Settings</string>

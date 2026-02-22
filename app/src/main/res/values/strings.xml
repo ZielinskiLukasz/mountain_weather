@@ -41,6 +41,11 @@
     <string name="show_daily_3">Daily (3 days)</string>
     <string name="show_daily_5">Daily (5 days)</string>
     <string name="settings_info">Only selected forecasts will be downloaded</string>
+    <string name="network_section">Network</string>
+    <string name="resilient_sync">Resilient sync</string>
+    <string name="resilient_sync_desc">Auto-retry with exponential backoff and circuit breaker for unstable connections (mountains, poor signal)</string>
+    <string name="background_sync">Background sync</string>
+    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (every ~3h, only on network)</string>
 
     <!-- Error -->
     <string name="connection_error">Connection error</string>

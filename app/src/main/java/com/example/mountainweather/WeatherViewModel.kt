@@ -14,6 +14,8 @@ import com.example.mountainweather.data.repository.ForecastSettings
 import com.example.mountainweather.data.repository.SavedLocationRepository
 import com.example.mountainweather.data.repository.SettingsRepository
 import com.example.mountainweather.data.repository.WeatherRepository
+import com.example.mountainweather.data.sync.NetworkMonitor
+import com.example.mountainweather.data.sync.ResilientSyncManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,6 +46,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     )
     private val savedLocationRepo = SavedLocationRepository(db.savedLocationDao())
     val settingsRepo = SettingsRepository(application)
+    private val syncManager = ResilientSyncManager(repository)
+    private val networkMonitor = NetworkMonitor(application)
 
     private val _uiState = MutableStateFlow(WeatherUiState())
     val uiState: StateFlow<WeatherUiState> = _uiState
@@ -57,20 +61,44 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private var dailyObserverJob: Job? = null
     private var favoriteObserverJob: Job? = null
     private var settingsJob: Job? = null
+    private var networkJob: Job? = null
 
     init {
-        observeCache()
-        observeFavoriteStatus()
-        fetchWeather()
-        observeSettings()
+        viewModelScope.launch {
+            val saved = settingsRepo.getLastLocation()
+            if (saved != null) {
+                _uiState.update {
+                    it.copy(
+                        locationName = saved.name,
+                        latitude = saved.latitude,
+                        longitude = saved.longitude
+                    )
+                }
+            }
+            observeCache()
+            observeFavoriteStatus()
+            fetchWeather()
+            observeSettings()
+            observeNetwork()
+        }
+    }
+
+    private fun observeNetwork() {
+        networkJob?.cancel()
+        networkJob = viewModelScope.launch {
+            networkMonitor.isOnline.collect { online ->
+                val settings = forecastSettings.value
+                if (online && settings.resilientSync && _uiState.value.isOfflineData) {
+                    fetchWeatherResilient(settings)
+                }
+            }
+        }
     }
 
     private fun observeSettings() {
         settingsJob?.cancel()
         settingsJob = viewModelScope.launch {
             settingsRepo.forecastSettings.collect { settings ->
-                val state = _uiState.value
-                val key = WeatherRepository.locationKey(state.latitude, state.longitude)
                 if (settings.showHourly) observeHourlyCache() else {
                     hourlyObserverJob?.cancel()
                     _uiState.update { it.copy(hourlyForecast = emptyList()) }
@@ -99,6 +127,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 error = null
             )
         }
+        viewModelScope.launch { settingsRepo.saveLastLocation(name, lat, lon) }
         observeCache()
         observeFavoriteStatus()
         val settings = forecastSettings.value
@@ -150,8 +179,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                         it.copy(
                             isLoading = false,
                             weather = cached,
-                            locationName = cached.locationName,
-                            isOfflineData = true
+                            locationName = cached.locationName
                         )
                     }
                 }
@@ -186,6 +214,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun fetchWeather() {
+        val settings = forecastSettings.value
+        if (settings.resilientSync) {
+            fetchWeatherResilient(settings)
+        } else {
+            fetchWeatherSimple()
+        }
+    }
+
+    private fun fetchWeatherSimple() {
         val state = _uiState.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
@@ -195,7 +232,20 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private fun fetchWeatherResilient(settings: ForecastSettings) {
+        val state = _uiState.value
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
+            val syncResult = syncManager.syncAll(
+                state.latitude, state.longitude, state.locationName, settings
+            )
+            syncResult.currentWeather?.let { handleResult(it) }
+        }
+    }
+
     private fun fetchForecasts(settings: ForecastSettings) {
+        if (settings.resilientSync) return // handled by fetchWeatherResilient
+
         val state = _uiState.value
         if (settings.showHourly) {
             viewModelScope.launch {
@@ -219,11 +269,20 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val settings = forecastSettings.value
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, error = null) }
-            handleResult(
-                repository.refreshWeather(state.latitude, state.longitude, state.locationName)
-            )
+            if (settings.resilientSync) {
+                val syncResult = syncManager.syncAll(
+                    state.latitude, state.longitude, state.locationName, settings
+                )
+                syncResult.currentWeather?.let { handleResult(it) }
+            } else {
+                handleResult(
+                    repository.refreshWeather(state.latitude, state.longitude, state.locationName)
+                )
+            }
         }
-        fetchForecasts(settings)
+        if (!settings.resilientSync) {
+            fetchForecasts(settings)
+        }
     }
 
     private fun handleResult(result: Result<WeatherEntity>) {

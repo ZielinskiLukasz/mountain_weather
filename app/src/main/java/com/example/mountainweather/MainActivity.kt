@@ -63,6 +63,8 @@ import com.example.mountainweather.ui.settings.SettingsScreen
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import com.example.mountainweather.ui.theme.MountainWeatherTheme
 import com.example.mountainweather.util.weatherCodeToInfo
 import com.example.mountainweather.util.windDirectionToArrow
@@ -75,9 +77,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        reconcileBackgroundSync()
         setContent {
             MountainWeatherTheme {
                 AppNavigation()
+            }
+        }
+    }
+
+    private fun reconcileBackgroundSync() {
+        val settingsRepo = com.example.mountainweather.data.repository.SettingsRepository(this)
+        kotlinx.coroutines.MainScope().launch {
+            val settings = settingsRepo.forecastSettings.first()
+            if (settings.backgroundSync) {
+                com.example.mountainweather.data.sync.SyncScheduler.enable(this@MainActivity)
             }
         }
     }
@@ -233,11 +246,11 @@ fun WeatherContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopAppBar(
+            modifier = Modifier.clickable(onClick = onChangeLocation),
             title = {
                 Text(
                     text = locationName,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.clickable(onClick = onChangeLocation)
+                    style = MaterialTheme.typography.headlineMedium
                 )
             },
             actions = {
