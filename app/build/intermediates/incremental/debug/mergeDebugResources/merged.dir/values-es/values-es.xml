@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="added_to_favorites">Añadido a favoritos</string>
+    <string name="app_name">Clima de Montaña</string>
+    <string name="background_sync">Sincronización en segundo plano</string>
+    <string name="background_sync_desc">Actualizar periódicamente el clima de ubicaciones favoritas en segundo plano (requiere red)</string>
     <string msgid="881409763997275156" name="call_notification_answer_action">"Responder"</string>
     <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Vídeo"</string>
     <string msgid="3229508546291798546" name="call_notification_decline_action">"Rechazar"</string>
@@ -27,11 +31,22 @@
     <string name="common_open_on_phone">Abrir en teléfono</string>
     <string name="common_signin_button_text">Iniciar sesión</string>
     <string name="common_signin_button_text_long">Iniciar sesión con Google</string>
+    <string name="connection_error">Error de conexión</string>
+    <string name="daily_forecast">Pronóstico diario</string>
     <string msgid="8038256446254964252" name="default_error_message">"Entrada no válida"</string>
     <string msgid="6312721426453364202" name="default_popup_window_title">"Ventana emergente"</string>
     <string msgid="1890207353314751437" name="dropdown_menu">"Menú desplegable"</string>
+    <string name="favorites">Favoritos</string>
+    <string name="feels_like">Sensación: %1$s°C</string>
+    <string name="forecast_types">Tipos de pronóstico</string>
+    <string name="gps_locating">Obteniendo ubicación…</string>
+    <string name="hourly_forecast">Pronóstico por hora</string>
+    <string name="humidity">Humedad</string>
     <string msgid="6827826412747255547" name="in_progress">"En curso"</string>
     <string msgid="7933458017204019916" name="indeterminate">"Marcado parcialmente"</string>
+    <string name="loading_weather">Cargando clima…</string>
+    <string name="location_deleted">Ubicación eliminada</string>
+    <string name="location_permission_needed">Se necesita permiso de ubicación para GPS</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"Contrae la hoja inferior"</string>
     <string msgid="1555567894577437024" name="m3c_bottom_sheet_dismiss_description">"Cierra la hoja inferior"</string>
     <string msgid="8403354765404029791" name="m3c_bottom_sheet_drag_handle_description">"Controlador de arrastre"</string>
@@ -90,17 +105,72 @@
     <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"Mostrar descripción emergente"</string>
     <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"Descripción emergente"</string>
     <string msgid="542007171693138492" name="navigation_menu">"Menú de navegación"</string>
+    <string name="network_section">Red</string>
+    <string name="no_results">No se encontraron resultados</string>
+    <string name="no_saved_locations">No hay ubicaciones guardadas</string>
     <string msgid="6610465462668679431" name="not_selected">"No seleccionado"</string>
+    <string name="offline_data">Datos offline de: %1$s</string>
+    <string name="precipitation">Precipitación</string>
+    <string name="pressure">Presión</string>
     <string msgid="5941395253238309765" name="range_end">"Fin del intervalo"</string>
     <string msgid="7097486360902471446" name="range_start">"Inicio del intervalo"</string>
+    <string name="recent_locations">Recientes</string>
+    <string name="refresh_error">Error al actualizar</string>
+    <string name="removed_from_favorites">Eliminado de favoritos</string>
+    <string name="resilient_sync">Sincronización resistente</string>
+    <string name="resilient_sync_desc">Reintento automático con retroceso exponencial y disyuntor para conexiones inestables (montañas, señal débil)</string>
+    <string name="retry">Reintentar</string>
+    <string name="search_city">Buscar ciudad…</string>
     <string msgid="6043586758067023" name="selected">"Seleccionado"</string>
+    <string name="settings">Ajustes</string>
+    <string name="settings_info">Solo se descargarán los pronósticos seleccionados</string>
+    <string name="show_daily_3">Diario (3 días)</string>
+    <string name="show_daily_5">Diario (5 días)</string>
+    <string name="show_hourly_24h">Por hora (24h)</string>
     <string msgid="4139871816613051306" name="state_empty">"Vacío"</string>
     <string msgid="5834637030682409883" name="state_off">"Desactivado"</string>
     <string msgid="1490883874751719580" name="state_on">"Activado"</string>
     <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
     <string msgid="2561197295334830845" name="switch_role">"Interruptor"</string>
+    <string name="sync_10_min">Cada 10 min</string>
+    <string name="sync_12h">Cada 12 horas</string>
+    <string name="sync_1h">Cada 1 hora</string>
+    <string name="sync_30_min">Cada 30 min</string>
+    <string name="sync_3h">Cada 3 horas</string>
+    <string name="sync_6h">Cada 6 horas</string>
+    <string name="sync_off">Desactivado</string>
     <string msgid="1672349317127674378" name="tab">"Pestaña"</string>
+    <string name="temp_max_min">%1$s° / %2$s°</string>
     <string msgid="5946805113151406391" name="template_percent">"<ns1:g id="PERCENTAGE">%1$d</ns1:g> por cien."</string>
     <string msgid="3765533235322692011" name="tooltip_description">"descripción emergente"</string>
     <string msgid="3124740595719787496" name="tooltip_label">"mostrar descripción emergente"</string>
+    <string name="unknown_error">Error desconocido</string>
+    <string name="update_time">Actualizado: %1$s</string>
+    <string name="use_gps">Usar ubicación actual</string>
+    <string name="wc_clear">Cielo despejado</string>
+    <string name="wc_dense_drizzle">Llovizna densa</string>
+    <string name="wc_fog">Niebla</string>
+    <string name="wc_freezing_drizzle">Llovizna helada</string>
+    <string name="wc_freezing_rain">Lluvia helada</string>
+    <string name="wc_heavy_rain">Lluvia fuerte</string>
+    <string name="wc_heavy_snow">Nieve intensa</string>
+    <string name="wc_heavy_snow_showers">Chubascos de nieve intensos</string>
+    <string name="wc_light_drizzle">Llovizna ligera</string>
+    <string name="wc_light_rain">Lluvia ligera</string>
+    <string name="wc_light_showers">Chubascos ligeros</string>
+    <string name="wc_light_snow">Nieve ligera</string>
+    <string name="wc_light_snow_showers">Chubascos de nieve ligeros</string>
+    <string name="wc_mainly_clear">Mayormente despejado</string>
+    <string name="wc_moderate_drizzle">Llovizna moderada</string>
+    <string name="wc_moderate_rain">Lluvia moderada</string>
+    <string name="wc_moderate_showers">Chubascos moderados</string>
+    <string name="wc_moderate_snow">Nieve moderada</string>
+    <string name="wc_overcast">Nublado</string>
+    <string name="wc_partly_cloudy">Parcialmente nublado</string>
+    <string name="wc_snow_grains">Granos de nieve</string>
+    <string name="wc_thunderstorm">Tormenta</string>
+    <string name="wc_thunderstorm_hail">Tormenta con granizo</string>
+    <string name="wc_unknown">Desconocido</string>
+    <string name="wc_violent_showers">Chubascos violentos</string>
+    <string name="wind">Viento</string>
 </resources>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="added_to_favorites">已添加到收藏</string>
+    <string name="app_name">山地天气</string>
+    <string name="background_sync">后台同步</string>
+    <string name="background_sync_desc">定期在后台更新收藏位置的天气（需要网络）</string>
     <string msgid="881409763997275156" name="call_notification_answer_action">"接听"</string>
     <string msgid="8793775615905189152" name="call_notification_answer_video_action">"视频通话"</string>
     <string msgid="3229508546291798546" name="call_notification_decline_action">"拒接"</string>
@@ -27,11 +31,22 @@
     <string name="common_open_on_phone">在手机上打开</string>
     <string name="common_signin_button_text">登录</string>
     <string name="common_signin_button_text_long">使用 Google 账号登录</string>
+    <string name="connection_error">连接错误</string>
+    <string name="daily_forecast">每日预报</string>
     <string msgid="8038256446254964252" name="default_error_message">"输入无效"</string>
     <string msgid="6312721426453364202" name="default_popup_window_title">"弹出式窗口"</string>
     <string msgid="1890207353314751437" name="dropdown_menu">"下拉菜单"</string>
+    <string name="favorites">收藏</string>
+    <string name="feels_like">体感温度：%1$s°C</string>
+    <string name="forecast_types">预报类型</string>
+    <string name="gps_locating">正在获取位置…</string>
+    <string name="hourly_forecast">逐小时预报</string>
+    <string name="humidity">湿度</string>
     <string msgid="6827826412747255547" name="in_progress">"进行中"</string>
     <string msgid="7933458017204019916" name="indeterminate">"部分选中"</string>
+    <string name="loading_weather">正在加载天气…</string>
+    <string name="location_deleted">位置已删除</string>
+    <string name="location_permission_needed">GPS需要位置权限</string>
     <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"收起底部动作条"</string>
     <string msgid="1555567894577437024" name="m3c_bottom_sheet_dismiss_description">"关闭底部动作条"</string>
     <string msgid="8403354765404029791" name="m3c_bottom_sheet_drag_handle_description">"拖动手柄"</string>
@@ -90,17 +105,72 @@
     <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"显示提示"</string>
     <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"提示"</string>
     <string msgid="542007171693138492" name="navigation_menu">"导航菜单"</string>
+    <string name="network_section">网络</string>
+    <string name="no_results">未找到结果</string>
+    <string name="no_saved_locations">暂无保存的位置</string>
     <string msgid="6610465462668679431" name="not_selected">"未选择"</string>
+    <string name="offline_data">离线数据，来自：%1$s</string>
+    <string name="precipitation">降水量</string>
+    <string name="pressure">气压</string>
     <string msgid="5941395253238309765" name="range_end">"范围终点"</string>
     <string msgid="7097486360902471446" name="range_start">"范围起点"</string>
+    <string name="recent_locations">最近</string>
+    <string name="refresh_error">刷新失败</string>
+    <string name="removed_from_favorites">已从收藏移除</string>
+    <string name="resilient_sync">弹性同步</string>
+    <string name="resilient_sync_desc">针对不稳定连接（山区、弱信号）自动重试，使用指数退避和断路器</string>
+    <string name="retry">重试</string>
+    <string name="search_city">搜索城市…</string>
     <string msgid="6043586758067023" name="selected">"已选择"</string>
+    <string name="settings">设置</string>
+    <string name="settings_info">仅下载所选预报</string>
+    <string name="show_daily_3">每日（3天）</string>
+    <string name="show_daily_5">每日（5天）</string>
+    <string name="show_hourly_24h">逐小时（24小时）</string>
     <string msgid="4139871816613051306" name="state_empty">"空白"</string>
     <string msgid="5834637030682409883" name="state_off">"已关闭"</string>
     <string msgid="1490883874751719580" name="state_on">"已开启"</string>
     <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
     <string msgid="2561197295334830845" name="switch_role">"开关"</string>
+    <string name="sync_10_min">每10分钟</string>
+    <string name="sync_12h">每12小时</string>
+    <string name="sync_1h">每1小时</string>
+    <string name="sync_30_min">每30分钟</string>
+    <string name="sync_3h">每3小时</string>
+    <string name="sync_6h">每6小时</string>
+    <string name="sync_off">关闭</string>
     <string msgid="1672349317127674378" name="tab">"标签页"</string>
+    <string name="temp_max_min">%1$s° / %2$s°</string>
     <string msgid="5946805113151406391" name="template_percent">"百分之 <ns1:g id="PERCENTAGE">%1$d</ns1:g>。"</string>
     <string msgid="3765533235322692011" name="tooltip_description">"提示"</string>
     <string msgid="3124740595719787496" name="tooltip_label">"显示提示"</string>
+    <string name="unknown_error">未知错误</string>
+    <string name="update_time">更新时间：%1$s</string>
+    <string name="use_gps">使用当前位置</string>
+    <string name="wc_clear">晴朗</string>
+    <string name="wc_dense_drizzle">大毛毛雨</string>
+    <string name="wc_fog">雾</string>
+    <string name="wc_freezing_drizzle">冻毛毛雨</string>
+    <string name="wc_freezing_rain">冻雨</string>
+    <string name="wc_heavy_rain">大雨</string>
+    <string name="wc_heavy_snow">大雪</string>
+    <string name="wc_heavy_snow_showers">大阵雪</string>
+    <string name="wc_light_drizzle">小毛毛雨</string>
+    <string name="wc_light_rain">小雨</string>
+    <string name="wc_light_showers">小阵雨</string>
+    <string name="wc_light_snow">小雪</string>
+    <string name="wc_light_snow_showers">小阵雪</string>
+    <string name="wc_mainly_clear">大部晴朗</string>
+    <string name="wc_moderate_drizzle">中等毛毛雨</string>
+    <string name="wc_moderate_rain">中雨</string>
+    <string name="wc_moderate_showers">中阵雨</string>
+    <string name="wc_moderate_snow">中雪</string>
+    <string name="wc_overcast">阴天</string>
+    <string name="wc_partly_cloudy">多云</string>
+    <string name="wc_snow_grains">雪粒</string>
+    <string name="wc_thunderstorm">雷暴</string>
+    <string name="wc_thunderstorm_hail">雷暴伴冰雹</string>
+    <string name="wc_unknown">未知</string>
+    <string name="wc_violent_showers">暴阵雨</string>
+    <string name="wind">风速</string>
 </resources>
