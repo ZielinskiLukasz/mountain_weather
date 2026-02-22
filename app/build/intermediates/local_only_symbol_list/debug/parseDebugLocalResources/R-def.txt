@@ -33,6 +33,13 @@ string settings_info
 string show_daily_3
 string show_daily_5
 string show_hourly_24h
+string sync_10_min
+string sync_12h
+string sync_1h
+string sync_30_min
+string sync_3h
+string sync_6h
+string sync_off
 string temp_max_min
 string unknown_error
 string update_time

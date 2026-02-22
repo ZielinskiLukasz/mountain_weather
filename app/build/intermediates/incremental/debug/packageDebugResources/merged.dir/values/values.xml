@@ -3,7 +3,7 @@
     <string name="added_to_favorites">Added to favorites</string>
     <string name="app_name">Mountain Weather</string>
     <string name="background_sync">Background sync</string>
-    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (every ~3h, only on network)</string>
+    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (requires network)</string>
     <string name="connection_error">Connection error</string>
     <string name="daily_forecast">Daily forecast</string>
     <string name="favorites">Favorites</string>
@@ -33,6 +33,13 @@
     <string name="show_daily_3">Daily (3 days)</string>
     <string name="show_daily_5">Daily (5 days)</string>
     <string name="show_hourly_24h">Hourly (24h)</string>
+    <string name="sync_10_min">Every 10 min</string>
+    <string name="sync_12h">Every 12 hours</string>
+    <string name="sync_1h">Every 1 hour</string>
+    <string name="sync_30_min">Every 30 min</string>
+    <string name="sync_3h">Every 3 hours</string>
+    <string name="sync_6h">Every 6 hours</string>
+    <string name="sync_off">Off</string>
     <string name="temp_max_min">%1$s° / %2$s°</string>
     <string name="unknown_error">Unknown error</string>
     <string name="update_time">Updated: %1$s</string>

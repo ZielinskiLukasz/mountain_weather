@@ -1,16 +1,26 @@
 package com.example.mountainweather.ui.settings
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -18,15 +28,18 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mountainweather.R
 import com.example.mountainweather.data.repository.ForecastSettings
 import com.example.mountainweather.data.repository.SettingsRepository
 import com.example.mountainweather.data.sync.SyncScheduler
-import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,6 +69,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = stringResource(R.string.forecast_types),
@@ -124,18 +138,15 @@ fun SettingsScreen(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            SettingsToggle(
-                label = stringResource(R.string.background_sync),
-                checked = settings.backgroundSync,
-                onCheckedChange = { enabled ->
-                    scope.launch {
-                        settingsRepo.setBackgroundSync(enabled)
-                        if (enabled) SyncScheduler.enable(context) else SyncScheduler.disable(context)
-                    }
-                }
+            Text(
+                text = stringResource(R.string.background_sync),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = stringResource(R.string.background_sync_desc),
@@ -143,6 +154,63 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val intervalLabels = mapOf(
+                0 to stringResource(R.string.sync_off),
+                10 to stringResource(R.string.sync_10_min),
+                30 to stringResource(R.string.sync_30_min),
+                60 to stringResource(R.string.sync_1h),
+                180 to stringResource(R.string.sync_3h),
+                360 to stringResource(R.string.sync_6h),
+                720 to stringResource(R.string.sync_12h)
+            )
+
+            var expanded by remember { mutableStateOf(false) }
+            val currentLabel = intervalLabels[settings.syncIntervalMinutes]
+                ?: stringResource(R.string.sync_off)
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = currentLabel,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    SyncScheduler.INTERVAL_OPTIONS.forEach { minutes ->
+                        DropdownMenuItem(
+                            text = { Text(intervalLabels[minutes] ?: "$minutes min") },
+                            onClick = {
+                                expanded = false
+                                scope.launch {
+                                    settingsRepo.setSyncInterval(minutes)
+                                    if (minutes > 0) {
+                                        SyncScheduler.enable(context, minutes)
+                                    } else {
+                                        SyncScheduler.disable(context)
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

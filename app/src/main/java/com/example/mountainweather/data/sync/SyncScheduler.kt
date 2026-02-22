@@ -10,17 +10,26 @@ import java.util.concurrent.TimeUnit
 
 object SyncScheduler {
 
-    fun enable(context: Context) {
+    val INTERVAL_OPTIONS = listOf(0, 10, 30, 60, 180, 360, 720)
+
+    fun enable(context: Context, intervalMinutes: Int) {
+        if (intervalMinutes <= 0) {
+            disable(context)
+            return
+        }
+
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val flexMinutes = (intervalMinutes / 4).coerceAtLeast(5).toLong()
+
         val request = PeriodicWorkRequestBuilder<WeatherSyncWorker>(
-            3, TimeUnit.HOURS,
-            30, TimeUnit.MINUTES
+            intervalMinutes.toLong(), TimeUnit.MINUTES,
+            flexMinutes, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
-            .setInitialDelay(15, TimeUnit.MINUTES)
+            .setInitialDelay(5, TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(

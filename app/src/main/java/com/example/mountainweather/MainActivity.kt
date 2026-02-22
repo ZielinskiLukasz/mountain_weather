@@ -89,8 +89,10 @@ class MainActivity : ComponentActivity() {
         val settingsRepo = com.example.mountainweather.data.repository.SettingsRepository(this)
         kotlinx.coroutines.MainScope().launch {
             val settings = settingsRepo.forecastSettings.first()
-            if (settings.backgroundSync) {
-                com.example.mountainweather.data.sync.SyncScheduler.enable(this@MainActivity)
+            if (settings.syncIntervalMinutes > 0) {
+                com.example.mountainweather.data.sync.SyncScheduler.enable(
+                    this@MainActivity, settings.syncIntervalMinutes
+                )
             }
         }
     }

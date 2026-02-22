@@ -372,6 +372,13 @@ string state_off
 string state_on
 string status_bar_notification_info_overflow
 string switch_role
+string sync_10_min
+string sync_12h
+string sync_1h
+string sync_30_min
+string sync_3h
+string sync_6h
+string sync_off
 string tab
 string temp_max_min
 string template_percent

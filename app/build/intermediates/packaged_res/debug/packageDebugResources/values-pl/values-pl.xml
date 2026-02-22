@@ -3,7 +3,7 @@
     <string name="added_to_favorites">Dodano do ulubionych</string>
     <string name="app_name">Pogoda Górska</string>
     <string name="background_sync">Synchronizacja w tle</string>
-    <string name="background_sync_desc">Okresowe odświeżanie pogody dla ulubionych lokalizacji w tle (co ~3h, tylko z siecią)</string>
+    <string name="background_sync_desc">Okresowe odświeżanie pogody dla ulubionych lokalizacji w tle (wymaga sieci)</string>
     <string name="connection_error">Błąd połączenia</string>
     <string name="daily_forecast">Prognoza dzienna</string>
     <string name="favorites">Ulubione</string>
@@ -33,6 +33,13 @@
     <string name="show_daily_3">Dzienna (3 dni)</string>
     <string name="show_daily_5">Dzienna (5 dni)</string>
     <string name="show_hourly_24h">Godzinowa (24h)</string>
+    <string name="sync_10_min">Co 10 min</string>
+    <string name="sync_12h">Co 12 godzin</string>
+    <string name="sync_1h">Co 1 godzinę</string>
+    <string name="sync_30_min">Co 30 min</string>
+    <string name="sync_3h">Co 3 godziny</string>
+    <string name="sync_6h">Co 6 godzin</string>
+    <string name="sync_off">Wyłączona</string>
     <string name="temp_max_min">%1$s° / %2$s°</string>
     <string name="unknown_error">Nieznany błąd</string>
     <string name="update_time">Aktualizacja: %1$s</string>

@@ -116,7 +116,7 @@
     <string name="androidx_startup" translatable="false">androidx.startup</string>
     <string name="app_name">Mountain Weather</string>
     <string name="background_sync">Background sync</string>
-    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (every ~3h, only on network)</string>
+    <string name="background_sync_desc">Periodically refresh weather for favorite locations in background (requires network)</string>
     <string name="call_notification_answer_action">Answer</string>
     <string name="call_notification_answer_video_action">Video</string>
     <string name="call_notification_decline_action">Decline</string>
@@ -249,6 +249,13 @@
     <string name="state_on">On</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="switch_role">Switch</string>
+    <string name="sync_10_min">Every 10 min</string>
+    <string name="sync_12h">Every 12 hours</string>
+    <string name="sync_1h">Every 1 hour</string>
+    <string name="sync_30_min">Every 30 min</string>
+    <string name="sync_3h">Every 3 hours</string>
+    <string name="sync_6h">Every 6 hours</string>
+    <string name="sync_off">Off</string>
     <string name="tab">Tab</string>
     <string name="temp_max_min">%1$s° / %2$s°</string>
     <string name="template_percent"><ns1:g id="percentage">%1$d</ns1:g> percent.</string>
@@ -354,23 +361,14 @@
         <attr format="reference" name="fontProviderCerts"/>
         
         <attr name="fontProviderFetchStrategy">
-            <!-- The blocking font fetch works as follows.
-              First, check the local cache, then if the requested font is not cached, request the
-              font from the provider and wait until it is finished.  You can change the length of
-              the timeout by modifying fontProviderFetchTimeout.  If the timeout happens, the
-              default typeface will be used instead. -->
+            
             <enum name="blocking" value="0"/>
-            <!-- The async font fetch works as follows.
-              First, check the local cache, then if the requeted font is not cached, trigger a
-              request the font and continue with layout inflation. Once the font fetch succeeds, the
-              target text view will be refreshed with the downloaded font data. The
-              fontProviderFetchTimeout will be ignored if async loading is specified. -->
+            
             <enum name="async" value="1"/>
         </attr>
         
         <attr format="integer" name="fontProviderFetchTimeout">
-            <!-- A special value for the timeout. In this case, the blocking font fetching will not
-              timeout and wait until a reply is received from the font provider. -->
+            
             <enum name="forever" value="-1"/>
         </attr>
         
