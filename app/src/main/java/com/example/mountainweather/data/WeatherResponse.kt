@@ -26,3 +26,34 @@ data class CurrentWeather(
     @SerializedName("pressure_msl")
     val pressure: Double
 )
+
+data class HourlyForecastResponse(
+    val hourly: HourlyData
+)
+
+data class HourlyData(
+    val time: List<String>,
+    @SerializedName("temperature_2m")
+    val temperature: List<Double>,
+    @SerializedName("weather_code")
+    val weatherCode: List<Int>,
+    val precipitation: List<Double>
+)
+
+data class DailyForecastResponse(
+    val daily: DailyData
+)
+
+data class DailyData(
+    val time: List<String>,
+    @SerializedName("weather_code")
+    val weatherCode: List<Int>,
+    @SerializedName("temperature_2m_max")
+    val temperatureMax: List<Double>,
+    @SerializedName("temperature_2m_min")
+    val temperatureMin: List<Double>,
+    @SerializedName("precipitation_sum")
+    val precipitationSum: List<Double>,
+    @SerializedName("wind_speed_10m_max")
+    val windSpeedMax: List<Double>
+)

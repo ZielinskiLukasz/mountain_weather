@@ -3,9 +3,12 @@
     <string name="added_to_favorites">Dodano do ulubionych</string>
     <string name="app_name">Pogoda Górska</string>
     <string name="connection_error">Błąd połączenia</string>
+    <string name="daily_forecast">Prognoza dzienna</string>
     <string name="favorites">Ulubione</string>
     <string name="feels_like">Odczuwalna: %1$s°C</string>
+    <string name="forecast_types">Rodzaje prognoz</string>
     <string name="gps_locating">Pobieranie lokalizacji…</string>
+    <string name="hourly_forecast">Prognoza godzinowa</string>
     <string name="humidity">Wilgotność</string>
     <string name="loading_weather">Pobieranie pogody…</string>
     <string name="location_deleted">Lokalizacja usunięta</string>
@@ -20,6 +23,12 @@
     <string name="removed_from_favorites">Usunięto z ulubionych</string>
     <string name="retry">Ponów próbę</string>
     <string name="search_city">Szukaj miasta…</string>
+    <string name="settings">Ustawienia</string>
+    <string name="settings_info">Pobierane są tylko zaznaczone prognozy</string>
+    <string name="show_daily_3">Dzienna (3 dni)</string>
+    <string name="show_daily_5">Dzienna (5 dni)</string>
+    <string name="show_hourly_24h">Godzinowa (24h)</string>
+    <string name="temp_max_min">%1$s° / %2$s°</string>
     <string name="unknown_error">Nieznany błąd</string>
     <string name="update_time">Aktualizacja: %1$s</string>
     <string name="use_gps">Użyj aktualnej pozycji</string>

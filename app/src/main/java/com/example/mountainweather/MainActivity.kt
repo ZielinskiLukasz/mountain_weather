@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -43,14 +45,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mountainweather.data.local.DailyForecastEntity
+import com.example.mountainweather.data.local.HourlyForecastEntity
 import com.example.mountainweather.data.local.WeatherEntity
+import com.example.mountainweather.data.repository.ForecastSettings
 import com.example.mountainweather.ui.locations.LocationScreen
+import com.example.mountainweather.ui.settings.SettingsScreen
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 import com.example.mountainweather.ui.theme.MountainWeatherTheme
 import com.example.mountainweather.util.weatherCodeToInfo
 import com.example.mountainweather.util.windDirectionToArrow
@@ -85,7 +97,8 @@ fun AppNavigation(weatherViewModel: WeatherViewModel = viewModel()) {
                     modifier = Modifier.padding(padding),
                     snackbarHostState = snackbarHostState,
                     viewModel = weatherViewModel,
-                    onChangeLocation = { navController.navigate("locations") }
+                    onChangeLocation = { navController.navigate("locations") },
+                    onOpenSettings = { navController.navigate("settings") }
                 )
             }
         }
@@ -98,6 +111,12 @@ fun AppNavigation(weatherViewModel: WeatherViewModel = viewModel()) {
                 onBack = { navController.popBackStack() }
             )
         }
+        composable("settings") {
+            SettingsScreen(
+                settingsRepo = weatherViewModel.settingsRepo,
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }
 
@@ -107,9 +126,11 @@ fun WeatherScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     viewModel: WeatherViewModel,
-    onChangeLocation: () -> Unit
+    onChangeLocation: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val settings by viewModel.forecastSettings.collectAsState()
 
     LaunchedEffect(state.error) {
         state.error?.let { snackbarHostState.showSnackbar(it) }
@@ -149,9 +170,13 @@ fun WeatherScreen(
                     WeatherContent(
                         locationName = state.locationName,
                         weather = state.weather!!,
+                        hourlyForecast = state.hourlyForecast,
+                        dailyForecast = state.dailyForecast,
+                        settings = settings,
                         isOffline = state.isOfflineData,
                         isFavorite = state.isFavorite,
                         onChangeLocation = onChangeLocation,
+                        onOpenSettings = onOpenSettings,
                         onToggleFavorite = { viewModel.toggleFavorite() }
                     )
                 }
@@ -188,9 +213,13 @@ fun OfflineBanner(cachedAt: Long) {
 fun WeatherContent(
     locationName: String,
     weather: WeatherEntity,
+    hourlyForecast: List<HourlyForecastEntity>,
+    dailyForecast: List<DailyForecastEntity>,
+    settings: ForecastSettings,
     isOffline: Boolean,
     isFavorite: Boolean,
     onChangeLocation: () -> Unit,
+    onOpenSettings: () -> Unit,
     onToggleFavorite: () -> Unit
 ) {
     val weatherInfo = weatherCodeToInfo(weather.weatherCode)
@@ -207,7 +236,8 @@ fun WeatherContent(
             title = {
                 Text(
                     text = locationName,
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.clickable(onClick = onChangeLocation)
                 )
             },
             actions = {
@@ -224,6 +254,13 @@ fun WeatherContent(
                         Icons.Default.LocationOn,
                         contentDescription = "Change location",
                         tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(onClick = onOpenSettings) {
+                    Icon(
+                        Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -284,6 +321,16 @@ fun WeatherContent(
             }
         }
 
+        if (settings.showHourly && hourlyForecast.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            HourlyForecastSection(hourlyForecast)
+        }
+
+        if ((settings.showDaily3 || settings.showDaily5) && dailyForecast.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            DailyForecastSection(dailyForecast)
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         val formattedTime = remember(weather.time) {
@@ -318,6 +365,144 @@ fun DetailRow(label: String, value: String) {
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+@Composable
+fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.hourly_forecast),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            LazyRow(
+                modifier = Modifier.padding(vertical = 12.dp)
+            ) {
+                items(hourlyForecast, key = { it.time }) { item ->
+                    HourlyForecastItem(item)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HourlyForecastItem(item: HourlyForecastEntity) {
+    val hour = remember(item.time) {
+        try {
+            LocalDateTime.parse(item.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                .format(DateTimeFormatter.ofPattern("HH:mm"))
+        } catch (_: Exception) {
+            item.time.takeLast(5)
+        }
+    }
+    val info = weatherCodeToInfo(item.weatherCode)
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = 12.dp)
+    ) {
+        Text(
+            text = hour,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = info.icon, fontSize = 22.sp)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "${item.temperature.toInt()}°",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold
+        )
+        if (item.precipitation > 0) {
+            Text(
+                text = "${item.precipitation}mm",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.daily_forecast),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                dailyForecast.forEachIndexed { index, item ->
+                    DailyForecastItem(item)
+                    if (index < dailyForecast.lastIndex) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DailyForecastItem(item: DailyForecastEntity) {
+    val dayName = remember(item.date) {
+        try {
+            val date = LocalDate.parse(item.date)
+            date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        } catch (_: Exception) {
+            item.date
+        }
+    }
+    val info = weatherCodeToInfo(item.weatherCode)
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = dayName,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Text(text = info.icon, fontSize = 20.sp)
+        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+        Text(
+            text = stringResource(
+                R.string.temp_max_min,
+                item.temperatureMax.toInt().toString(),
+                item.temperatureMin.toInt().toString()
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold
+        )
+        if (item.precipitationSum > 0) {
+            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+            Text(
+                text = "${item.precipitationSum}mm",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 

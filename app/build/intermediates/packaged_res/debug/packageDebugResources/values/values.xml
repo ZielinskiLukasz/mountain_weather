@@ -3,9 +3,12 @@
     <string name="added_to_favorites">Added to favorites</string>
     <string name="app_name">Mountain Weather</string>
     <string name="connection_error">Connection error</string>
+    <string name="daily_forecast">Daily forecast</string>
     <string name="favorites">Favorites</string>
     <string name="feels_like">Feels like: %1$s°C</string>
+    <string name="forecast_types">Forecast types</string>
     <string name="gps_locating">Getting location…</string>
+    <string name="hourly_forecast">Hourly forecast</string>
     <string name="humidity">Humidity</string>
     <string name="loading_weather">Loading weather…</string>
     <string name="location_deleted">Location deleted</string>
@@ -20,6 +23,12 @@
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="retry">Retry</string>
     <string name="search_city">Search city…</string>
+    <string name="settings">Settings</string>
+    <string name="settings_info">Only selected forecasts will be downloaded</string>
+    <string name="show_daily_3">Daily (3 days)</string>
+    <string name="show_daily_5">Daily (5 days)</string>
+    <string name="show_hourly_24h">Hourly (24h)</string>
+    <string name="temp_max_min">%1$s° / %2$s°</string>
     <string name="unknown_error">Unknown error</string>
     <string name="update_time">Updated: %1$s</string>
     <string name="use_gps">Use current location</string>

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.mountainweather.app-mergeDebugResources-57:/values-pt-rBR/values-pt-rBR.xml",
+            "outputFile": "com.example.mountainweather.app-mergeDebugResources-60:/values-pt-rBR/values-pt-rBR.xml",
             "map": [
                 {
                     "source": "/home/zieloo/.gradle/caches/8.9/transforms/39cefeaef1447aa5d1172705377247ed/transformed/play-services-base-18.5.0/res/values-pt-rBR/values.xml",

@@ -3,9 +3,12 @@ local
 string added_to_favorites
 string app_name
 string connection_error
+string daily_forecast
 string favorites
 string feels_like
+string forecast_types
 string gps_locating
+string hourly_forecast
 string humidity
 string loading_weather
 string location_deleted
@@ -20,6 +23,12 @@ string refresh_error
 string removed_from_favorites
 string retry
 string search_city
+string settings
+string settings_info
+string show_daily_3
+string show_daily_5
+string show_hourly_24h
+string temp_max_min
 string unknown_error
 string update_time
 string use_gps

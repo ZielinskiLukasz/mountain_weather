@@ -15,6 +15,24 @@ interface OpenMeteoApi {
         @Query("timezone") timezone: String = "auto"
     ): WeatherResponse
 
+    @GET("v1/forecast")
+    suspend fun getHourlyForecast(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("hourly") hourly: String = "temperature_2m,weather_code,precipitation",
+        @Query("forecast_hours") forecastHours: Int = 24,
+        @Query("timezone") timezone: String = "auto"
+    ): HourlyForecastResponse
+
+    @GET("v1/forecast")
+    suspend fun getDailyForecast(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("daily") daily: String = "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max",
+        @Query("forecast_days") forecastDays: Int,
+        @Query("timezone") timezone: String = "auto"
+    ): DailyForecastResponse
+
     companion object {
         private const val BASE_URL = "https://api.open-meteo.com/"
 

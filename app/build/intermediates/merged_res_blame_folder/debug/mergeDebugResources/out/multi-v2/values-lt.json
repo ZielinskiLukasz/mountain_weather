@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.mountainweather.app-mergeDebugResources-57:/values-lt/values-lt.xml",
+            "outputFile": "com.example.mountainweather.app-mergeDebugResources-60:/values-lt/values-lt.xml",
             "map": [
                 {
                     "source": "/home/zieloo/.gradle/caches/8.9/transforms/af06d53c7b42ce71aaa69450657774ae/transformed/foundation-release/res/values-lt/values-lt.xml",

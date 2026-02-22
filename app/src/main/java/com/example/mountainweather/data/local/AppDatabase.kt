@@ -6,14 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [WeatherEntity::class, SavedLocationEntity::class],
-    version = 2,
+    entities = [
+        WeatherEntity::class,
+        SavedLocationEntity::class,
+        HourlyForecastEntity::class,
+        DailyForecastEntity::class
+    ],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun weatherDao(): WeatherDao
     abstract fun savedLocationDao(): SavedLocationDao
+    abstract fun hourlyForecastDao(): HourlyForecastDao
+    abstract fun dailyForecastDao(): DailyForecastDao
 
     companion object {
         @Volatile
