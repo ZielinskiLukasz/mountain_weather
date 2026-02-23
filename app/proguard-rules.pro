@@ -10,12 +10,7 @@
 # Gson
 -keep class com.google.gson.** { *; }
 -keepattributes EnclosingMethod
--keep class com.example.mountainweather.data.WeatherResponse { *; }
--keep class com.example.mountainweather.data.CurrentWeather { *; }
--keep class com.example.mountainweather.data.HourlyForecastResponse { *; }
--keep class com.example.mountainweather.data.HourlyData { *; }
--keep class com.example.mountainweather.data.DailyForecastResponse { *; }
--keep class com.example.mountainweather.data.DailyData { *; }
+-keep class com.ergonomic.mountainweather.data.** { *; }
 
 # OkHttp
 -dontwarn okhttp3.**
@@ -37,7 +32,7 @@
 
 # WorkManager
 -keep class androidx.work.** { *; }
--keep class com.example.mountainweather.data.sync.WeatherSyncWorker { *; }
+-keep class com.ergonomic.mountainweather.data.sync.WeatherSyncWorker { *; }
 
 # Google Play Services
 -keep class com.google.android.gms.** { *; }

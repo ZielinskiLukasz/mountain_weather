@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 ANDROID_HOME="${ANDROID_HOME:-$HOME/Android/Sdk}"
 ADB="$ANDROID_HOME/platform-tools/adb"
-PACKAGE="com.example.mountainweather"
+PACKAGE="com.ergonomic.mountainweather"
 ACTIVITY=".MainActivity"
 APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
 
