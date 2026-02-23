@@ -59,6 +59,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private var cacheObserverJob: Job? = null
     private var hourlyObserverJob: Job? = null
     private var dailyObserverJob: Job? = null
+    private var dailyFetchJob: Job? = null
     private var favoriteObserverJob: Job? = null
     private var settingsJob: Job? = null
     private var networkJob: Job? = null
@@ -257,8 +258,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             settings.showDaily3 -> 3
             else -> 0
         }
+        dailyFetchJob?.cancel()
         if (days > 0) {
-            viewModelScope.launch {
+            _uiState.update { it.copy(dailyForecast = emptyList()) }
+            dailyFetchJob = viewModelScope.launch {
                 repository.refreshDailyForecast(state.latitude, state.longitude, days)
             }
         }

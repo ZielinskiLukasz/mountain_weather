@@ -90,8 +90,7 @@ fun SettingsScreen(
                 checked = settings.showDaily3,
                 onCheckedChange = { enabled ->
                     scope.launch {
-                        settingsRepo.setShowDaily3(enabled)
-                        if (enabled) settingsRepo.setShowDaily5(false)
+                        settingsRepo.setDailyMode(daily3 = enabled, daily5 = if (enabled) false else settings.showDaily5)
                     }
                 }
             )
@@ -101,8 +100,7 @@ fun SettingsScreen(
                 checked = settings.showDaily5,
                 onCheckedChange = { enabled ->
                     scope.launch {
-                        settingsRepo.setShowDaily5(enabled)
-                        if (enabled) settingsRepo.setShowDaily3(false)
+                        settingsRepo.setDailyMode(daily3 = if (enabled) false else settings.showDaily3, daily5 = enabled)
                     }
                 }
             )

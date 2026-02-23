@@ -58,6 +58,13 @@ class SettingsRepository(private val context: Context) {
         context.dataStore.edit { it[Keys.SHOW_DAILY_5] = enabled }
     }
 
+    suspend fun setDailyMode(daily3: Boolean, daily5: Boolean) {
+        context.dataStore.edit {
+            it[Keys.SHOW_DAILY_3] = daily3
+            it[Keys.SHOW_DAILY_5] = daily5
+        }
+    }
+
     suspend fun setResilientSync(enabled: Boolean) {
         context.dataStore.edit { it[Keys.RESILIENT_SYNC] = enabled }
     }
