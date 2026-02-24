@@ -348,13 +348,11 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val formattedTime = remember(weather.time) {
-            try {
-                LocalDateTime.parse(weather.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                    .format(DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy"))
-            } catch (_: Exception) {
-                weather.time
-            }
+        val formattedTime = remember(weather.cachedAt) {
+            val dt = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(weather.cachedAt), ZoneId.systemDefault()
+            )
+            dt.format(DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy"))
         }
         Text(
             text = stringResource(R.string.update_time, formattedTime),

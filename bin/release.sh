@@ -3,7 +3,7 @@ set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 AAB="$PROJECT_DIR/app/build/outputs/bundle/release/app-release.aab"
-APK="$PROJECT_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
+APK="$PROJECT_DIR/app/build/outputs/apk/release/app-release.apk"
 
 usage() {
     cat <<EOF
