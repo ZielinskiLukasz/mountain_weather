@@ -25,7 +25,6 @@ class WeatherSyncWorker(
         val settings = settingsRepo.forecastSettings.first()
 
         val favorites = db.savedLocationDao().getFavorites()
-        if (favorites.isEmpty()) return Result.success()
 
         var allOk = true
         for (location in favorites) {

@@ -47,7 +47,7 @@
     <string name="background_sync">Synchronizacja w tle</string>
     <string name="background_sync_desc">Okresowe odświeżanie pogody dla ulubionych lokalizacji w tle (wymaga sieci)</string>
     <string name="sync_off">Wyłączona</string>
-    <string name="sync_10_min">Co 10 min</string>
+    <string name="sync_15_min">Co 15 min</string>
     <string name="sync_30_min">Co 30 min</string>
     <string name="sync_1h">Co 1 godzinę</string>
     <string name="sync_3h">Co 3 godziny</string>

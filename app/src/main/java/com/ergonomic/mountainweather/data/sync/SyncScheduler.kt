@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 object SyncScheduler {
 
-    val INTERVAL_OPTIONS = listOf(0, 10, 30, 60, 180, 360, 720)
+    val INTERVAL_OPTIONS = listOf(0, 15, 30, 60, 180, 360, 720)
 
     fun enable(context: Context, intervalMinutes: Int) {
         if (intervalMinutes <= 0) {
@@ -29,7 +29,7 @@ object SyncScheduler {
             flexMinutes, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
-            .setInitialDelay(5, TimeUnit.MINUTES)
+            .setInitialDelay(1, TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(

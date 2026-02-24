@@ -158,7 +158,7 @@ fun SettingsScreen(
 
             val intervalLabels = mapOf(
                 0 to stringResource(R.string.sync_off),
-                10 to stringResource(R.string.sync_10_min),
+                15 to stringResource(R.string.sync_15_min),
                 30 to stringResource(R.string.sync_30_min),
                 60 to stringResource(R.string.sync_1h),
                 180 to stringResource(R.string.sync_3h),

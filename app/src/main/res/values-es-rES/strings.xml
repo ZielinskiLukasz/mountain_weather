@@ -47,7 +47,7 @@
     <string name="background_sync">Sincronización en segundo plano</string>
     <string name="background_sync_desc">Actualizar periódicamente el tiempo de ubicaciones favoritas en segundo plano (requiere red)</string>
     <string name="sync_off">Desactivado</string>
-    <string name="sync_10_min">Cada 10 min</string>
+    <string name="sync_15_min">Cada 15 min</string>
     <string name="sync_30_min">Cada 30 min</string>
     <string name="sync_1h">Cada 1 hora</string>
     <string name="sync_3h">Cada 3 horas</string>

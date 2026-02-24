@@ -47,7 +47,7 @@
     <string name="background_sync">Hintergrundsynchronisierung</string>
     <string name="background_sync_desc">Wetter für Lieblingsorte regelmäßig im Hintergrund aktualisieren (Netzwerk erforderlich)</string>
     <string name="sync_off">Aus</string>
-    <string name="sync_10_min">Alle 10 Min</string>
+    <string name="sync_15_min">Alle 15 Min</string>
     <string name="sync_30_min">Alle 30 Min</string>
     <string name="sync_1h">Jede Stunde</string>
     <string name="sync_3h">Alle 3 Stunden</string>
