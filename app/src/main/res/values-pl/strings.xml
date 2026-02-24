@@ -55,10 +55,12 @@
     <string name="sync_12h">Co 12 godzin</string>
 
     <!-- Error -->
-    <string name="connection_error">Błąd połączenia</string>
-    <string name="retry">Ponów próbę</string>
+    <string name="connection_error">Brak połączenia</string>
+    <string name="connection_error_desc">Sprawdź połączenie z internetem i spróbuj ponownie. Dane pogodowe będą dostępne po przywróceniu połączenia.</string>
+    <string name="retry">Spróbuj ponownie</string>
     <string name="unknown_error">Nieznany błąd</string>
     <string name="refresh_error">Błąd odświeżania</string>
+    <string name="refresh_error_snackbar">Nie udało się odświeżyć — sprawdź połączenie</string>
 
     <!-- Weather codes -->
     <string name="wc_clear">Bezchmurnie</string>

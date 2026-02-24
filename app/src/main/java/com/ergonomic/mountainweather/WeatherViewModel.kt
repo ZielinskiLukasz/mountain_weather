@@ -254,6 +254,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         if (settings.showHourly) {
             viewModelScope.launch {
                 repository.refreshHourlyForecast(state.latitude, state.longitude)
+                    .onSuccess { entities ->
+                        _uiState.update { it.copy(hourlyForecast = entities) }
+                    }
             }
         }
         val days = when {
@@ -263,10 +266,14 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
         dailyFetchJob?.cancel()
         if (days > 0) {
-            _uiState.update { it.copy(dailyForecast = emptyList()) }
             dailyFetchJob = viewModelScope.launch {
                 repository.refreshDailyForecast(state.latitude, state.longitude, days)
+                    .onSuccess { entities ->
+                        _uiState.update { it.copy(dailyForecast = entities) }
+                    }
             }
+        } else {
+            _uiState.update { it.copy(dailyForecast = emptyList()) }
         }
     }
 

@@ -55,10 +55,12 @@
     <string name="sync_12h">Every 12 hours</string>
 
     <!-- Error -->
-    <string name="connection_error">Connection error</string>
-    <string name="retry">Retry</string>
+    <string name="connection_error">No connection</string>
+    <string name="connection_error_desc">Check your internet connection and try again. Weather data will be available once you\'re back online.</string>
+    <string name="retry">Try again</string>
     <string name="unknown_error">Unknown error</string>
     <string name="refresh_error">Refresh failed</string>
+    <string name="refresh_error_snackbar">Could not refresh — check your connection</string>
 
     <!-- Weather codes -->
     <string name="wc_clear">Clear sky</string>

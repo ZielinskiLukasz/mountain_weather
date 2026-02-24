@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -147,8 +148,11 @@ fun WeatherScreen(
     val state by viewModel.uiState.collectAsState()
     val settings by viewModel.forecastSettings.collectAsState()
 
+    val refreshErrorMessage = stringResource(R.string.refresh_error_snackbar)
     LaunchedEffect(state.error) {
-        state.error?.let { snackbarHostState.showSnackbar(it) }
+        if (state.error != null && state.weather != null) {
+            snackbarHostState.showSnackbar(refreshErrorMessage)
+        }
     }
 
     when {
@@ -342,8 +346,10 @@ fun WeatherContent(
         }
 
         if ((settings.showDaily3 || settings.showDaily5) && dailyForecast.isNotEmpty()) {
+            val maxDays = if (settings.showDaily5) 5 else 3
+            val visibleDays = dailyForecast.take(maxDays)
             Spacer(modifier = Modifier.height(16.dp))
-            DailyForecastSection(dailyForecast)
+            DailyForecastSection(visibleDays)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -521,28 +527,40 @@ fun DailyForecastItem(item: DailyForecastEntity) {
 
 @Composable
 fun ErrorContent(message: String, onRetry: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(32.dp)
+    Card(
+        modifier = Modifier.padding(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        Text(text = "⚠️", fontSize = 48.sp)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.connection_error),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.error
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onRetry) {
-            Text(stringResource(R.string.retry))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp)
+        ) {
+            Text(text = "📡", fontSize = 56.sp)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.connection_error),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = stringResource(R.string.connection_error_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(
+                onClick = onRetry,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.retry))
+            }
         }
     }
 }
