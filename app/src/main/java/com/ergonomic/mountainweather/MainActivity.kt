@@ -311,6 +311,11 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val todayForecast = remember(dailyForecast) {
+            val today = LocalDate.now().toString()
+            dailyForecast.firstOrNull { it.date == today }
+        }
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -318,6 +323,17 @@ fun WeatherContent(
             )
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
+                if (todayForecast != null) {
+                    DetailRow(
+                        "🌡️ ${stringResource(R.string.temperature)}",
+                        stringResource(
+                            R.string.temp_max_min,
+                            todayForecast.temperatureMax.toInt().toString(),
+                            todayForecast.temperatureMin.toInt().toString()
+                        )
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
                 DetailRow(
                     "💨 ${stringResource(R.string.wind)}",
                     "${weather.windSpeed} km/h  ${windDirectionToArrow(weather.windDirection)}"
@@ -334,7 +350,7 @@ fun WeatherContent(
                 )
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 DetailRow(
-                    "🌡️ ${stringResource(R.string.pressure)}",
+                    "🔵 ${stringResource(R.string.pressure)}",
                     "${weather.pressure.toInt()} hPa"
                 )
             }
@@ -347,9 +363,12 @@ fun WeatherContent(
 
         if ((settings.showDaily3 || settings.showDaily5) && dailyForecast.isNotEmpty()) {
             val maxDays = if (settings.showDaily5) 5 else 3
-            val visibleDays = dailyForecast.take(maxDays)
-            Spacer(modifier = Modifier.height(16.dp))
-            DailyForecastSection(visibleDays)
+            val today = LocalDate.now().toString()
+            val futureDays = dailyForecast.filter { it.date > today }.take(maxDays)
+            if (futureDays.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                DailyForecastSection(futureDays)
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

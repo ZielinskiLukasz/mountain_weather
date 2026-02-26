@@ -40,7 +40,7 @@ class WeatherSyncWorker(
                     else -> 0
                 }
                 if (days > 0) {
-                    repository.refreshDailyForecast(location.latitude, location.longitude, days)
+                    repository.refreshDailyForecast(location.latitude, location.longitude, days + 1)
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "Sync failed for ${location.name}: ${e.message}")
@@ -66,7 +66,7 @@ class WeatherSyncWorker(
                         else -> 0
                     }
                     if (days > 0) {
-                        repository.refreshDailyForecast(saved.latitude, saved.longitude, days)
+                        repository.refreshDailyForecast(saved.latitude, saved.longitude, days + 1)
                     }
                 } catch (e: Exception) {
                     Log.w(TAG, "Sync failed for last location ${saved.name}: ${e.message}")

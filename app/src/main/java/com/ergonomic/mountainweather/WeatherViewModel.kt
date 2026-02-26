@@ -267,7 +267,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         dailyFetchJob?.cancel()
         if (days > 0) {
             dailyFetchJob = viewModelScope.launch {
-                repository.refreshDailyForecast(state.latitude, state.longitude, days)
+                repository.refreshDailyForecast(state.latitude, state.longitude, days + 1)
                     .onSuccess { entities ->
                         _uiState.update { it.copy(dailyForecast = entities) }
                     }

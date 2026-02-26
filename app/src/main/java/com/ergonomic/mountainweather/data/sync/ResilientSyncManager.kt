@@ -36,7 +36,7 @@ class ResilientSyncManager(
             else -> 0
         }
         val dailyResult = if (dailyDays > 0) {
-            syncDaily(latitude, longitude, dailyDays)
+            syncDaily(latitude, longitude, dailyDays + 1)
         } else null
 
         return SyncResult(currentResult, hourlyResult, dailyResult)

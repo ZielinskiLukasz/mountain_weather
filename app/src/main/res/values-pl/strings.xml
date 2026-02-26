@@ -9,6 +9,7 @@
     <string name="offline_data">Dane offline z: %1$s</string>
 
     <!-- Detail card -->
+    <string name="temperature">Temperatura</string>
     <string name="wind">Wiatr</string>
     <string name="humidity">Wilgotność</string>
     <string name="precipitation">Opady</string>
