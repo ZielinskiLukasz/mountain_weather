@@ -1,0 +1,11 @@
+<en-US>
+Initial release of Mountain Weather — an offline-ready weather app designed for adventurers in areas with poor connectivity.
+
+• Current weather with temperature, wind, humidity, precipitation and pressure
+• Hourly forecast (24h) and daily forecast (3 or 5 days)
+• Search for any location or use GPS
+• Save favorite and recent locations (up to 10 each)
+• Offline mode — cached data available without internet
+• Resilient sync
+• Configurable background sync for favorite locations
+</en-US>
