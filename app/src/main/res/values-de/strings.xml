@@ -16,7 +16,7 @@
     <string name="pressure">Luftdruck</string>
 
     <!-- Location screen -->
-    <string name="search_city">Stadt suchen…</string>
+    <string name="search_city">Stadt oder Koordinaten…</string>
     <string name="use_gps">Aktuellen Standort verwenden</string>
     <string name="no_results">Keine Ergebnisse gefunden</string>
     <string name="location_permission_needed">Standortberechtigung für GPS erforderlich</string>

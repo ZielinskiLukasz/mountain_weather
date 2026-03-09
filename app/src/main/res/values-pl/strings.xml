@@ -16,7 +16,7 @@
     <string name="pressure">Ciśnienie</string>
 
     <!-- Location screen -->
-    <string name="search_city">Szukaj miasta…</string>
+    <string name="search_city">Miasto lub współrzędne…</string>
     <string name="use_gps">Użyj aktualnej pozycji</string>
     <string name="no_results">Brak wyników</string>
     <string name="location_permission_needed">Wymagane uprawnienie do lokalizacji</string>

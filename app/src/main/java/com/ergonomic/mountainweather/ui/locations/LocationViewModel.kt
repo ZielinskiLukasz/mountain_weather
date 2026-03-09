@@ -83,7 +83,24 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    private val coordPattern = Regex(
+        """^\s*(-?\d+[.,]\d+)\s*[,;\s]\s*(-?\d+[.,]\d+)\s*$"""
+    )
+
+    private fun parseCoordinates(query: String): Pair<Double, Double>? {
+        val match = coordPattern.matchEntire(query) ?: return null
+        val lat = match.groupValues[1].replace(',', '.').toDoubleOrNull() ?: return null
+        val lon = match.groupValues[2].replace(',', '.').toDoubleOrNull() ?: return null
+        if (lat !in -90.0..90.0 || lon !in -180.0..180.0) return null
+        return lat to lon
+    }
+
     private suspend fun performSearch(query: String) {
+        val coords = parseCoordinates(query)
+        if (coords != null) {
+            performCoordinateSearch(coords.first, coords.second)
+            return
+        }
         _uiState.update { it.copy(isSearching = true, error = null) }
         try {
             val lang = Locale.getDefault().language
@@ -99,6 +116,20 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                 it.copy(isSearching = false, error = e.message)
             }
         }
+    }
+
+    private suspend fun performCoordinateSearch(lat: Double, lon: Double) {
+        _uiState.update { it.copy(isSearching = true, error = null) }
+        val name = resolveLocationName(lat, lon)
+        val result = GeocodingResult(
+            id = 0,
+            name = name,
+            latitude = lat,
+            longitude = lon,
+            country = null,
+            region = null
+        )
+        _uiState.update { it.copy(isSearching = false, results = listOf(result)) }
     }
 
     fun selectSearchResult(result: GeocodingResult) {
@@ -185,9 +216,9 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
             val addresses = geocoder.getFromLocation(lat, lon, 1)
             addresses?.firstOrNull()?.locality
                 ?: addresses?.firstOrNull()?.subAdminArea
-                ?: "%.2f, %.2f".format(lat, lon)
+                ?: "(%.2f, %.2f)".format(lat, lon)
         } catch (_: Exception) {
-            "%.2f, %.2f".format(lat, lon)
+            "(%.2f, %.2f)".format(lat, lon)
         }
     }
 }

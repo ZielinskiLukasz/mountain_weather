@@ -16,7 +16,7 @@
     <string name="pressure">Presión</string>
 
     <!-- Location screen -->
-    <string name="search_city">Buscar ciudad…</string>
+    <string name="search_city">Ciudad o coordenadas…</string>
     <string name="use_gps">Usar ubicación actual</string>
     <string name="no_results">No se han encontrado resultados</string>
     <string name="location_permission_needed">Se necesita permiso de ubicación para el GPS</string>
