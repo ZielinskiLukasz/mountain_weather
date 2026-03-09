@@ -35,7 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -227,7 +227,6 @@ fun OfflineBanner(cachedAt: Long) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherContent(
     locationName: String,
@@ -251,41 +250,41 @@ fun WeatherContent(
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopAppBar(
-            modifier = Modifier.clickable(onClick = onChangeLocation),
-            title = {
-                Text(
-                    text = locationName,
-                    style = MaterialTheme.typography.headlineMedium
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onChangeLocation)
+                .padding(top = 8.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = locationName,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onToggleFavorite) {
+                Icon(
+                    Icons.Filled.Star,
+                    contentDescription = "Toggle favorite",
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.outlineVariant
                 )
-            },
-            actions = {
-                IconButton(onClick = onToggleFavorite) {
-                    Icon(
-                        Icons.Filled.Star,
-                        contentDescription = "Toggle favorite",
-                        tint = if (isFavorite) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.outlineVariant
-                    )
-                }
-                IconButton(onClick = onChangeLocation) {
-                    Icon(
-                        Icons.Default.LocationOn,
-                        contentDescription = "Change location",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                IconButton(onClick = onOpenSettings) {
-                    Icon(
-                        Icons.Default.Settings,
-                        contentDescription = "Settings",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
             }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
+            IconButton(onClick = onChangeLocation) {
+                Icon(
+                    Icons.Default.LocationOn,
+                    contentDescription = "Change location",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            IconButton(onClick = onOpenSettings) {
+                Icon(
+                    Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
 
         Text(text = weatherInfo.icon, fontSize = 72.sp)
 
