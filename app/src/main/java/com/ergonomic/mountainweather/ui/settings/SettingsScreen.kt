@@ -215,7 +215,7 @@ fun SettingsScreen(
                 context.packageManager.getPackageInfo(context.packageName, 0)
             }
             Text(
-                text = "${packageInfo.versionName} (${packageInfo.longVersionCode})",
+                text = "${packageInfo.versionName}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
                 textAlign = TextAlign.Center,
