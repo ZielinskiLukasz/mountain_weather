@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,6 +67,9 @@ import java.time.format.TextStyle
 import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import androidx.compose.ui.draw.clip
+import com.ergonomic.mountainweather.ui.theme.CardBorderDark
+import com.ergonomic.mountainweather.ui.theme.CardBorderLight
 import com.ergonomic.mountainweather.ui.theme.MountainWeatherTheme
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
@@ -215,7 +219,7 @@ fun OfflineBanner(cachedAt: Long) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.7f))
             .padding(vertical = 6.dp, horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -243,9 +247,14 @@ fun WeatherContent(
     val weatherInfo = weatherCodeToInfo(weather.weatherCode)
     val scrollState = rememberScrollState()
 
+    val cardShape = RoundedCornerShape(16.dp)
+    val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
+        CardBorderDark else CardBorderLight
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -316,7 +325,10 @@ fun WeatherContent(
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, cardBorder, cardShape),
+            shape = cardShape,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )
@@ -407,6 +419,9 @@ fun DetailRow(label: String, value: String) {
 
 @Composable
 fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
+    val cardShape = RoundedCornerShape(16.dp)
+    val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
+        CardBorderDark else CardBorderLight
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.hourly_forecast),
@@ -416,7 +431,10 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, cardBorder, cardShape),
+            shape = cardShape,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )
@@ -473,6 +491,9 @@ fun HourlyForecastItem(item: HourlyForecastEntity) {
 
 @Composable
 fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
+    val cardShape = RoundedCornerShape(16.dp)
+    val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
+        CardBorderDark else CardBorderLight
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.daily_forecast),
@@ -482,7 +503,10 @@ fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, cardBorder, cardShape),
+            shape = cardShape,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             )
