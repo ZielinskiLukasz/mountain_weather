@@ -452,15 +452,17 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
 
 @Composable
 fun HourlyForecastItem(item: HourlyForecastEntity) {
-    val hour = remember(item.time) {
+    val hourData = remember(item.time) {
         try {
-            LocalDateTime.parse(item.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                .format(DateTimeFormatter.ofPattern("HH:mm"))
+            val dt = LocalDateTime.parse(item.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            dt.format(DateTimeFormatter.ofPattern("HH:mm")) to dt.hour
         } catch (_: Exception) {
-            item.time.takeLast(5)
+            item.time.takeLast(5) to 12
         }
     }
-    val info = weatherCodeToInfo(item.weatherCode)
+    val hour = hourData.first
+    val isDay = hourData.second in 6..20
+    val info = weatherCodeToInfo(item.weatherCode, isDay)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -17,7 +17,7 @@ import com.ergonomic.mountainweather.data.repository.WeatherRepository
 import com.ergonomic.mountainweather.data.sync.NetworkMonitor
 import com.ergonomic.mountainweather.data.sync.ResilientSyncManager
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -81,8 +81,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             observeFavoriteStatus()
             observeSettings()
             observeNetwork()
-
-            delay(1500)
             fetchWeather()
         }
     }
