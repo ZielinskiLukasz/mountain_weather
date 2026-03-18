@@ -64,6 +64,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private var favoriteObserverJob: Job? = null
     private var settingsJob: Job? = null
     private var networkJob: Job? = null
+    private var lastEnabledParams: Set<String>? = null
 
     init {
         viewModelScope.launch {
@@ -81,7 +82,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             observeFavoriteStatus()
             observeSettings()
             observeNetwork()
-            fetchWeather()
         }
     }
 
@@ -108,6 +108,12 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 if (settings.showDaily3 || settings.showDaily5) observeDailyCache() else {
                     dailyObserverJob?.cancel()
                     _uiState.update { it.copy(dailyForecast = emptyList()) }
+                }
+                val isFirst = lastEnabledParams == null
+                val paramsChanged = lastEnabledParams != null && lastEnabledParams != settings.enabledCurrentParams
+                lastEnabledParams = settings.enabledCurrentParams
+                if (isFirst || paramsChanged) {
+                    fetchWeather()
                 }
                 fetchForecasts(settings)
             }
@@ -148,6 +154,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     _uiState.update { it.copy(isFavorite = isFav) }
                 }
         }
+    }
+
+    fun saveParamOrder(order: List<String>) {
+        viewModelScope.launch { settingsRepo.saveParamOrder(order) }
     }
 
     fun toggleFavorite() {
@@ -220,16 +230,20 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         if (settings.resilientSync) {
             fetchWeatherResilient(settings)
         } else {
-            fetchWeatherSimple()
+            fetchWeatherEnriched()
         }
     }
 
-    private fun fetchWeatherSimple() {
+    private fun fetchWeatherEnriched() {
         val state = _uiState.value
+        val settings = forecastSettings.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
             handleResult(
-                repository.refreshWeather(state.latitude, state.longitude, state.locationName)
+                repository.refreshEnrichedWeather(
+                    state.latitude, state.longitude,
+                    state.locationName, settings.enabledCurrentParams
+                )
             )
         }
     }
@@ -246,7 +260,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun fetchForecasts(settings: ForecastSettings) {
-        if (settings.resilientSync) return // handled by fetchWeatherResilient
+        if (settings.resilientSync) return
 
         val state = _uiState.value
         if (settings.showHourly) {
@@ -287,7 +301,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 syncResult.currentWeather?.let { handleResult(it) }
             } else {
                 handleResult(
-                    repository.refreshWeather(state.latitude, state.longitude, state.locationName)
+                    repository.refreshEnrichedWeather(
+                        state.latitude, state.longitude,
+                        state.locationName, settings.enabledCurrentParams
+                    )
                 )
             }
         }

@@ -29,7 +29,10 @@ class WeatherSyncWorker(
         var allOk = true
         for (location in favorites) {
             try {
-                repository.refreshWeather(location.latitude, location.longitude, location.name)
+                repository.refreshEnrichedWeather(
+                    location.latitude, location.longitude,
+                    location.name, settings.enabledCurrentParams
+                )
 
                 if (settings.showHourly) {
                     repository.refreshHourlyForecast(location.latitude, location.longitude)
@@ -56,7 +59,10 @@ class WeatherSyncWorker(
             }
             if (!alreadySynced) {
                 try {
-                    repository.refreshWeather(saved.latitude, saved.longitude, saved.name)
+                    repository.refreshEnrichedWeather(
+                        saved.latitude, saved.longitude,
+                        saved.name, settings.enabledCurrentParams
+                    )
                     if (settings.showHourly) {
                         repository.refreshHourlyForecast(saved.latitude, saved.longitude)
                     }

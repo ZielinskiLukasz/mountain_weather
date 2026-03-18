@@ -16,6 +16,18 @@ interface OpenMeteoApi {
     ): WeatherResponse
 
     @GET("v1/forecast")
+    suspend fun getEnrichedWeather(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("current") current: String,
+        @Query("daily") daily: String? = null,
+        @Query("hourly") hourly: String? = null,
+        @Query("forecast_days") forecastDays: Int? = null,
+        @Query("forecast_hours") forecastHours: Int? = null,
+        @Query("timezone") timezone: String = "auto"
+    ): WeatherResponse
+
+    @GET("v1/forecast")
     suspend fun getHourlyForecast(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,

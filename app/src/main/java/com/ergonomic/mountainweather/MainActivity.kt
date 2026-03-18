@@ -4,19 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -24,7 +34,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,22 +45,34 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -62,21 +83,22 @@ import com.ergonomic.mountainweather.data.local.WeatherEntity
 import com.ergonomic.mountainweather.data.repository.ForecastSettings
 import com.ergonomic.mountainweather.ui.locations.LocationScreen
 import com.ergonomic.mountainweather.ui.settings.SettingsScreen
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import androidx.compose.ui.draw.clip
 import com.ergonomic.mountainweather.ui.theme.CardBorderDark
 import com.ergonomic.mountainweather.ui.theme.CardBorderLight
 import com.ergonomic.mountainweather.ui.theme.MountainWeatherTheme
+import com.ergonomic.mountainweather.util.WeatherParams
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -200,7 +222,8 @@ fun WeatherScreen(
                         isFavorite = state.isFavorite,
                         onChangeLocation = onChangeLocation,
                         onOpenSettings = onOpenSettings,
-                        onToggleFavorite = { viewModel.toggleFavorite() }
+                        onToggleFavorite = { viewModel.toggleFavorite() },
+                        onReorder = { viewModel.saveParamOrder(it) }
                     )
                 }
             }
@@ -231,6 +254,8 @@ fun OfflineBanner(cachedAt: Long) {
     }
 }
 
+data class DetailItem(val key: String, val icon: String, val label: String, val value: String)
+
 @Composable
 fun WeatherContent(
     locationName: String,
@@ -242,7 +267,8 @@ fun WeatherContent(
     isFavorite: Boolean,
     onChangeLocation: () -> Unit,
     onOpenSettings: () -> Unit,
-    onToggleFavorite: () -> Unit
+    onToggleFavorite: () -> Unit,
+    onReorder: (List<String>) -> Unit
 ) {
     val weatherInfo = weatherCodeToInfo(weather.weatherCode)
     val scrollState = rememberScrollState()
@@ -250,6 +276,8 @@ fun WeatherContent(
     val cardShape = RoundedCornerShape(16.dp)
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
         CardBorderDark else CardBorderLight
+
+    val detailItems = buildDetailItems(weather, settings.enabledCurrentParams, settings.paramOrder)
 
     Column(
         modifier = Modifier
@@ -303,11 +331,13 @@ fun WeatherContent(
             color = MaterialTheme.colorScheme.primary
         )
 
-        Text(
-            text = stringResource(R.string.feels_like, weather.apparentTemperature.toString()),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (WeatherParams.APPARENT_TEMP in settings.enabledCurrentParams) {
+            Text(
+                text = stringResource(R.string.feels_like, weather.apparentTemperature.toString()),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
 
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -319,51 +349,23 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        val todayForecast = remember(dailyForecast) {
-            val today = LocalDate.now().toString()
-            dailyForecast.firstOrNull { it.date == today }
-        }
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, cardBorder, cardShape),
-            shape = cardShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                if (todayForecast != null) {
-                    DetailRow(
-                        "🌡️ ${stringResource(R.string.temperature)}",
-                        stringResource(
-                            R.string.temp_max_min,
-                            todayForecast.temperatureMax.toInt().toString(),
-                            todayForecast.temperatureMin.toInt().toString()
-                        )
+        if (detailItems.isNotEmpty()) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, cardBorder, cardShape),
+                shape = cardShape,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Box(modifier = Modifier.padding(12.dp)) {
+                    DraggableDetailGrid(
+                        items = detailItems,
+                        paramOrder = settings.paramOrder,
+                        onReorder = onReorder
                     )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 }
-                DetailRow(
-                    "💨 ${stringResource(R.string.wind)}",
-                    "${weather.windSpeed} km/h  ${windDirectionToArrow(weather.windDirection)}"
-                )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                DetailRow(
-                    "💧 ${stringResource(R.string.humidity)}",
-                    "${weather.humidity}%"
-                )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                DetailRow(
-                    "🌧️ ${stringResource(R.string.precipitation)}",
-                    "${weather.precipitation} mm"
-                )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                DetailRow(
-                    "🔵 ${stringResource(R.string.pressure)}",
-                    "${weather.pressure.toInt()} hPa"
-                )
             }
         }
 
@@ -402,19 +404,354 @@ fun WeatherContent(
 }
 
 @Composable
-fun DetailRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyLarge)
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+fun DraggableDetailGrid(
+    items: List<DetailItem>,
+    paramOrder: List<String>,
+    onReorder: (List<String>) -> Unit
+) {
+    if (items.isEmpty()) return
+
+    val haptic = LocalHapticFeedback.current
+    val density = LocalDensity.current
+
+    var draggedKey by remember { mutableStateOf<String?>(null) }
+    var dragOffset by remember { mutableStateOf(Offset.Zero) }
+
+    var currentOrder by remember { mutableStateOf(items.map { it.key }) }
+
+    LaunchedEffect(items.map { it.key }.toSet()) {
+        val newKeys = items.map { it.key }
+        currentOrder = currentOrder.filter { it in newKeys } + newKeys.filter { it !in currentOrder }
+    }
+
+    val orderedItems by remember(items, currentOrder) {
+        derivedStateOf {
+            val map = items.associateBy { it.key }
+            currentOrder.mapNotNull { map[it] }
+        }
+    }
+
+    val columns = 2
+    val rowCount by remember { derivedStateOf { (orderedItems.size + columns - 1) / columns } }
+    val cellHeightDp = 50.dp
+
+    val dragShape = RoundedCornerShape(12.dp)
+    val primary = MaterialTheme.colorScheme.primary
+    val tertiary = MaterialTheme.colorScheme.tertiary
+    val dragBorderBrush = Brush.linearGradient(listOf(primary, tertiary))
+    val dragBg = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val cellWidthPx = with(density) { (maxWidth / columns).toPx() }
+        val cellHeightPx = with(density) { cellHeightDp.toPx() }
+        val cellWidthDp = maxWidth / columns
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(cellHeightDp * rowCount)
+        ) {
+            orderedItems.forEach { item ->
+                key(item.key) {
+                    val isDragged = item.key == draggedKey
+                    val index by remember { derivedStateOf { currentOrder.indexOf(item.key) } }
+                    val targetXPx by remember { derivedStateOf { (index % columns).toFloat() * cellWidthPx } }
+                    val targetYPx by remember { derivedStateOf { (index / columns).toFloat() * cellHeightPx } }
+
+                    val springSpec = spring<Float>(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                    val animX by animateFloatAsState(targetXPx, animationSpec = springSpec, label = "ax_${item.key}")
+                    val animY by animateFloatAsState(targetYPx, animationSpec = springSpec, label = "ay_${item.key}")
+
+                    val dragScale by animateFloatAsState(
+                        targetValue = if (isDragged) 1.08f else 1f,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "scale_${item.key}"
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .width(cellWidthDp)
+                            .height(cellHeightDp)
+                            .zIndex(if (isDragged) 10f else 0f)
+                            .offset {
+                                if (isDragged) {
+                                    IntOffset(
+                                        (targetXPx + dragOffset.x).roundToInt(),
+                                        (targetYPx + dragOffset.y).roundToInt()
+                                    )
+                                } else {
+                                    IntOffset(animX.roundToInt(), animY.roundToInt())
+                                }
+                            }
+                            .graphicsLayer {
+                                scaleX = dragScale
+                                scaleY = dragScale
+                                if (isDragged) {
+                                    shadowElevation = 16f
+                                    shape = dragShape
+                                    clip = true
+                                    rotationZ = 1.5f
+                                }
+                            }
+                            .then(
+                                if (isDragged) Modifier
+                                    .clip(dragShape)
+                                    .background(dragBg, dragShape)
+                                    .border(2.dp, dragBorderBrush, dragShape)
+                                else Modifier
+                            )
+                            .pointerInput(Unit) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        draggedKey = item.key
+                                        dragOffset = Offset.Zero
+                                    },
+                                    onDrag = { change, amount ->
+                                        change.consume()
+                                        dragOffset += amount
+
+                                        val myIdx = currentOrder.indexOf(item.key)
+                                        if (myIdx < 0) return@detectDragGesturesAfterLongPress
+                                        val baseX = (myIdx % columns) * cellWidthPx
+                                        val baseY = (myIdx / columns) * cellHeightPx
+                                        val centerX = baseX + dragOffset.x + cellWidthPx / 2
+                                        val centerY = baseY + dragOffset.y + cellHeightPx / 2
+                                        val tCol = (centerX / cellWidthPx).toInt().coerceIn(0, columns - 1)
+                                        val tRow = (centerY / cellHeightPx).toInt().coerceIn(0, rowCount - 1)
+                                        val targetIdx = (tRow * columns + tCol).coerceIn(0, currentOrder.lastIndex)
+
+                                        if (targetIdx != myIdx) {
+                                            val newOrder = currentOrder.toMutableList()
+                                            newOrder.removeAt(myIdx)
+                                            newOrder.add(targetIdx, item.key)
+
+                                            val dCol = (myIdx % columns) - (targetIdx % columns)
+                                            val dRow = (myIdx / columns) - (targetIdx / columns)
+                                            dragOffset = Offset(
+                                                dragOffset.x + dCol * cellWidthPx,
+                                                dragOffset.y + dRow * cellHeightPx
+                                            )
+                                            currentOrder = newOrder
+                                        }
+                                    },
+                                    onDragEnd = {
+                                        draggedKey = null
+                                        dragOffset = Offset.Zero
+                                        onReorder(currentOrder)
+                                    },
+                                    onDragCancel = {
+                                        draggedKey = null
+                                        dragOffset = Offset.Zero
+                                    }
+                                )
+                            }
+                            .padding(vertical = 2.dp, horizontal = 4.dp)
+                    ) {
+                        Column {
+                            Text(
+                                text = "${item.icon} ${item.label}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (isDragged) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = item.value,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDragged) MaterialTheme.colorScheme.onSurface
+                                    else Color.Unspecified
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun buildDetailItems(
+    weather: WeatherEntity,
+    enabled: Set<String>,
+    paramOrder: List<String>
+): List<DetailItem> {
+    val allItems = mutableMapOf<String, DetailItem>()
+
+    if (WeatherParams.TEMPERATURE in enabled && weather.temperatureMax != null && weather.temperatureMin != null) {
+        allItems[WeatherParams.TEMPERATURE] = DetailItem(
+            WeatherParams.TEMPERATURE,
+            "🌡️", stringResource(R.string.param_temperature),
+            stringResource(R.string.temp_max_min,
+                weather.temperatureMax.toInt().toString(),
+                weather.temperatureMin.toInt().toString())
         )
     }
+    if (WeatherParams.WIND in enabled) {
+        allItems[WeatherParams.WIND] = DetailItem(
+            WeatherParams.WIND,
+            "💨", stringResource(R.string.param_wind),
+            "${weather.windSpeed} km/h ${windDirectionToArrow(weather.windDirection)}"
+        )
+    }
+    if (WeatherParams.HUMIDITY in enabled) {
+        allItems[WeatherParams.HUMIDITY] = DetailItem(
+            WeatherParams.HUMIDITY,
+            "💧", stringResource(R.string.param_humidity),
+            "${weather.humidity}%"
+        )
+    }
+    if (WeatherParams.PRECIPITATION in enabled) {
+        allItems[WeatherParams.PRECIPITATION] = DetailItem(
+            WeatherParams.PRECIPITATION,
+            "🌧️", stringResource(R.string.param_precipitation),
+            "${weather.precipitation} mm"
+        )
+    }
+    if (WeatherParams.PRESSURE in enabled) {
+        allItems[WeatherParams.PRESSURE] = DetailItem(
+            WeatherParams.PRESSURE,
+            "⏲️", stringResource(R.string.param_pressure),
+            "${weather.pressure.toInt()} hPa"
+        )
+    }
+    if (WeatherParams.CLOUD_COVER in enabled && weather.cloudCover != null) {
+        allItems[WeatherParams.CLOUD_COVER] = DetailItem(
+            WeatherParams.CLOUD_COVER,
+            "☁️", stringResource(R.string.param_clouds),
+            "${weather.cloudCover}%"
+        )
+    }
+    if (WeatherParams.WIND_GUSTS in enabled && weather.windGusts != null) {
+        allItems[WeatherParams.WIND_GUSTS] = DetailItem(
+            WeatherParams.WIND_GUSTS,
+            "🌬️", stringResource(R.string.param_wind_gusts),
+            "${weather.windGusts} km/h"
+        )
+    }
+    if (WeatherParams.WIND_DIRECTION in enabled) {
+        allItems[WeatherParams.WIND_DIRECTION] = DetailItem(
+            WeatherParams.WIND_DIRECTION,
+            "🧭", stringResource(R.string.param_wind_dir),
+            "${weather.windDirection}° ${windDirectionToArrow(weather.windDirection)}"
+        )
+    }
+    if (WeatherParams.SNOWFALL in enabled && weather.snowfall != null) {
+        allItems[WeatherParams.SNOWFALL] = DetailItem(
+            WeatherParams.SNOWFALL,
+            "❄️", stringResource(R.string.param_snowfall),
+            "${weather.snowfall} cm"
+        )
+    }
+    if (WeatherParams.RAIN in enabled && weather.rain != null) {
+        allItems[WeatherParams.RAIN] = DetailItem(
+            WeatherParams.RAIN,
+            "🌦️", stringResource(R.string.param_rain),
+            "${weather.rain} mm"
+        )
+    }
+    if (WeatherParams.SUNRISE_SUNSET in enabled && weather.sunrise != null && weather.sunset != null) {
+        val rise = weather.sunrise.takeLast(5)
+        val set = weather.sunset.takeLast(5)
+        allItems[WeatherParams.SUNRISE_SUNSET] = DetailItem(
+            WeatherParams.SUNRISE_SUNSET,
+            "🌅", stringResource(R.string.param_sunrise_sunset),
+            "$rise / $set"
+        )
+    }
+    if (WeatherParams.UV_INDEX in enabled && weather.uvIndexMax != null) {
+        allItems[WeatherParams.UV_INDEX] = DetailItem(
+            WeatherParams.UV_INDEX,
+            "☀️", stringResource(R.string.param_uv_index),
+            "${weather.uvIndexMax}"
+        )
+    }
+    if (WeatherParams.RAIN_SUM in enabled && weather.rainSum != null) {
+        allItems[WeatherParams.RAIN_SUM] = DetailItem(
+            WeatherParams.RAIN_SUM,
+            "💦", stringResource(R.string.param_rain_sum),
+            "${weather.rainSum} mm"
+        )
+    }
+    if (WeatherParams.SHOWERS_SUM in enabled && weather.showersSum != null) {
+        allItems[WeatherParams.SHOWERS_SUM] = DetailItem(
+            WeatherParams.SHOWERS_SUM,
+            "🚿", stringResource(R.string.param_showers_sum),
+            "${weather.showersSum} mm"
+        )
+    }
+    if (WeatherParams.SNOWFALL_SUM in enabled && weather.snowfallSum != null) {
+        allItems[WeatherParams.SNOWFALL_SUM] = DetailItem(
+            WeatherParams.SNOWFALL_SUM,
+            "🌨️", stringResource(R.string.param_snowfall_sum),
+            "${weather.snowfallSum} cm"
+        )
+    }
+    if (WeatherParams.PRECIP_HOURS in enabled && weather.precipitationHours != null) {
+        allItems[WeatherParams.PRECIP_HOURS] = DetailItem(
+            WeatherParams.PRECIP_HOURS,
+            "⏱️", stringResource(R.string.param_precip_hours),
+            "${weather.precipitationHours.toInt()} h"
+        )
+    }
+    if (WeatherParams.PRECIP_PROBABILITY in enabled && weather.precipitationProbabilityMax != null) {
+        allItems[WeatherParams.PRECIP_PROBABILITY] = DetailItem(
+            WeatherParams.PRECIP_PROBABILITY,
+            "📊", stringResource(R.string.param_precip_prob),
+            "${weather.precipitationProbabilityMax}%"
+        )
+    }
+    if (WeatherParams.SUNSHINE_DURATION in enabled && weather.sunshineDuration != null) {
+        val hours = (weather.sunshineDuration / 3600).toInt()
+        val minutes = ((weather.sunshineDuration % 3600) / 60).toInt()
+        allItems[WeatherParams.SUNSHINE_DURATION] = DetailItem(
+            WeatherParams.SUNSHINE_DURATION,
+            "🌤️", stringResource(R.string.param_sunshine),
+            "${hours}h ${minutes}m"
+        )
+    }
+    if (WeatherParams.WIND_GUSTS_MAX in enabled && weather.windGustsMax != null) {
+        allItems[WeatherParams.WIND_GUSTS_MAX] = DetailItem(
+            WeatherParams.WIND_GUSTS_MAX,
+            "💥", stringResource(R.string.param_gusts_max),
+            "${weather.windGustsMax} km/h"
+        )
+    }
+    if (WeatherParams.DOMINANT_WIND_DIR in enabled && weather.dominantWindDirection != null) {
+        allItems[WeatherParams.DOMINANT_WIND_DIR] = DetailItem(
+            WeatherParams.DOMINANT_WIND_DIR,
+            "🔄", stringResource(R.string.param_dom_wind),
+            "${weather.dominantWindDirection}° ${windDirectionToArrow(weather.dominantWindDirection)}"
+        )
+    }
+    if (WeatherParams.DEW_POINT in enabled && weather.dewPoint != null) {
+        allItems[WeatherParams.DEW_POINT] = DetailItem(
+            WeatherParams.DEW_POINT,
+            "🌫️", stringResource(R.string.param_dew_point),
+            "${weather.dewPoint}°C"
+        )
+    }
+    if (WeatherParams.VISIBILITY in enabled && weather.visibility != null) {
+        val km = weather.visibility / 1000.0
+        allItems[WeatherParams.VISIBILITY] = DetailItem(
+            WeatherParams.VISIBILITY,
+            "👁️", stringResource(R.string.param_visibility),
+            "${"%.1f".format(km)} km"
+        )
+    }
+    if (WeatherParams.FREEZING_LEVEL in enabled && weather.freezingLevelHeight != null) {
+        allItems[WeatherParams.FREEZING_LEVEL] = DetailItem(
+            WeatherParams.FREEZING_LEVEL,
+            "🏔️", stringResource(R.string.param_freezing_level),
+            "${weather.freezingLevelHeight.toInt()} m"
+        )
+    }
+
+    val orderedKeys = paramOrder.filter { it in allItems } + allItems.keys.filter { it !in paramOrder }
+    return orderedKeys.mapNotNull { allItems[it] }
 }
 
 @Composable

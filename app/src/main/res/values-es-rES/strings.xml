@@ -15,6 +15,33 @@
     <string name="precipitation">Precipitación</string>
     <string name="pressure">Presión</string>
 
+    <!-- Weather param labels -->
+    <string name="param_temperature">Temp mín/máx</string>
+    <string name="param_wind">Viento</string>
+    <string name="param_humidity">Humedad</string>
+    <string name="param_precipitation">Precipitación</string>
+    <string name="param_pressure">Presión</string>
+    <string name="param_feels_like">Sensación</string>
+    <string name="param_clouds">Nubosidad</string>
+    <string name="param_wind_gusts">Ráfagas</string>
+    <string name="param_wind_dir">Dir. viento</string>
+    <string name="param_snowfall">Nevada</string>
+    <string name="param_rain">Lluvia</string>
+    <string name="param_sunrise_sunset">Amanecer/ocaso</string>
+    <string name="param_uv_index">Índice UV</string>
+    <string name="param_rain_sum">Lluvia Σ</string>
+    <string name="param_showers_sum">Chubascos Σ</string>
+    <string name="param_snowfall_sum">Nieve Σ</string>
+    <string name="param_precip_hours">Horas precip.</string>
+    <string name="param_precip_prob">Prob. precip.</string>
+    <string name="param_sunshine">Sol</string>
+    <string name="param_gusts_max">Ráfagas máx.</string>
+    <string name="param_dom_wind">Viento dom.</string>
+    <string name="param_dew_point">Punto rocío</string>
+    <string name="param_visibility">Visibilidad</string>
+    <string name="param_freezing_level">Nivel 0°C</string>
+    <string name="weather_details">Detalles del tiempo</string>
+
     <!-- Location screen -->
     <string name="search_city">Ciudad o coordenadas…</string>
     <string name="use_gps">Usar ubicación actual</string>

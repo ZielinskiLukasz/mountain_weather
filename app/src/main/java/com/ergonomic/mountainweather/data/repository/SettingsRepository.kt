@@ -8,7 +8,9 @@ import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.ergonomic.mountainweather.util.WeatherParams
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -20,7 +22,9 @@ data class ForecastSettings(
     val showDaily3: Boolean = false,
     val showDaily5: Boolean = true,
     val resilientSync: Boolean = false,
-    val syncIntervalMinutes: Int = 0
+    val syncIntervalMinutes: Int = 0,
+    val enabledCurrentParams: Set<String> = WeatherParams.DEFAULTS,
+    val paramOrder: List<String> = WeatherParams.ALL.map { it.key }
 )
 
 class SettingsRepository(private val context: Context) {
@@ -34,6 +38,8 @@ class SettingsRepository(private val context: Context) {
         val LAST_LOCATION_NAME = stringPreferencesKey("last_location_name")
         val LAST_LOCATION_LAT = doublePreferencesKey("last_location_lat")
         val LAST_LOCATION_LON = doublePreferencesKey("last_location_lon")
+        val ENABLED_CURRENT_PARAMS = stringSetPreferencesKey("enabled_current_params")
+        val PARAM_ORDER = stringPreferencesKey("param_order")
     }
 
     val forecastSettings: Flow<ForecastSettings> = context.dataStore.data.map { prefs ->
@@ -42,7 +48,10 @@ class SettingsRepository(private val context: Context) {
             showDaily3 = prefs[Keys.SHOW_DAILY_3] ?: false,
             showDaily5 = prefs[Keys.SHOW_DAILY_5] ?: true,
             resilientSync = prefs[Keys.RESILIENT_SYNC] ?: false,
-            syncIntervalMinutes = prefs[Keys.SYNC_INTERVAL_MINUTES] ?: 0
+            syncIntervalMinutes = prefs[Keys.SYNC_INTERVAL_MINUTES] ?: 0,
+            enabledCurrentParams = prefs[Keys.ENABLED_CURRENT_PARAMS] ?: WeatherParams.DEFAULTS,
+            paramOrder = prefs[Keys.PARAM_ORDER]?.split(",")?.filter { it.isNotBlank() }
+                ?: WeatherParams.ALL.map { it.key }
         )
     }
 
@@ -71,6 +80,17 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setSyncInterval(minutes: Int) {
         context.dataStore.edit { it[Keys.SYNC_INTERVAL_MINUTES] = minutes }
+    }
+
+    suspend fun saveParamOrder(order: List<String>) {
+        context.dataStore.edit { it[Keys.PARAM_ORDER] = order.joinToString(",") }
+    }
+
+    suspend fun toggleCurrentParam(key: String) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[Keys.ENABLED_CURRENT_PARAMS] ?: WeatherParams.DEFAULTS
+            prefs[Keys.ENABLED_CURRENT_PARAMS] = if (key in current) current - key else current + key
+        }
     }
 
     suspend fun saveLastLocation(name: String, lat: Double, lon: Double) {

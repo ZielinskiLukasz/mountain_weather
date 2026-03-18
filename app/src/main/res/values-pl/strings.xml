@@ -15,6 +15,33 @@
     <string name="precipitation">Opady</string>
     <string name="pressure">Ciśnienie</string>
 
+    <!-- Weather param labels -->
+    <string name="param_temperature">Temp min/max</string>
+    <string name="param_wind">Wiatr</string>
+    <string name="param_humidity">Wilgotność</string>
+    <string name="param_precipitation">Opady</string>
+    <string name="param_pressure">Ciśnienie</string>
+    <string name="param_feels_like">Odczuwalna</string>
+    <string name="param_clouds">Zachmurzenie</string>
+    <string name="param_wind_gusts">Porywy wiatru</string>
+    <string name="param_wind_dir">Kier. wiatru</string>
+    <string name="param_snowfall">Śnieg</string>
+    <string name="param_rain">Deszcz</string>
+    <string name="param_sunrise_sunset">Wschód/zachód</string>
+    <string name="param_uv_index">Indeks UV</string>
+    <string name="param_rain_sum">Suma deszczu</string>
+    <string name="param_showers_sum">Suma przelotnych</string>
+    <string name="param_snowfall_sum">Suma śniegu</string>
+    <string name="param_precip_hours">Godz. opadów</string>
+    <string name="param_precip_prob">Prawd. opadów</string>
+    <string name="param_sunshine">Nasłonecznienie</string>
+    <string name="param_gusts_max">Maks. porywy</string>
+    <string name="param_dom_wind">Przew. wiatr</string>
+    <string name="param_dew_point">Punkt rosy</string>
+    <string name="param_visibility">Widoczność</string>
+    <string name="param_freezing_level">Izoterma 0°C</string>
+    <string name="weather_details">Szczegóły pogody</string>
+
     <!-- Location screen -->
     <string name="search_city">Miasto lub współrzędne…</string>
     <string name="use_gps">Użyj aktualnej pozycji</string>
@@ -38,9 +65,9 @@
     <!-- Settings -->
     <string name="settings">Ustawienia</string>
     <string name="forecast_types">Rodzaje prognoz</string>
-    <string name="show_hourly_24h">Godzinowa (24h)</string>
-    <string name="show_daily_3">Dzienna (3 dni)</string>
-    <string name="show_daily_5">Dzienna (5 dni)</string>
+    <string name="show_hourly_24h">24h</string>
+    <string name="show_daily_3">3 dni</string>
+    <string name="show_daily_5">5 dni</string>
     <string name="settings_info">Pobierane są tylko zaznaczone prognozy</string>
     <string name="network_section">Sieć</string>
     <string name="resilient_sync">Odporna synchronizacja</string>

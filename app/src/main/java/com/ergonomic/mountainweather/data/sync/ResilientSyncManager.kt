@@ -24,7 +24,7 @@ class ResilientSyncManager(
         locationName: String,
         settings: ForecastSettings
     ): SyncResult {
-        val currentResult = syncCurrent(latitude, longitude, locationName)
+        val currentResult = syncCurrent(latitude, longitude, locationName, settings.enabledCurrentParams)
 
         val hourlyResult = if (settings.showHourly) {
             syncHourly(latitude, longitude)
@@ -45,17 +45,18 @@ class ResilientSyncManager(
     private suspend fun syncCurrent(
         latitude: Double,
         longitude: Double,
-        locationName: String
+        locationName: String,
+        enabledParams: Set<String>
     ): Result<WeatherEntity> {
         return try {
             val result = circuitBreaker.execute {
                 retryPolicy.execute {
-                    repository.refreshWeather(latitude, longitude, locationName).getOrThrow()
+                    repository.refreshEnrichedWeather(latitude, longitude, locationName, enabledParams).getOrThrow()
                 }
             }
             Result.success(result)
         } catch (e: Exception) {
-            repository.refreshWeather(latitude, longitude, locationName)
+            repository.refreshEnrichedWeather(latitude, longitude, locationName, enabledParams)
         }
     }
 

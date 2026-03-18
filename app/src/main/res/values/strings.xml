@@ -15,6 +15,33 @@
     <string name="precipitation">Precipitation</string>
     <string name="pressure">Pressure</string>
 
+    <!-- Weather param labels -->
+    <string name="param_temperature">Temp min/max</string>
+    <string name="param_wind">Wind</string>
+    <string name="param_humidity">Humidity</string>
+    <string name="param_precipitation">Precipitation</string>
+    <string name="param_pressure">Pressure</string>
+    <string name="param_feels_like">Feels like</string>
+    <string name="param_clouds">Cloud cover</string>
+    <string name="param_wind_gusts">Wind gusts</string>
+    <string name="param_wind_dir">Wind dir.</string>
+    <string name="param_snowfall">Snowfall</string>
+    <string name="param_rain">Rain</string>
+    <string name="param_sunrise_sunset">Sunrise/set</string>
+    <string name="param_uv_index">UV index</string>
+    <string name="param_rain_sum">Rain total</string>
+    <string name="param_showers_sum">Showers total</string>
+    <string name="param_snowfall_sum">Snow total</string>
+    <string name="param_precip_hours">Precip. hours</string>
+    <string name="param_precip_prob">Precip. prob.</string>
+    <string name="param_sunshine">Sunshine</string>
+    <string name="param_gusts_max">Max gusts</string>
+    <string name="param_dom_wind">Dom. wind</string>
+    <string name="param_dew_point">Dew point</string>
+    <string name="param_visibility">Visibility</string>
+    <string name="param_freezing_level">Freezing level</string>
+    <string name="weather_details">Weather details</string>
+
     <!-- Location screen -->
     <string name="search_city">City or coordinates…</string>
     <string name="use_gps">Use current location</string>

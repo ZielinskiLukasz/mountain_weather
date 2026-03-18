@@ -1,7 +1,10 @@
 package com.ergonomic.mountainweather.ui.settings
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,11 +14,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,9 +44,10 @@ import com.ergonomic.mountainweather.R
 import com.ergonomic.mountainweather.data.repository.ForecastSettings
 import com.ergonomic.mountainweather.data.repository.SettingsRepository
 import com.ergonomic.mountainweather.data.sync.SyncScheduler
+import com.ergonomic.mountainweather.util.WeatherParams
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     settingsRepo: SettingsRepository,
@@ -80,33 +84,63 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            SettingsToggle(
-                label = stringResource(R.string.show_hourly_24h),
-                checked = settings.showHourly,
-                onCheckedChange = { scope.launch { settingsRepo.setShowHourly(it) } }
-            )
-
-            SettingsToggle(
-                label = stringResource(R.string.show_daily_3),
-                checked = settings.showDaily3,
-                onCheckedChange = { enabled ->
-                    scope.launch {
-                        settingsRepo.setDailyMode(daily3 = enabled, daily5 = if (enabled) false else settings.showDaily5)
-                    }
-                }
-            )
-
-            SettingsToggle(
-                label = stringResource(R.string.show_daily_5),
-                checked = settings.showDaily5,
-                onCheckedChange = { enabled ->
-                    scope.launch {
-                        settingsRepo.setDailyMode(daily3 = if (enabled) false else settings.showDaily3, daily5 = enabled)
-                    }
-                }
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = settings.showHourly,
+                    onClick = { scope.launch { settingsRepo.setShowHourly(!settings.showHourly) } },
+                    label = { Text(stringResource(R.string.show_hourly_24h)) }
+                )
+                FilterChip(
+                    selected = settings.showDaily3,
+                    onClick = {
+                        scope.launch {
+                            settingsRepo.setDailyMode(daily3 = !settings.showDaily3, daily5 = if (!settings.showDaily3) false else settings.showDaily5)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.show_daily_3)) }
+                )
+                FilterChip(
+                    selected = settings.showDaily5,
+                    onClick = {
+                        scope.launch {
+                            settingsRepo.setDailyMode(daily3 = if (!settings.showDaily5) false else settings.showDaily3, daily5 = !settings.showDaily5)
+                        }
+                    },
+                    label = { Text(stringResource(R.string.show_daily_5)) }
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.weather_details),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy((-4).dp)
+            ) {
+                WeatherParams.ALL.forEach { param ->
+                    FilterChip(
+                        selected = param.key in settings.enabledCurrentParams,
+                        onClick = { scope.launch { settingsRepo.toggleCurrentParam(param.key) } },
+                        label = {
+                            Text(
+                                "${param.icon} ${stringResource(param.labelRes)}",
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = stringResource(R.string.settings_info),
@@ -114,7 +148,7 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = stringResource(R.string.network_section),
