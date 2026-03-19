@@ -37,13 +37,13 @@ fun weatherCodeToInfo(code: Int, isDay: Boolean = true): WeatherInfo = when (cod
 }
 
 fun windDirectionToArrow(degrees: Int): String = when ((degrees + 22) / 45 % 8) {
-    0 -> "↑ N"
-    1 -> "↗ NE"
-    2 -> "→ E"
-    3 -> "↘ SE"
-    4 -> "↓ S"
-    5 -> "↙ SW"
-    6 -> "← W"
-    7 -> "↖ NW"
+    0 -> "↓ N"
+    1 -> "↙ NE"
+    2 -> "← E"
+    3 -> "↖ SE"
+    4 -> "↑ S"
+    5 -> "↗ SW"
+    6 -> "→ W"
+    7 -> "↘ NW"
     else -> ""
 }
