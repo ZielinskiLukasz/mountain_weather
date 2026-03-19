@@ -749,6 +749,41 @@ fun buildDetailItems(
             "${weather.freezingLevelHeight.toInt()} m"
         )
     }
+    if (WeatherParams.AQI_EU in enabled && weather.aqiEu != null) {
+        allItems[WeatherParams.AQI_EU] = DetailItem(
+            WeatherParams.AQI_EU,
+            "🟢", stringResource(R.string.param_aqi_eu),
+            "${weather.aqiEu} EAQI"
+        )
+    }
+    if (WeatherParams.AQI_US in enabled && weather.aqiUs != null) {
+        allItems[WeatherParams.AQI_US] = DetailItem(
+            WeatherParams.AQI_US,
+            "🟡", stringResource(R.string.param_aqi_us),
+            "${weather.aqiUs} USAQI"
+        )
+    }
+    if (WeatherParams.PM25 in enabled && weather.pm25 != null) {
+        allItems[WeatherParams.PM25] = DetailItem(
+            WeatherParams.PM25,
+            "🫁", stringResource(R.string.param_pm25),
+            "${"%.1f".format(weather.pm25)} μg/m³"
+        )
+    }
+    if (WeatherParams.PM10 in enabled && weather.pm10 != null) {
+        allItems[WeatherParams.PM10] = DetailItem(
+            WeatherParams.PM10,
+            "🌁", stringResource(R.string.param_pm10),
+            "${"%.1f".format(weather.pm10)} μg/m³"
+        )
+    }
+    if (WeatherParams.OZONE in enabled && weather.ozone != null) {
+        allItems[WeatherParams.OZONE] = DetailItem(
+            WeatherParams.OZONE,
+            "🛡️", stringResource(R.string.param_ozone),
+            "${"%.0f".format(weather.ozone)} μg/m³"
+        )
+    }
 
     val orderedKeys = paramOrder.filter { it in allItems } + allItems.keys.filter { it !in paramOrder }
     return orderedKeys.mapNotNull { allItems[it] }

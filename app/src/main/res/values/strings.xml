@@ -40,6 +40,11 @@
     <string name="param_dew_point">Dew point</string>
     <string name="param_visibility">Visibility</string>
     <string name="param_freezing_level">Freezing level</string>
+    <string name="param_aqi_eu">AQI (EU)</string>
+    <string name="param_aqi_us">AQI (US)</string>
+    <string name="param_pm25">PM2.5</string>
+    <string name="param_pm10">PM10</string>
+    <string name="param_ozone">Ozone</string>
     <string name="weather_details">Weather details</string>
 
     <!-- Location screen -->

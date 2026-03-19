@@ -1,5 +1,6 @@
 package com.ergonomic.mountainweather.data.repository
 
+import com.ergonomic.mountainweather.data.AirQualityApi
 import com.ergonomic.mountainweather.data.OpenMeteoApi
 import com.ergonomic.mountainweather.data.local.DailyForecastDao
 import com.ergonomic.mountainweather.data.local.DailyForecastEntity
@@ -15,7 +16,8 @@ class WeatherRepository(
     private val api: OpenMeteoApi,
     private val dao: WeatherDao,
     private val hourlyDao: HourlyForecastDao,
-    private val dailyDao: DailyForecastDao
+    private val dailyDao: DailyForecastDao,
+    private val airQualityApi: AirQualityApi = AirQualityApi.create()
 ) {
     fun observeCachedWeather(locationKey: String): Flow<WeatherEntity?> =
         dao.observeWeather(locationKey)
@@ -90,6 +92,14 @@ class WeatherRepository(
                 hourly.time.indexOfFirst { it.startsWith(targetHour) }.takeIf { it >= 0 }
             }
 
+            val aqData = if (enabledParams.any { it in WeatherParams.AIR_QUALITY_KEYS }) {
+                try {
+                    val aqQuery = buildAirQualityQuery(enabledParams)
+                    if (aqQuery != null) airQualityApi.getCurrent(latitude, longitude, aqQuery).current
+                    else null
+                } catch (_: Exception) { null }
+            } else null
+
             val entity = WeatherEntity(
                 locationKey = key,
                 locationName = locationName,
@@ -124,7 +134,12 @@ class WeatherRepository(
                 dominantWindDirection = todayDaily?.windDirectionDominant?.firstOrNull(),
                 dewPoint = currentHourIndex?.let { response.hourly?.dewPoint?.getOrNull(it) },
                 visibility = currentHourIndex?.let { response.hourly?.visibility?.getOrNull(it) },
-                freezingLevelHeight = currentHourIndex?.let { response.hourly?.freezingLevelHeight?.getOrNull(it) }
+                freezingLevelHeight = currentHourIndex?.let { response.hourly?.freezingLevelHeight?.getOrNull(it) },
+                aqiEu = aqData?.europeanAqi,
+                aqiUs = aqData?.usAqi,
+                pm25 = aqData?.pm25,
+                pm10 = aqData?.pm10,
+                ozone = aqData?.ozone
             )
             dao.insertWeather(entity)
             Result.success(entity)
@@ -174,6 +189,16 @@ class WeatherRepository(
         if (WeatherParams.DEW_POINT in enabledParams) fields.add("dew_point_2m")
         if (WeatherParams.VISIBILITY in enabledParams) fields.add("visibility")
         if (WeatherParams.FREEZING_LEVEL in enabledParams) fields.add("freezing_level_height")
+        return if (fields.isEmpty()) null else fields.joinToString(",")
+    }
+
+    private fun buildAirQualityQuery(enabledParams: Set<String>): String? {
+        val fields = mutableListOf<String>()
+        if (WeatherParams.AQI_EU in enabledParams) fields.add("european_aqi")
+        if (WeatherParams.AQI_US in enabledParams) fields.add("us_aqi")
+        if (WeatherParams.PM25 in enabledParams) fields.add("pm2_5")
+        if (WeatherParams.PM10 in enabledParams) fields.add("pm10")
+        if (WeatherParams.OZONE in enabledParams) fields.add("ozone")
         return if (fields.isEmpty()) null else fields.joinToString(",")
     }
 

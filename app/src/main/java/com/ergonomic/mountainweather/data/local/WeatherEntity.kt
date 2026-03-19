@@ -39,5 +39,10 @@ data class WeatherEntity(
     val visibility: Double? = null,
     val freezingLevelHeight: Double? = null,
     val temperatureMax: Double? = null,
-    val temperatureMin: Double? = null
+    val temperatureMin: Double? = null,
+    val aqiEu: Int? = null,
+    val aqiUs: Int? = null,
+    val pm25: Double? = null,
+    val pm10: Double? = null,
+    val ozone: Double? = null
 )

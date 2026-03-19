@@ -40,6 +40,11 @@
     <string name="param_dew_point">Punkt rosy</string>
     <string name="param_visibility">Widoczność</string>
     <string name="param_freezing_level">Izoterma 0°C</string>
+    <string name="param_aqi_eu">AQI (EU)</string>
+    <string name="param_aqi_us">AQI (US)</string>
+    <string name="param_pm25">PM2.5</string>
+    <string name="param_pm10">PM10</string>
+    <string name="param_ozone">Ozon</string>
     <string name="weather_details">Szczegóły pogody</string>
 
     <!-- Location screen -->
