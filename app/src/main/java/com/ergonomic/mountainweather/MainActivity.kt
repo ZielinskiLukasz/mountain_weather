@@ -374,8 +374,8 @@ fun WeatherContent(
             HourlyForecastSection(hourlyForecast)
         }
 
-        if ((settings.showDaily3 || settings.showDaily5) && dailyForecast.isNotEmpty()) {
-            val maxDays = if (settings.showDaily5) 5 else 3
+        if (settings.dailyForecastDays > 0 && dailyForecast.isNotEmpty()) {
+            val maxDays = settings.dailyForecastDays
             val today = LocalDate.now().toString()
             val futureDays = dailyForecast.filter { it.date > today }.take(maxDays)
             if (futureDays.isNotEmpty()) {
@@ -864,10 +864,12 @@ fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
 
 @Composable
 fun DailyForecastItem(item: DailyForecastEntity) {
-    val dayName = remember(item.date) {
+    val dayLabel = remember(item.date) {
         try {
             val date = LocalDate.parse(item.date)
-            date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+            val dow = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+            val formatted = date.format(DateTimeFormatter.ofPattern("dd.MM"))
+            "$formatted ($dow)"
         } catch (_: Exception) {
             item.date
         }
@@ -880,7 +882,7 @@ fun DailyForecastItem(item: DailyForecastEntity) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = dayName,
+            text = dayLabel,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f)
         )

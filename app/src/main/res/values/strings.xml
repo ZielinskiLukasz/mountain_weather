@@ -68,6 +68,8 @@
     <string name="show_hourly_24h">Hourly (24h)</string>
     <string name="show_daily_3">Daily (3 days)</string>
     <string name="show_daily_5">Daily (5 days)</string>
+    <string name="show_daily_7">Daily (7 days)</string>
+    <string name="show_daily_14">Daily (14 days)</string>
     <string name="settings_info">Only selected forecasts will be downloaded</string>
     <string name="network_section">Network</string>
     <string name="resilient_sync">Resilient sync</string>

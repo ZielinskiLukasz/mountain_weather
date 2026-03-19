@@ -68,6 +68,8 @@
     <string name="show_hourly_24h">Stündlich (24h)</string>
     <string name="show_daily_3">Täglich (3 Tage)</string>
     <string name="show_daily_5">Täglich (5 Tage)</string>
+    <string name="show_daily_7">Täglich (7 Tage)</string>
+    <string name="show_daily_14">Täglich (14 Tage)</string>
     <string name="settings_info">Nur ausgewählte Vorhersagen werden heruntergeladen</string>
     <string name="network_section">Netzwerk</string>
     <string name="resilient_sync">Robuste Synchronisierung</string>

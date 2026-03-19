@@ -68,6 +68,8 @@
     <string name="show_hourly_24h">Por hora (24h)</string>
     <string name="show_daily_3">Diario (3 días)</string>
     <string name="show_daily_5">Diario (5 días)</string>
+    <string name="show_daily_7">Diario (7 días)</string>
+    <string name="show_daily_14">Diario (14 días)</string>
     <string name="settings_info">Solo se descargarán los pronósticos seleccionados</string>
     <string name="network_section">Red</string>
     <string name="resilient_sync">Sincronización resistente</string>

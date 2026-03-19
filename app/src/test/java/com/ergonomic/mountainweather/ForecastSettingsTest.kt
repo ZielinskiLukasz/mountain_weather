@@ -41,6 +41,15 @@ class ForecastSettingsTest {
         val s = ForecastSettings(showDaily3 = false, showDaily5 = false)
         assertFalse(s.showDaily3)
         assertFalse(s.showDaily5)
+        assertEquals(0, s.dailyForecastDays)
+    }
+
+    @Test
+    fun `dailyForecastDays returns correct value`() {
+        assertEquals(3, ForecastSettings(showDaily3 = true, showDaily5 = false).dailyForecastDays)
+        assertEquals(5, ForecastSettings(showDaily5 = true).dailyForecastDays)
+        assertEquals(7, ForecastSettings(showDaily5 = false, showDaily7 = true).dailyForecastDays)
+        assertEquals(14, ForecastSettings(showDaily5 = false, showDaily14 = true).dailyForecastDays)
     }
 
     @Test

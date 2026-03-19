@@ -68,6 +68,8 @@
     <string name="show_hourly_24h">24h</string>
     <string name="show_daily_3">3 dni</string>
     <string name="show_daily_5">5 dni</string>
+    <string name="show_daily_7">7 dni</string>
+    <string name="show_daily_14">14 dni</string>
     <string name="settings_info">Pobierane są tylko zaznaczone prognozy</string>
     <string name="network_section">Sieć</string>
     <string name="resilient_sync">Odporna synchronizacja</string>

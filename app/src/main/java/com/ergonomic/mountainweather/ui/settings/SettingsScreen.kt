@@ -84,32 +84,34 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy((-4).dp)
             ) {
                 FilterChip(
                     selected = settings.showHourly,
                     onClick = { scope.launch { settingsRepo.setShowHourly(!settings.showHourly) } },
                     label = { Text(stringResource(R.string.show_hourly_24h)) }
                 )
-                FilterChip(
-                    selected = settings.showDaily3,
-                    onClick = {
-                        scope.launch {
-                            settingsRepo.setDailyMode(daily3 = !settings.showDaily3, daily5 = if (!settings.showDaily3) false else settings.showDaily5)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.show_daily_3)) }
+
+                data class DailyOption(val days: Int, val labelRes: Int, val selected: Boolean)
+                val dailyOptions = listOf(
+                    DailyOption(3, R.string.show_daily_3, settings.showDaily3),
+                    DailyOption(5, R.string.show_daily_5, settings.showDaily5),
+                    DailyOption(7, R.string.show_daily_7, settings.showDaily7),
+                    DailyOption(14, R.string.show_daily_14, settings.showDaily14)
                 )
-                FilterChip(
-                    selected = settings.showDaily5,
-                    onClick = {
-                        scope.launch {
-                            settingsRepo.setDailyMode(daily3 = if (!settings.showDaily5) false else settings.showDaily3, daily5 = !settings.showDaily5)
-                        }
-                    },
-                    label = { Text(stringResource(R.string.show_daily_5)) }
-                )
+                dailyOptions.forEach { opt ->
+                    FilterChip(
+                        selected = opt.selected,
+                        onClick = {
+                            scope.launch {
+                                settingsRepo.setDailyMode(if (opt.selected) 0 else opt.days)
+                            }
+                        },
+                        label = { Text(stringResource(opt.labelRes)) }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -30,11 +30,7 @@ class ResilientSyncManager(
             syncHourly(latitude, longitude)
         } else null
 
-        val dailyDays = when {
-            settings.showDaily5 -> 5
-            settings.showDaily3 -> 3
-            else -> 0
-        }
+        val dailyDays = settings.dailyForecastDays
         val dailyResult = if (dailyDays > 0) {
             syncDaily(latitude, longitude, dailyDays + 1)
         } else null

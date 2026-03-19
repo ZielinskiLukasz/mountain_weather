@@ -105,7 +105,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     hourlyObserverJob?.cancel()
                     _uiState.update { it.copy(hourlyForecast = emptyList()) }
                 }
-                if (settings.showDaily3 || settings.showDaily5) observeDailyCache() else {
+                if (settings.dailyForecastDays > 0) observeDailyCache() else {
                     dailyObserverJob?.cancel()
                     _uiState.update { it.copy(dailyForecast = emptyList()) }
                 }
@@ -140,7 +140,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         observeFavoriteStatus()
         val settings = forecastSettings.value
         if (settings.showHourly) observeHourlyCache()
-        if (settings.showDaily3 || settings.showDaily5) observeDailyCache()
+        if (settings.dailyForecastDays > 0) observeDailyCache()
         fetchWeather()
         fetchForecasts(settings)
     }
@@ -271,11 +271,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     }
             }
         }
-        val days = when {
-            settings.showDaily5 -> 5
-            settings.showDaily3 -> 3
-            else -> 0
-        }
+        val days = settings.dailyForecastDays
         dailyFetchJob?.cancel()
         if (days > 0) {
             dailyFetchJob = viewModelScope.launch {

@@ -68,6 +68,8 @@
     <string name="show_hourly_24h">Por horas (24h)</string>
     <string name="show_daily_3">Diaria (3 días)</string>
     <string name="show_daily_5">Diaria (5 días)</string>
+    <string name="show_daily_7">Diaria (7 días)</string>
+    <string name="show_daily_14">Diaria (14 días)</string>
     <string name="settings_info">Solo se descargarán las previsiones seleccionadas</string>
     <string name="network_section">Red</string>
     <string name="resilient_sync">Sincronización resistente</string>

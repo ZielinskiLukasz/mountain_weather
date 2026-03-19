@@ -37,11 +37,7 @@ class WeatherSyncWorker(
                 if (settings.showHourly) {
                     repository.refreshHourlyForecast(location.latitude, location.longitude)
                 }
-                val days = when {
-                    settings.showDaily5 -> 5
-                    settings.showDaily3 -> 3
-                    else -> 0
-                }
+                val days = settings.dailyForecastDays
                 if (days > 0) {
                     repository.refreshDailyForecast(location.latitude, location.longitude, days + 1)
                 }
@@ -66,11 +62,7 @@ class WeatherSyncWorker(
                     if (settings.showHourly) {
                         repository.refreshHourlyForecast(saved.latitude, saved.longitude)
                     }
-                    val days = when {
-                        settings.showDaily5 -> 5
-                        settings.showDaily3 -> 3
-                        else -> 0
-                    }
+                    val days = settings.dailyForecastDays
                     if (days > 0) {
                         repository.refreshDailyForecast(saved.latitude, saved.longitude, days + 1)
                     }
