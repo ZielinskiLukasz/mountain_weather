@@ -5,6 +5,7 @@
     <!-- Home screen -->
     <string name="feels_like">Odczuwalna: %1$s°C</string>
     <string name="loading_weather">Pobieranie pogody…</string>
+    <string name="pull_to_refresh_hint">Pociągnij w dół, aby załadować pogodę</string>
     <string name="update_time">Aktualizacja: %1$s</string>
     <string name="offline_data">Dane offline z: %1$s</string>
 

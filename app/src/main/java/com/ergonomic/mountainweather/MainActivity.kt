@@ -10,6 +10,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,7 +59,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -174,11 +180,30 @@ fun WeatherScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val settings by viewModel.forecastSettings.collectAsState()
+    val pages = state.locationPages
 
     val refreshErrorMessage = stringResource(R.string.refresh_error_snackbar)
     LaunchedEffect(state.error) {
         if (state.error != null && state.weather != null) {
             snackbarHostState.showSnackbar(refreshErrorMessage)
+        }
+    }
+
+    val pageCount = pages.size.coerceAtLeast(1)
+    val pagerState = rememberPagerState(
+        initialPage = state.currentPageIndex.coerceIn(0, pageCount - 1),
+        pageCount = { pageCount }
+    )
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.settledPage }.collect { page ->
+            viewModel.onPageChanged(page)
+        }
+    }
+
+    LaunchedEffect(state.locationSelectionVersion) {
+        if (pagerState.currentPage != 0) {
+            pagerState.scrollToPage(0)
         }
     }
 
@@ -210,24 +235,94 @@ fun WeatherScreen(
                 modifier = modifier.fillMaxSize()
             ) {
                 Column {
+                    if (pages.size > 1) {
+                        PageIndicator(
+                            pageCount = pageCount,
+                            currentPage = pagerState.currentPage,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 4.dp)
+                        )
+                    }
                     if (state.isOfflineData) {
                         OfflineBanner(cachedAt = state.weather?.cachedAt ?: 0L)
                     }
-                    WeatherContent(
-                        locationName = state.locationName,
-                        weather = state.weather!!,
-                        hourlyForecast = state.hourlyForecast,
-                        dailyForecast = state.dailyForecast,
-                        settings = settings,
-                        isOffline = state.isOfflineData,
-                        isFavorite = state.isFavorite,
-                        onChangeLocation = onChangeLocation,
-                        onOpenSettings = onOpenSettings,
-                        onToggleFavorite = { viewModel.toggleFavorite() },
-                        onReorder = { viewModel.saveParamOrder(it) }
-                    )
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize()
+                    ) { pageIndex ->
+                        val page = pages.getOrNull(pageIndex)
+                        val isActivePage = pageIndex == pagerState.settledPage
+                        val locationKey = if (page != null)
+                            com.ergonomic.mountainweather.data.repository.WeatherRepository.locationKey(page.latitude, page.longitude)
+                        else null
+                        val pageWeather = locationKey?.let { state.weatherByLocation[it] } ?: state.weather
+                        val pageHourly = locationKey?.let { state.hourlyByLocation[it] } ?: emptyList()
+                        val pageDaily = locationKey?.let { state.dailyByLocation[it] } ?: emptyList()
+                        val pageName = page?.name ?: state.locationName
+                        val pageIsFavorite = if (isActivePage) state.isFavorite
+                            else page?.isCurrent == false
+
+                        if (pageWeather != null) {
+                            WeatherContent(
+                                locationName = pageName,
+                                weather = pageWeather,
+                                hourlyForecast = pageHourly,
+                                dailyForecast = pageDaily,
+                                settings = settings,
+                                isOffline = state.isOfflineData && isActivePage,
+                                isFavorite = pageIsFavorite,
+                                onChangeLocation = onChangeLocation,
+                                onOpenSettings = onOpenSettings,
+                                onToggleFavorite = { viewModel.toggleFavorite() },
+                                onReorder = { viewModel.saveParamOrder(it) }
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = page?.name ?: "",
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text(
+                                        text = stringResource(R.string.pull_to_refresh_hint),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun PageIndicator(pageCount: Int, currentPage: Int, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(pageCount) { index ->
+            val isSelected = index == currentPage
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .size(if (isSelected) 10.dp else 7.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isSelected) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                    )
+            )
         }
     }
 }
@@ -312,7 +407,7 @@ fun WeatherContent(
                 Icon(
                     Icons.Default.LocationOn,
                     contentDescription = "Change location",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onOpenSettings) {

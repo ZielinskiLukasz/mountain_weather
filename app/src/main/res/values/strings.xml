@@ -5,6 +5,7 @@
     <!-- Home screen -->
     <string name="feels_like">Feels like: %1$s°C</string>
     <string name="loading_weather">Loading weather…</string>
+    <string name="pull_to_refresh_hint">Pull down to load weather</string>
     <string name="update_time">Updated: %1$s</string>
     <string name="offline_data">Offline data from: %1$s</string>
 
