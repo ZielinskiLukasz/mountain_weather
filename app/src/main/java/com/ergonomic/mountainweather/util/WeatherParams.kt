@@ -48,7 +48,7 @@ object WeatherParams {
         WeatherParamDef(WIND, "💨", R.string.param_wind),
         WeatherParamDef(HUMIDITY, "💧", R.string.param_humidity),
         WeatherParamDef(PRECIPITATION, "🌧️", R.string.param_precipitation),
-        WeatherParamDef(PRESSURE, "⏲️", R.string.param_pressure),
+        WeatherParamDef(PRESSURE, "🌀", R.string.param_pressure),
         WeatherParamDef(CLOUD_COVER, "☁️", R.string.param_clouds),
         WeatherParamDef(WIND_GUSTS, "🌬️", R.string.param_wind_gusts),
         WeatherParamDef(WIND_DIRECTION, "🧭", R.string.param_wind_dir),
@@ -64,13 +64,13 @@ object WeatherParams {
         WeatherParamDef(SUNSHINE_DURATION, "🌤️", R.string.param_sunshine),
         WeatherParamDef(WIND_GUSTS_MAX, "💥", R.string.param_gusts_max),
         WeatherParamDef(DOMINANT_WIND_DIR, "🔄", R.string.param_dom_wind),
-        WeatherParamDef(DEW_POINT, "🌫️", R.string.param_dew_point),
+        WeatherParamDef(DEW_POINT, "💧", R.string.param_dew_point),
         WeatherParamDef(VISIBILITY, "👁️", R.string.param_visibility),
         WeatherParamDef(FREEZING_LEVEL, "🏔️", R.string.param_freezing_level),
         WeatherParamDef(AQI_EU, "🟢", R.string.param_aqi_eu),
         WeatherParamDef(AQI_US, "🟡", R.string.param_aqi_us),
         WeatherParamDef(PM25, "🫁", R.string.param_pm25),
-        WeatherParamDef(PM10, "🌁", R.string.param_pm10),
+        WeatherParamDef(PM10, "💨", R.string.param_pm10),
         WeatherParamDef(OZONE, "🛡️", R.string.param_ozone)
     )
 

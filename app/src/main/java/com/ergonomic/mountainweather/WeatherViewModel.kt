@@ -113,7 +113,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 val paramsChanged = lastEnabledParams != null && lastEnabledParams != settings.enabledCurrentParams
                 lastEnabledParams = settings.enabledCurrentParams
                 if (isFirst || paramsChanged) {
-                    fetchWeather()
+                    fetchWeatherWithSettings(settings)
                 }
                 fetchForecasts(settings)
             }
@@ -141,7 +141,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val settings = forecastSettings.value
         if (settings.showHourly) observeHourlyCache()
         if (settings.dailyForecastDays > 0) observeDailyCache()
-        fetchWeather()
+        fetchWeatherWithSettings(settings)
         fetchForecasts(settings)
     }
 
@@ -226,17 +226,19 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun fetchWeather() {
-        val settings = forecastSettings.value
+        fetchWeatherWithSettings(forecastSettings.value)
+    }
+
+    private fun fetchWeatherWithSettings(settings: ForecastSettings) {
         if (settings.resilientSync) {
             fetchWeatherResilient(settings)
         } else {
-            fetchWeatherEnriched()
+            fetchWeatherEnriched(settings)
         }
     }
 
-    private fun fetchWeatherEnriched() {
+    private fun fetchWeatherEnriched(settings: ForecastSettings) {
         val state = _uiState.value
-        val settings = forecastSettings.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
             handleResult(
@@ -302,10 +304,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                         state.locationName, settings.enabledCurrentParams
                     )
                 )
+                fetchForecasts(settings)
             }
-        }
-        if (!settings.resilientSync) {
-            fetchForecasts(settings)
         }
     }
 

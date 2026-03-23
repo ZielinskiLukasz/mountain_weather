@@ -574,6 +574,16 @@ fun DraggableDetailGrid(
     }
 }
 
+private val pm25Thresholds = doubleArrayOf(10.0, 25.0, 50.0)
+private val pm10Thresholds = doubleArrayOf(20.0, 50.0, 100.0)
+
+private fun pmLevel(value: Double, thresholds: DoubleArray): String = when {
+    value <= thresholds[0] -> "🟢"
+    value <= thresholds[1] -> "🟡"
+    value <= thresholds[2] -> "🟠"
+    else -> "🔴"
+}
+
 @Composable
 fun buildDetailItems(
     weather: WeatherEntity,
@@ -765,17 +775,19 @@ fun buildDetailItems(
         )
     }
     if (WeatherParams.PM25 in enabled && weather.pm25 != null) {
+        val level = pmLevel(weather.pm25, pm25Thresholds)
         allItems[WeatherParams.PM25] = DetailItem(
             WeatherParams.PM25,
             "🫁", stringResource(R.string.param_pm25),
-            "${"%.1f".format(weather.pm25)} μg/m³"
+            "$level ${"%.1f".format(weather.pm25)} μg/m³"
         )
     }
     if (WeatherParams.PM10 in enabled && weather.pm10 != null) {
+        val level = pmLevel(weather.pm10, pm10Thresholds)
         allItems[WeatherParams.PM10] = DetailItem(
             WeatherParams.PM10,
-            "🌁", stringResource(R.string.param_pm10),
-            "${"%.1f".format(weather.pm10)} μg/m³"
+            "💨", stringResource(R.string.param_pm10),
+            "$level ${"%.1f".format(weather.pm10)} μg/m³"
         )
     }
     if (WeatherParams.OZONE in enabled && weather.ozone != null) {
@@ -805,7 +817,7 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
         }.coerceAtLeast(0)
     }
     val listState = rememberLazyListState()
-    LaunchedEffect(currentHourIndex) {
+    LaunchedEffect(hourlyForecast) {
         listState.scrollToItem(currentHourIndex)
     }
 
@@ -856,26 +868,15 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
     val hour = hourData.first
     val isDay = hourData.second in 6..20
     val info = weatherCodeToInfo(item.weatherCode, isDay)
-    val highlightShape = RoundedCornerShape(10.dp)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .then(
-                if (isCurrentHour) Modifier
-                    .clip(highlightShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), highlightShape)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                else Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
+        modifier = Modifier.padding(horizontal = 12.dp)
     ) {
         Text(
             text = hour,
             style = MaterialTheme.typography.labelSmall,
-            fontWeight = if (isCurrentHour) FontWeight.Bold else FontWeight.Normal,
-            color = if (isCurrentHour) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = info.icon, fontSize = 22.sp)
@@ -883,8 +884,7 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
         Text(
             text = "${item.temperature.toInt()}°",
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (isCurrentHour) MaterialTheme.colorScheme.primary else Color.Unspecified
+            fontWeight = FontWeight.Bold
         )
         if (item.precipitation > 0) {
             Text(
