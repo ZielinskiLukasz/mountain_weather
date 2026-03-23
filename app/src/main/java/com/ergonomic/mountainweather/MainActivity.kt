@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -794,6 +795,20 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
     val cardShape = RoundedCornerShape(16.dp)
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
         CardBorderDark else CardBorderLight
+
+    val currentHour = remember { LocalDateTime.now().hour }
+    val currentHourIndex = remember(hourlyForecast) {
+        hourlyForecast.indexOfFirst { entry ->
+            try {
+                LocalDateTime.parse(entry.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME).hour == currentHour
+            } catch (_: Exception) { false }
+        }.coerceAtLeast(0)
+    }
+    val listState = rememberLazyListState()
+    LaunchedEffect(currentHourIndex) {
+        listState.scrollToItem(currentHourIndex)
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(R.string.hourly_forecast),
@@ -812,10 +827,16 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
             )
         ) {
             LazyRow(
+                state = listState,
                 modifier = Modifier.padding(vertical = 12.dp)
             ) {
                 items(hourlyForecast, key = { it.time }) { item ->
-                    HourlyForecastItem(item)
+                    val itemHour = remember(item.time) {
+                        try {
+                            LocalDateTime.parse(item.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME).hour
+                        } catch (_: Exception) { -1 }
+                    }
+                    HourlyForecastItem(item, isCurrentHour = itemHour == currentHour)
                 }
             }
         }
@@ -823,7 +844,7 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
 }
 
 @Composable
-fun HourlyForecastItem(item: HourlyForecastEntity) {
+fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = false) {
     val hourData = remember(item.time) {
         try {
             val dt = LocalDateTime.parse(item.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -835,15 +856,26 @@ fun HourlyForecastItem(item: HourlyForecastEntity) {
     val hour = hourData.first
     val isDay = hourData.second in 6..20
     val info = weatherCodeToInfo(item.weatherCode, isDay)
+    val highlightShape = RoundedCornerShape(10.dp)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 12.dp)
+        modifier = Modifier
+            .padding(horizontal = 4.dp)
+            .then(
+                if (isCurrentHour) Modifier
+                    .clip(highlightShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), highlightShape)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                else Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
     ) {
         Text(
             text = hour,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            fontWeight = if (isCurrentHour) FontWeight.Bold else FontWeight.Normal,
+            color = if (isCurrentHour) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = info.icon, fontSize = 22.sp)
@@ -851,7 +883,8 @@ fun HourlyForecastItem(item: HourlyForecastEntity) {
         Text(
             text = "${item.temperature.toInt()}°",
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = if (isCurrentHour) MaterialTheme.colorScheme.primary else Color.Unspecified
         )
         if (item.precipitation > 0) {
             Text(

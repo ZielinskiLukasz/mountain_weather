@@ -32,7 +32,9 @@ interface OpenMeteoApi {
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
         @Query("hourly") hourly: String = "temperature_2m,weather_code,precipitation",
-        @Query("forecast_hours") forecastHours: Int = 24,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("forecast_hours") forecastHours: Int? = null,
         @Query("timezone") timezone: String = "auto"
     ): HourlyForecastResponse
 

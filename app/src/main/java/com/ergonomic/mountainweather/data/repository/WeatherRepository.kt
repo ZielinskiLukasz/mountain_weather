@@ -10,6 +10,7 @@ import com.ergonomic.mountainweather.data.local.WeatherDao
 import com.ergonomic.mountainweather.data.local.WeatherEntity
 import com.ergonomic.mountainweather.util.WeatherParams
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import java.util.Locale
 
 class WeatherRepository(
@@ -208,7 +209,12 @@ class WeatherRepository(
     ): Result<List<HourlyForecastEntity>> {
         val key = locationKey(latitude, longitude)
         return try {
-            val response = api.getHourlyForecast(latitude, longitude)
+            val today = LocalDate.now().toString()
+            val response = api.getHourlyForecast(
+                latitude, longitude,
+                startDate = today,
+                endDate = today
+            )
             val now = System.currentTimeMillis()
             val entities = response.hourly.time.indices.map { i ->
                 HourlyForecastEntity(
