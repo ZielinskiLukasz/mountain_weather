@@ -38,6 +38,12 @@ class SavedLocationRepository(private val dao: SavedLocationDao) {
 
     suspend fun delete(id: Long) = dao.delete(id)
 
+    suspend fun reorderFavorites(orderedIds: List<Long>) {
+        orderedIds.forEachIndexed { index, id ->
+            dao.updateSortOrder(id, index)
+        }
+    }
+
     fun observeFavoriteByCoordinates(lat: Double, lon: Double): Flow<Boolean> =
         dao.observeIsFavorite(lat, lon).map { it == true }
 }

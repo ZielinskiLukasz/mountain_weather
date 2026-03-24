@@ -174,6 +174,10 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { savedLocationRepo.delete(id) }
     }
 
+    fun reorderFavorites(orderedIds: List<Long>) {
+        viewModelScope.launch { savedLocationRepo.reorderFavorites(orderedIds) }
+    }
+
     @SuppressLint("MissingPermission")
     fun requestGpsLocation() {
         viewModelScope.launch {

@@ -18,5 +18,6 @@ data class SavedLocationEntity(
     val region: String? = null,
     val isFavorite: Boolean = false,
     val lastUsedAt: Long = System.currentTimeMillis(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val sortOrder: Int = Int.MAX_VALUE
 )

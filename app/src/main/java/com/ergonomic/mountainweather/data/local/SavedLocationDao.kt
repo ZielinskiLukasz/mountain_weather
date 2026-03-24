@@ -9,11 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SavedLocationDao {
 
-    @Query("SELECT * FROM saved_locations WHERE isFavorite = 1 ORDER BY name ASC LIMIT :limit")
+    @Query("SELECT * FROM saved_locations WHERE isFavorite = 1 ORDER BY sortOrder ASC, name ASC LIMIT :limit")
     fun observeFavorites(limit: Int = 10): Flow<List<SavedLocationEntity>>
 
-    @Query("SELECT * FROM saved_locations WHERE isFavorite = 1 ORDER BY name ASC")
+    @Query("SELECT * FROM saved_locations WHERE isFavorite = 1 ORDER BY sortOrder ASC, name ASC")
     suspend fun getFavorites(): List<SavedLocationEntity>
+
+    @Query("UPDATE saved_locations SET sortOrder = :order WHERE id = :id")
+    suspend fun updateSortOrder(id: Long, order: Int)
 
     @Query(
         "SELECT * FROM saved_locations WHERE isFavorite = 0 ORDER BY lastUsedAt DESC LIMIT :limit"
