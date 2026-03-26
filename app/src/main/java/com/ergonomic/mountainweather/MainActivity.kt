@@ -520,15 +520,13 @@ fun DraggableDetailGrid(
         currentOrder = currentOrder.filter { it in newKeys } + newKeys.filter { it !in currentOrder }
     }
 
-    val orderedItems by remember(items, currentOrder) {
-        derivedStateOf {
-            val map = items.associateBy { it.key }
-            currentOrder.mapNotNull { map[it] }
-        }
+    val orderedItems = remember(items, currentOrder) {
+        val map = items.associateBy { it.key }
+        currentOrder.mapNotNull { map[it] }
     }
 
     val columns = 2
-    val rowCount by remember { derivedStateOf { (orderedItems.size + columns - 1) / columns } }
+    val rowCount = (orderedItems.size + columns - 1) / columns
     val cellHeightDp = 50.dp
 
     val dragShape = RoundedCornerShape(12.dp)
