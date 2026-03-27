@@ -34,10 +34,11 @@ class WeatherSyncWorker(
                     location.name, settings.enabledCurrentParams
                 )
 
-                if (settings.showHourly) {
-                    repository.refreshHourlyForecast(location.latitude, location.longitude)
-                }
                 val days = settings.dailyForecastDays
+                val hourlyDays = if (days > 0) days + 1 else 1
+                if (settings.showHourly) {
+                    repository.refreshHourlyForecast(location.latitude, location.longitude, hourlyDays)
+                }
                 if (days > 0) {
                     repository.refreshDailyForecast(location.latitude, location.longitude, days + 1)
                 }
@@ -59,10 +60,11 @@ class WeatherSyncWorker(
                         saved.latitude, saved.longitude,
                         saved.name, settings.enabledCurrentParams
                     )
-                    if (settings.showHourly) {
-                        repository.refreshHourlyForecast(saved.latitude, saved.longitude)
-                    }
                     val days = settings.dailyForecastDays
+                    val hourlyDays = if (days > 0) days + 1 else 1
+                    if (settings.showHourly) {
+                        repository.refreshHourlyForecast(saved.latitude, saved.longitude, hourlyDays)
+                    }
                     if (days > 0) {
                         repository.refreshDailyForecast(saved.latitude, saved.longitude, days + 1)
                     }

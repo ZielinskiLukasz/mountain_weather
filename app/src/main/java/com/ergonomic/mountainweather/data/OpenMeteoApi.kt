@@ -35,6 +35,7 @@ interface OpenMeteoApi {
         @Query("start_date") startDate: String? = null,
         @Query("end_date") endDate: String? = null,
         @Query("forecast_hours") forecastHours: Int? = null,
+        @Query("forecast_days") forecastDays: Int? = null,
         @Query("timezone") timezone: String = "auto"
     ): HourlyForecastResponse
 

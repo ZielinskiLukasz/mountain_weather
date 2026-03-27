@@ -66,6 +66,8 @@
     <!-- Forecasts -->
     <string name="hourly_forecast">Prognoza godzinowa</string>
     <string name="daily_forecast">Prognoza dzienna</string>
+    <string name="today_label">Dziś</string>
+    <string name="hourly_no_data">Brak danych — odśwież stronę</string>
     <string name="temp_max_min">%1$s° / %2$s°</string>
 
     <!-- Settings -->

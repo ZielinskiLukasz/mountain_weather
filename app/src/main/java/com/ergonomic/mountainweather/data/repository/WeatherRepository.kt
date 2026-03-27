@@ -205,15 +205,17 @@ class WeatherRepository(
 
     suspend fun refreshHourlyForecast(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        forecastDays: Int = 1
     ): Result<List<HourlyForecastEntity>> {
         val key = locationKey(latitude, longitude)
         return try {
-            val today = LocalDate.now().toString()
+            val today = LocalDate.now()
+            val endDate = today.plusDays((forecastDays - 1).toLong().coerceAtLeast(0))
             val response = api.getHourlyForecast(
                 latitude, longitude,
-                startDate = today,
-                endDate = today
+                startDate = today.toString(),
+                endDate = endDate.toString()
             )
             val now = System.currentTimeMillis()
             val entities = response.hourly.time.indices.map { i ->

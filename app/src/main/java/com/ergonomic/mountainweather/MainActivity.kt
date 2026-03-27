@@ -272,10 +272,12 @@ fun WeatherScreen(
                                 settings = settings,
                                 isOffline = state.isOfflineData && isActivePage,
                                 isFavorite = pageIsFavorite,
+                                selectedHourlyDate = state.selectedHourlyDate,
                                 onChangeLocation = onChangeLocation,
                                 onOpenSettings = onOpenSettings,
                                 onToggleFavorite = { viewModel.toggleFavorite() },
-                                onReorder = { viewModel.saveParamOrder(it) }
+                                onReorder = { viewModel.saveParamOrder(it) },
+                                onSelectDay = { viewModel.selectHourlyDay(it) }
                             )
                         } else {
                             Box(
@@ -361,10 +363,12 @@ fun WeatherContent(
     settings: ForecastSettings,
     isOffline: Boolean,
     isFavorite: Boolean,
+    selectedHourlyDate: String?,
     onChangeLocation: () -> Unit,
     onOpenSettings: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onReorder: (List<String>) -> Unit
+    onReorder: (List<String>) -> Unit,
+    onSelectDay: (String?) -> Unit
 ) {
     val weatherInfo = weatherCodeToInfo(weather.weatherCode)
     val scrollState = rememberScrollState()
@@ -467,7 +471,21 @@ fun WeatherContent(
 
         if (settings.showHourly && hourlyForecast.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-            HourlyForecastSection(hourlyForecast)
+            val todayStr = LocalDate.now().toString()
+            val filterDate = selectedHourlyDate ?: todayStr
+            val filteredHourly = hourlyForecast.filter { it.time.startsWith(filterDate) }
+            val displayHourly = filteredHourly.ifEmpty {
+                hourlyForecast.filter { it.time.startsWith(todayStr) }
+            }
+            val effectiveDate = if (filteredHourly.isNotEmpty()) selectedHourlyDate else null
+            if (displayHourly.isNotEmpty()) {
+                HourlyForecastSection(
+                    hourlyForecast = displayHourly,
+                    selectedDate = effectiveDate,
+                    onBackToToday = { onSelectDay(null) },
+                    noDataForDate = filteredHourly.isEmpty() && selectedHourlyDate != null
+                )
+            }
         }
 
         if (settings.dailyForecastDays > 0 && dailyForecast.isNotEmpty()) {
@@ -476,7 +494,12 @@ fun WeatherContent(
             val futureDays = dailyForecast.filter { it.date > today }.take(maxDays)
             if (futureDays.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
-                DailyForecastSection(futureDays)
+                DailyForecastSection(
+                    dailyForecast = futureDays,
+                    selectedDate = selectedHourlyDate,
+                    showHourly = settings.showHourly,
+                    onDayClick = { date -> onSelectDay(if (date == selectedHourlyDate) null else date) }
+                )
             }
         }
 
@@ -896,13 +919,18 @@ fun buildDetailItems(
 }
 
 @Composable
-fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
+fun HourlyForecastSection(
+    hourlyForecast: List<HourlyForecastEntity>,
+    selectedDate: String? = null,
+    onBackToToday: () -> Unit = {},
+    noDataForDate: Boolean = false
+) {
     val cardShape = RoundedCornerShape(16.dp)
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
         CardBorderDark else CardBorderLight
 
     val currentHour = remember { LocalDateTime.now().hour }
-    val currentHourIndex = remember(hourlyForecast) {
+    val scrollToIndex = remember(hourlyForecast) {
         hourlyForecast.indexOfFirst { entry ->
             try {
                 LocalDateTime.parse(entry.time, DateTimeFormatter.ISO_LOCAL_DATE_TIME).hour == currentHour
@@ -911,17 +939,59 @@ fun HourlyForecastSection(hourlyForecast: List<HourlyForecastEntity>) {
     }
     val listState = rememberLazyListState()
     LaunchedEffect(hourlyForecast) {
-        listState.scrollToItem(currentHourIndex)
+        listState.scrollToItem(scrollToIndex)
+    }
+
+    val headerLabel = if (selectedDate != null) {
+        val date = try {
+            val d = LocalDate.parse(selectedDate)
+            val dow = d.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
+            "${d.format(DateTimeFormatter.ofPattern("dd.MM"))} ($dow)"
+        } catch (_: Exception) { selectedDate }
+        "${stringResource(R.string.hourly_forecast)} · $date"
+    } else {
+        stringResource(R.string.hourly_forecast)
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.hourly_forecast),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = headerLabel,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(1f)
+            )
+            if (selectedDate != null) {
+                Text(
+                    text = stringResource(R.string.today_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable(onClick = onBackToToday)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                )
+            }
+        }
+        if (noDataForDate) {
+            Text(
+                text = stringResource(R.string.hourly_no_data),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -990,7 +1060,12 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
 }
 
 @Composable
-fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
+fun DailyForecastSection(
+    dailyForecast: List<DailyForecastEntity>,
+    selectedDate: String? = null,
+    showHourly: Boolean = false,
+    onDayClick: (String) -> Unit = {}
+) {
     val cardShape = RoundedCornerShape(16.dp)
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
         CardBorderDark else CardBorderLight
@@ -1013,7 +1088,13 @@ fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 dailyForecast.forEachIndexed { index, item ->
-                    DailyForecastItem(item)
+                    val isSelected = item.date == selectedDate
+                    DailyForecastItem(
+                        item = item,
+                        isSelected = isSelected,
+                        isClickable = showHourly,
+                        onClick = { onDayClick(item.date) }
+                    )
                     if (index < dailyForecast.lastIndex) {
                         HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
                     }
@@ -1024,7 +1105,12 @@ fun DailyForecastSection(dailyForecast: List<DailyForecastEntity>) {
 }
 
 @Composable
-fun DailyForecastItem(item: DailyForecastEntity) {
+fun DailyForecastItem(
+    item: DailyForecastEntity,
+    isSelected: Boolean = false,
+    isClickable: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     val dayLabel = remember(item.date) {
         try {
             val date = LocalDate.parse(item.date)
@@ -1036,9 +1122,22 @@ fun DailyForecastItem(item: DailyForecastEntity) {
         }
     }
     val info = weatherCodeToInfo(item.weatherCode)
+    val selectedBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (isSelected) Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(selectedBg, RoundedCornerShape(8.dp))
+                else Modifier
+            )
+            .then(
+                if (isClickable) Modifier.clickable(onClick = onClick)
+                else Modifier
+            )
+            .padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

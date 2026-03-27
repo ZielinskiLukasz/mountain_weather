@@ -26,8 +26,9 @@ class ResilientSyncManager(
     ): SyncResult {
         val currentResult = syncCurrent(latitude, longitude, locationName, settings.enabledCurrentParams)
 
+        val hourlyDays = if (settings.dailyForecastDays > 0) settings.dailyForecastDays + 1 else 1
         val hourlyResult = if (settings.showHourly) {
-            syncHourly(latitude, longitude)
+            syncHourly(latitude, longitude, hourlyDays)
         } else null
 
         val dailyDays = settings.dailyForecastDays
@@ -58,17 +59,18 @@ class ResilientSyncManager(
 
     private suspend fun syncHourly(
         latitude: Double,
-        longitude: Double
+        longitude: Double,
+        forecastDays: Int = 1
     ): Result<List<HourlyForecastEntity>> {
         return try {
             val result = circuitBreaker.execute {
                 retryPolicy.execute {
-                    repository.refreshHourlyForecast(latitude, longitude).getOrThrow()
+                    repository.refreshHourlyForecast(latitude, longitude, forecastDays).getOrThrow()
                 }
             }
             Result.success(result)
         } catch (e: Exception) {
-            repository.refreshHourlyForecast(latitude, longitude)
+            repository.refreshHourlyForecast(latitude, longitude, forecastDays)
         }
     }
 

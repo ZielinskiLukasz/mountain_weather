@@ -49,7 +49,8 @@ data class WeatherUiState(
     val locationSelectionVersion: Int = 0,
     val weatherByLocation: Map<String, WeatherEntity> = emptyMap(),
     val hourlyByLocation: Map<String, List<HourlyForecastEntity>> = emptyMap(),
-    val dailyByLocation: Map<String, List<DailyForecastEntity>> = emptyMap()
+    val dailyByLocation: Map<String, List<DailyForecastEntity>> = emptyMap(),
+    val selectedHourlyDate: String? = null
 )
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -229,7 +230,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 isFavorite = false,
                 error = null,
                 currentPageIndex = 0,
-                locationSelectionVersion = it.locationSelectionVersion + 1
+                locationSelectionVersion = it.locationSelectionVersion + 1,
+                selectedHourlyDate = null
             )
         }
         viewModelScope.launch { settingsRepo.saveLastLocation(name, lat, lon) }
@@ -252,6 +254,11 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     _uiState.update { it.copy(isFavorite = isFav) }
                 }
         }
+    }
+
+    fun selectHourlyDay(date: String?) {
+        val today = java.time.LocalDate.now().toString()
+        _uiState.update { it.copy(selectedHourlyDate = if (date == today) null else date) }
     }
 
     fun saveParamOrder(order: List<String>) {
@@ -376,8 +383,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val state = _uiState.value
         val key = WeatherRepository.locationKey(state.latitude, state.longitude)
         if (settings.showHourly) {
+            val hourlyDays = if (settings.dailyForecastDays > 0) settings.dailyForecastDays + 1 else 1
             viewModelScope.launch {
-                repository.refreshHourlyForecast(state.latitude, state.longitude)
+                repository.refreshHourlyForecast(state.latitude, state.longitude, hourlyDays)
                     .onSuccess { entities ->
                         val hMap = _uiState.value.hourlyByLocation.toMutableMap()
                         hMap[key] = entities
