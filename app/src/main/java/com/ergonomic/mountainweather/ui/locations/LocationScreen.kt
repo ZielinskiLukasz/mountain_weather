@@ -238,6 +238,7 @@ fun SavedLocationsContent(
     }
 
     var draggedIndex by remember { mutableIntStateOf(-1) }
+    var dragStartIndex by remember { mutableIntStateOf(-1) }
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
@@ -253,7 +254,12 @@ fun SavedLocationsContent(
                 Box(
                     modifier = Modifier
                         .zIndex(if (isDragged) 10f else 0f)
-                        .offset { IntOffset(0, if (isDragged) dragOffsetY.roundToInt() else 0) }
+                        .offset {
+                            if (isDragged) {
+                                val positionShift = (draggedIndex - dragStartIndex) * itemHeightPx
+                                IntOffset(0, (dragOffsetY - positionShift).roundToInt())
+                            } else IntOffset.Zero
+                        }
                         .graphicsLayer {
                             if (isDragged) {
                                 scaleX = 1.03f
@@ -266,26 +272,28 @@ fun SavedLocationsContent(
                                 onDragStart = {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     draggedIndex = index
+                                    dragStartIndex = index
                                     dragOffsetY = 0f
                                 },
                                 onDrag = { change, dragAmount ->
                                     change.consume()
                                     dragOffsetY += dragAmount.y
-                                    val targetIndex = (index + (dragOffsetY / itemHeightPx).roundToInt())
+                                    val targetIndex = (dragStartIndex + (dragOffsetY / itemHeightPx).roundToInt())
                                         .coerceIn(0, orderedFavs.lastIndex)
-                                    if (targetIndex != index && targetIndex != draggedIndex) {
+                                    if (targetIndex != draggedIndex) {
                                         orderedFavs.add(targetIndex, orderedFavs.removeAt(draggedIndex))
                                         draggedIndex = targetIndex
-                                        dragOffsetY = 0f
                                     }
                                 },
                                 onDragEnd = {
                                     draggedIndex = -1
+                                    dragStartIndex = -1
                                     dragOffsetY = 0f
                                     onReorder(orderedFavs.map { it.id })
                                 },
                                 onDragCancel = {
                                     draggedIndex = -1
+                                    dragStartIndex = -1
                                     dragOffsetY = 0f
                                 }
                             )
