@@ -958,11 +958,12 @@ fun buildDetailItems(
             "${"%.0f".format(weather.elevation)} m"
         )
     }
-    if (WeatherParams.GPS_ALTITUDE in enabled && gpsAltitude != null) {
+    if (WeatherParams.GPS_ALTITUDE in enabled) {
+        val altitudeValue = if (gpsAltitude != null) "${"%.0f".format(gpsAltitude)} m" else "— m"
         allItems[WeatherParams.GPS_ALTITUDE] = DetailItem(
             WeatherParams.GPS_ALTITUDE,
             "📍", stringResource(R.string.param_gps_altitude),
-            "${"%.0f".format(gpsAltitude)} m"
+            altitudeValue
         )
     }
 
