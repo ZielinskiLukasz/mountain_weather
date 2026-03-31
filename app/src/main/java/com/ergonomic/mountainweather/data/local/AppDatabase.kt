@@ -14,7 +14,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         HourlyForecastEntity::class,
         DailyForecastEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -82,38 +82,56 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_1_7 = object : Migration(1, 7) {
+        private val MIGRATION_1_8 = object : Migration(1, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 addAllWeatherColumns(db)
                 createTablesIfMissing(db)
                 addSortOrder(db)
             }
         }
-        private val MIGRATION_2_7 = object : Migration(2, 7) {
+        private val MIGRATION_2_8 = object : Migration(2, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 addAllWeatherColumns(db)
                 createTablesIfMissing(db)
                 addSortOrder(db)
             }
         }
-        private val MIGRATION_3_7 = object : Migration(3, 7) {
+        private val MIGRATION_3_8 = object : Migration(3, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 addAllWeatherColumns(db)
                 createTablesIfMissing(db)
                 addSortOrder(db)
             }
         }
-        private val MIGRATION_4_7 = object : Migration(4, 7) {
+        private val MIGRATION_4_8 = object : Migration(4, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 addAllWeatherColumns(db)
                 addSortOrder(db)
             }
         }
-        private val MIGRATION_5_7 = object : Migration(5, 7) {
+        private val MIGRATION_5_8 = object : Migration(5, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 MIGRATION_5_6.migrate(db)
                 addSortOrder(db)
+                addElevationColumn(db)
             }
+        }
+        private val MIGRATION_6_8 = object : Migration(6, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                addSortOrder(db)
+                addElevationColumn(db)
+            }
+        }
+
+        private val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                addElevationColumn(db)
+            }
+        }
+
+        private fun addElevationColumn(db: SupportSQLiteDatabase) {
+            try { db.execSQL("ALTER TABLE weather_cache ADD COLUMN elevation REAL") }
+            catch (_: Exception) { }
         }
 
         private fun addSortOrder(db: SupportSQLiteDatabase) {
@@ -130,7 +148,8 @@ abstract class AppDatabase : RoomDatabase() {
                 "windGustsMax REAL", "dominantWindDirection INTEGER", "dewPoint REAL",
                 "visibility REAL", "freezingLevelHeight REAL",
                 "temperatureMax REAL", "temperatureMin REAL",
-                "aqiEu INTEGER", "aqiUs INTEGER", "pm25 REAL", "pm10 REAL", "ozone REAL"
+                "aqiEu INTEGER", "aqiUs INTEGER", "pm25 REAL", "pm10 REAL", "ozone REAL",
+                "elevation REAL"
             )
             columns.forEach { col ->
                 try { db.execSQL("ALTER TABLE weather_cache ADD COLUMN $col") }
@@ -190,9 +209,10 @@ abstract class AppDatabase : RoomDatabase() {
                     "mountain_weather.db"
                 )
                     .addMigrations(
-                        MIGRATION_1_7, MIGRATION_2_7, MIGRATION_3_7,
-                        MIGRATION_4_7, MIGRATION_4_5, MIGRATION_5_6,
-                        MIGRATION_5_7, MIGRATION_6_7
+                        MIGRATION_1_8, MIGRATION_2_8, MIGRATION_3_8,
+                        MIGRATION_4_8, MIGRATION_4_5, MIGRATION_5_6,
+                        MIGRATION_5_8, MIGRATION_6_7, MIGRATION_6_8,
+                        MIGRATION_7_8
                     )
                     .build()
                     .also { INSTANCE = it }

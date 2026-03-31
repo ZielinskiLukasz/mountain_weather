@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class WeatherResponse(
     val latitude: Double,
     val longitude: Double,
+    val elevation: Double? = null,
     val current: CurrentWeather,
     val daily: DailyData? = null,
     val hourly: HourlyData? = null

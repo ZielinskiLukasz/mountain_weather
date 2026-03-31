@@ -46,6 +46,9 @@
     <string name="param_pm25">PM2.5</string>
     <string name="param_pm10">PM10</string>
     <string name="param_ozone">Ozono</string>
+    <string name="param_elevation">Altitud s.n.m.</string>
+    <string name="param_gps_altitude">Altitud GPS</string>
+    <string name="gps_permission_for_altitude">Se necesita permiso de ubicación para la altitud GPS</string>
     <string name="weather_details">Detalles del tiempo</string>
 
     <!-- Location screen -->

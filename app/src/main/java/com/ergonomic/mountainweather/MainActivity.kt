@@ -1,9 +1,14 @@
 package com.ergonomic.mountainweather
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -71,6 +76,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -181,6 +187,27 @@ fun WeatherScreen(
     val state by viewModel.uiState.collectAsState()
     val settings by viewModel.forecastSettings.collectAsState()
     val pages = state.locationPages
+    val context = LocalContext.current
+
+    val gpsPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) viewModel.refreshGpsAltitude()
+    }
+
+    val gpsAltitudeEnabled = WeatherParams.GPS_ALTITUDE in settings.enabledCurrentParams
+    LaunchedEffect(gpsAltitudeEnabled) {
+        if (gpsAltitudeEnabled) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            if (hasPermission) {
+                viewModel.refreshGpsAltitude()
+            } else {
+                gpsPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+    }
 
     val refreshErrorMessage = stringResource(R.string.refresh_error_snackbar)
     LaunchedEffect(state.error) {
@@ -231,7 +258,15 @@ fun WeatherScreen(
         else -> {
             PullToRefreshBox(
                 isRefreshing = state.isRefreshing,
-                onRefresh = { viewModel.refresh() },
+                onRefresh = {
+                    viewModel.refresh()
+                    if (gpsAltitudeEnabled) {
+                        val hasPermission = ContextCompat.checkSelfPermission(
+                            context, Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (hasPermission) viewModel.refreshGpsAltitude()
+                    }
+                },
                 modifier = modifier.fillMaxSize()
             ) {
                 Column {
@@ -273,6 +308,7 @@ fun WeatherScreen(
                                 isOffline = state.isOfflineData && isActivePage,
                                 isFavorite = pageIsFavorite,
                                 selectedHourlyDate = state.selectedHourlyDate,
+                                gpsAltitude = state.gpsAltitude,
                                 onChangeLocation = onChangeLocation,
                                 onOpenSettings = onOpenSettings,
                                 onToggleFavorite = { viewModel.toggleFavorite() },
@@ -364,6 +400,7 @@ fun WeatherContent(
     isOffline: Boolean,
     isFavorite: Boolean,
     selectedHourlyDate: String?,
+    gpsAltitude: Double? = null,
     onChangeLocation: () -> Unit,
     onOpenSettings: () -> Unit,
     onToggleFavorite: () -> Unit,
@@ -377,7 +414,7 @@ fun WeatherContent(
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
         CardBorderDark else CardBorderLight
 
-    val detailItems = buildDetailItems(weather, settings.enabledCurrentParams, settings.paramOrder)
+    val detailItems = buildDetailItems(weather, settings.enabledCurrentParams, settings.paramOrder, gpsAltitude)
 
     Column(
         modifier = Modifier
@@ -704,7 +741,8 @@ private fun pmLevel(value: Double, thresholds: DoubleArray): String = when {
 fun buildDetailItems(
     weather: WeatherEntity,
     enabled: Set<String>,
-    paramOrder: List<String>
+    paramOrder: List<String>,
+    gpsAltitude: Double? = null
 ): List<DetailItem> {
     val allItems = mutableMapOf<String, DetailItem>()
 
@@ -911,6 +949,20 @@ fun buildDetailItems(
             WeatherParams.OZONE,
             "🛡️", stringResource(R.string.param_ozone),
             "${"%.0f".format(weather.ozone)} μg/m³"
+        )
+    }
+    if (WeatherParams.ELEVATION in enabled && weather.elevation != null) {
+        allItems[WeatherParams.ELEVATION] = DetailItem(
+            WeatherParams.ELEVATION,
+            "⛰️", stringResource(R.string.param_elevation),
+            "${"%.0f".format(weather.elevation)} m"
+        )
+    }
+    if (WeatherParams.GPS_ALTITUDE in enabled && gpsAltitude != null) {
+        allItems[WeatherParams.GPS_ALTITUDE] = DetailItem(
+            WeatherParams.GPS_ALTITUDE,
+            "📍", stringResource(R.string.param_gps_altitude),
+            "${"%.0f".format(gpsAltitude)} m"
         )
     }
 

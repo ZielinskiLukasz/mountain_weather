@@ -34,6 +34,9 @@ object WeatherParams {
     const val VISIBILITY = "visibility"
     const val FREEZING_LEVEL = "freezing_level"
 
+    const val ELEVATION = "elevation"
+    const val GPS_ALTITUDE = "gps_altitude"
+
     const val AQI_EU = "aqi_eu"
     const val AQI_US = "aqi_us"
     const val PM25 = "pm2_5"
@@ -71,8 +74,11 @@ object WeatherParams {
         WeatherParamDef(AQI_US, "🟡", R.string.param_aqi_us),
         WeatherParamDef(PM25, "🫁", R.string.param_pm25),
         WeatherParamDef(PM10, "💨", R.string.param_pm10),
-        WeatherParamDef(OZONE, "🛡️", R.string.param_ozone)
+        WeatherParamDef(OZONE, "🛡️", R.string.param_ozone),
+        WeatherParamDef(ELEVATION, "⛰️", R.string.param_elevation),
+        WeatherParamDef(GPS_ALTITUDE, "📍", R.string.param_gps_altitude)
     )
 
     val AIR_QUALITY_KEYS = setOf(AQI_EU, AQI_US, PM25, PM10, OZONE)
+    val GPS_KEYS = setOf(GPS_ALTITUDE)
 }

@@ -1,5 +1,6 @@
 package com.ergonomic.mountainweather
 
+import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,14 +17,18 @@ import com.ergonomic.mountainweather.data.repository.SettingsRepository
 import com.ergonomic.mountainweather.data.repository.WeatherRepository
 import com.ergonomic.mountainweather.data.sync.NetworkMonitor
 import com.ergonomic.mountainweather.data.sync.ResilientSyncManager
+import com.ergonomic.mountainweather.util.WeatherParams
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.Job
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 data class LocationPage(
     val name: String,
@@ -50,7 +55,9 @@ data class WeatherUiState(
     val weatherByLocation: Map<String, WeatherEntity> = emptyMap(),
     val hourlyByLocation: Map<String, List<HourlyForecastEntity>> = emptyMap(),
     val dailyByLocation: Map<String, List<DailyForecastEntity>> = emptyMap(),
-    val selectedHourlyDate: String? = null
+    val selectedHourlyDate: String? = null,
+    val gpsAltitude: Double? = null,
+    val gpsAltitudeError: Boolean = false
 )
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -63,6 +70,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     val settingsRepo = SettingsRepository(application)
     private val syncManager = ResilientSyncManager(repository)
     private val networkMonitor = NetworkMonitor(application)
+    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
 
     private val _uiState = MutableStateFlow(WeatherUiState())
     val uiState: StateFlow<WeatherUiState> = _uiState
@@ -429,6 +437,29 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 fetchForecasts(settings)
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun refreshGpsAltitude() {
+        viewModelScope.launch {
+            try {
+                val location = fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    CancellationTokenSource().token
+                ).await()
+                if (location != null && location.hasAltitude()) {
+                    _uiState.update { it.copy(gpsAltitude = location.altitude, gpsAltitudeError = false) }
+                } else {
+                    _uiState.update { it.copy(gpsAltitudeError = true) }
+                }
+            } catch (_: Exception) {
+                _uiState.update { it.copy(gpsAltitudeError = true) }
+            }
+        }
+    }
+
+    fun needsGpsPermission(): Boolean {
+        return forecastSettings.value.enabledCurrentParams.contains(WeatherParams.GPS_ALTITUDE)
     }
 
     private fun handleResult(result: Result<WeatherEntity>) {

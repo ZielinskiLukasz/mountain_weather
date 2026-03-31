@@ -140,7 +140,8 @@ class WeatherRepository(
                 aqiUs = aqData?.usAqi,
                 pm25 = aqData?.pm25,
                 pm10 = aqData?.pm10,
-                ozone = aqData?.ozone
+                ozone = aqData?.ozone,
+                elevation = response.elevation
             )
             dao.insertWeather(entity)
             Result.success(entity)
