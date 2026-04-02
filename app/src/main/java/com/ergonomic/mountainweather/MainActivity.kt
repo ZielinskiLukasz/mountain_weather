@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -79,6 +80,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -100,6 +102,7 @@ import com.ergonomic.mountainweather.ui.theme.CardBorderDark
 import com.ergonomic.mountainweather.ui.theme.CardBorderLight
 import com.ergonomic.mountainweather.ui.theme.MountainWeatherTheme
 import com.ergonomic.mountainweather.util.WeatherParams
+import com.ergonomic.mountainweather.util.WeatherInfo
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
 import kotlinx.coroutines.flow.first
@@ -343,6 +346,21 @@ fun WeatherScreen(
 }
 
 @Composable
+fun WeatherIcon(info: WeatherInfo, size: androidx.compose.ui.unit.TextUnit = 24.sp, dpSize: androidx.compose.ui.unit.Dp = androidx.compose.ui.unit.Dp.Unspecified) {
+    if (info.iconRes != 0) {
+        val dp = if (dpSize != androidx.compose.ui.unit.Dp.Unspecified) dpSize
+            else with(LocalDensity.current) { size.toDp() }
+        Image(
+            painter = painterResource(id = info.iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(dp)
+        )
+    } else {
+        Text(text = info.icon, fontSize = size)
+    }
+}
+
+@Composable
 fun PageIndicator(pageCount: Int, currentPage: Int, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
@@ -460,7 +478,7 @@ fun WeatherContent(
             }
         }
 
-        Text(text = weatherInfo.icon, fontSize = 72.sp)
+        WeatherIcon(info = weatherInfo, size = 72.sp)
 
         Text(
             text = "${weather.temperature}°C",
@@ -1087,27 +1105,34 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 12.dp)
+        modifier = Modifier.width(56.dp)
     ) {
         Text(
             text = hour,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = info.icon, fontSize = 22.sp)
+        Box(modifier = Modifier.height(26.dp), contentAlignment = Alignment.Center) {
+            WeatherIcon(info = info, size = 22.sp)
+        }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "${item.temperature.toInt()}°",
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
         )
-        if (item.precipitation > 0) {
-            Text(
-                text = "${item.precipitation}mm",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+        Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
+            if (item.precipitation > 0) {
+                Text(
+                    text = "${item.precipitation}mm",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -1199,7 +1224,7 @@ fun DailyForecastItem(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f)
         )
-        Text(text = info.icon, fontSize = 20.sp)
+        WeatherIcon(info = info, size = 20.sp)
         Spacer(modifier = Modifier.padding(horizontal = 8.dp))
         Text(
             text = stringResource(

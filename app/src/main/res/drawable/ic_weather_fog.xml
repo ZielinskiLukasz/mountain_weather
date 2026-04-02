@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Cloud -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M30,12c-0.12,0 -0.24,0.01 -0.36,0.02C28.64,9.4 26.15,7.5 23.2,7.5c-2.2,0 -4.14,1.06 -5.36,2.7C17.22,9.9 16.64,9.7 16,9.7c-1.93,0 -3.5,1.57 -3.5,3.5c0,0.19 0.02,0.38 0.05,0.57C10.9,14.4 9.7,16.01 9.7,17.9c0,2.43 1.97,4.4 4.4,4.4H30c2.43,0 4.4-1.97 4.4-4.4C34.4,15.47 32.43,12 30,12z"/>
+    <!-- Fog lines -->
+    <path
+        android:pathData="M8,27h32"
+        android:strokeWidth="3"
+        android:strokeColor="#BDBDBD"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M12,33h24"
+        android:strokeWidth="3"
+        android:strokeColor="#BDBDBD"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M10,39h28"
+        android:strokeWidth="3"
+        android:strokeColor="#BDBDBD"
+        android:strokeLineCap="round"/>
+</vector>
