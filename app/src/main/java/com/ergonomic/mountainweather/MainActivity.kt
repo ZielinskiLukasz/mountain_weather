@@ -348,8 +348,9 @@ fun WeatherScreen(
 @Composable
 fun WeatherIcon(info: WeatherInfo, size: androidx.compose.ui.unit.TextUnit = 24.sp, dpSize: androidx.compose.ui.unit.Dp = androidx.compose.ui.unit.Dp.Unspecified) {
     if (info.iconRes != 0) {
-        val dp = if (dpSize != androidx.compose.ui.unit.Dp.Unspecified) dpSize
+        val baseDp = if (dpSize != androidx.compose.ui.unit.Dp.Unspecified) dpSize
             else with(LocalDensity.current) { size.toDp() }
+        val dp = baseDp * 1.45f
         Image(
             painter = painterResource(id = info.iconRes),
             contentDescription = null,
