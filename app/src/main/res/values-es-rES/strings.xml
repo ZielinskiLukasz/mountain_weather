@@ -97,7 +97,10 @@
 
     <!-- Error -->
     <string name="connection_error">Error de conexión</string>
+    <string name="api_error">Servicio no disponible</string>
+    <string name="api_error_desc">El servicio meteorológico no está disponible temporalmente. Esto suele resolverse en unos minutos. Inténtelo de nuevo en breve.</string>
     <string name="retry">Reintentar</string>
+    <string name="change_location_btn">Cambiar ubicación</string>
     <string name="unknown_error">Error desconocido</string>
     <string name="refresh_error">Error al actualizar</string>
 

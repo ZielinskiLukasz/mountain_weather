@@ -37,6 +37,8 @@ data class LocationPage(
     val isCurrent: Boolean = false
 )
 
+enum class ErrorType { NONE, NO_INTERNET, API_ERROR }
+
 data class WeatherUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
@@ -49,6 +51,7 @@ data class WeatherUiState(
     val latitude: Double = 50.06,
     val longitude: Double = 19.94,
     val error: String? = null,
+    val errorType: ErrorType = ErrorType.NONE,
     val locationPages: List<LocationPage> = emptyList(),
     val currentPageIndex: Int = 0,
     val locationSelectionVersion: Int = 0,
@@ -462,6 +465,16 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         return forecastSettings.value.enabledCurrentParams.contains(WeatherParams.GPS_ALTITUDE)
     }
 
+    private fun classifyError(e: Throwable): ErrorType {
+        val root = if (e is CachedDataException) e.cause else e
+        return when (root) {
+            is java.net.UnknownHostException,
+            is java.net.ConnectException,
+            is java.net.NoRouteToHostException -> ErrorType.NO_INTERNET
+            else -> ErrorType.API_ERROR
+        }
+    }
+
     private fun handleResult(result: Result<WeatherEntity>) {
         result.fold(
             onSuccess = { entity ->
@@ -474,10 +487,12 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     isOfflineData = false,
                     locationName = entity.locationName,
                     error = null,
+                    errorType = ErrorType.NONE,
                     weatherByLocation = updatedMap
                 )
             },
             onFailure = { error ->
+                val type = classifyError(error)
                 if (error is CachedDataException) {
                     _uiState.update {
                         it.copy(
@@ -486,7 +501,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                             weather = error.cachedData,
                             isOfflineData = true,
                             locationName = error.cachedData.locationName,
-                            error = error.cause?.message
+                            error = error.cause?.message,
+                            errorType = type
                         )
                     }
                 } else {
@@ -494,7 +510,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                         it.copy(
                             isLoading = false,
                             isRefreshing = false,
-                            error = error.message
+                            error = error.message,
+                            errorType = type
                         )
                     }
                 }

@@ -3,6 +3,9 @@
 -keepclassmembers,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
+-keep,allowobfuscation interface com.ergonomic.mountainweather.data.OpenMeteoApi
+-keep,allowobfuscation interface com.ergonomic.mountainweather.data.AirQualityApi
+-keep,allowobfuscation interface com.ergonomic.mountainweather.data.GeocodingApi
 -dontwarn retrofit2.**
 -dontwarn okhttp3.**
 -dontwarn okio.**
@@ -16,8 +19,10 @@
 -keep class com.ergonomic.mountainweather.data.HourlyData { *; }
 -keep class com.ergonomic.mountainweather.data.DailyForecastResponse { *; }
 -keep class com.ergonomic.mountainweather.data.DailyData { *; }
--keep class com.ergonomic.mountainweather.data.AirQualityApi$* { *; }
--keep class com.ergonomic.mountainweather.data.GeocodingApi$* { *; }
+-keep class com.ergonomic.mountainweather.data.AirQualityResponse { *; }
+-keep class com.ergonomic.mountainweather.data.AirQualityCurrent { *; }
+-keep class com.ergonomic.mountainweather.data.GeocodingResponse { *; }
+-keep class com.ergonomic.mountainweather.data.GeocodingResult { *; }
 
 # Room: keep database, entities, and DAOs
 -keep class * extends androidx.room.RoomDatabase { *; }
@@ -34,7 +39,7 @@
 # Kotlin metadata (needed for reflection-based libraries)
 -keep class kotlin.Metadata { *; }
 
-# Google Play Services Location: keep only what's accessed via reflection
--keep class com.google.android.gms.location.FusedLocationProviderClient { *; }
--keep class com.google.android.gms.location.LocationServices { *; }
+# Google Play Services Location
+-keep class com.google.android.gms.location.** { *; }
+-keep class com.google.android.gms.tasks.** { *; }
 -dontwarn com.google.android.gms.**

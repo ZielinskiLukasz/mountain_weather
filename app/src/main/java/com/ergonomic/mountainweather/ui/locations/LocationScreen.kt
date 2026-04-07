@@ -85,7 +85,6 @@ fun LocationScreen(
     }
 
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()

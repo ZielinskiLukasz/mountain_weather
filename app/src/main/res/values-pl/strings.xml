@@ -98,10 +98,14 @@
     <!-- Error -->
     <string name="connection_error">Brak połączenia</string>
     <string name="connection_error_desc">Sprawdź połączenie z internetem i spróbuj ponownie. Dane pogodowe będą dostępne po przywróceniu połączenia.</string>
+    <string name="api_error">Usługa niedostępna</string>
+    <string name="api_error_desc">Serwis pogodowy jest chwilowo niedostępny. Problem zazwyczaj rozwiązuje się w ciągu kilku minut. Spróbuj ponownie za chwilę.</string>
     <string name="retry">Spróbuj ponownie</string>
+    <string name="change_location_btn">Zmień lokalizację</string>
     <string name="unknown_error">Nieznany błąd</string>
     <string name="refresh_error">Błąd odświeżania</string>
     <string name="refresh_error_snackbar">Nie udało się odświeżyć — sprawdź połączenie</string>
+    <string name="refresh_api_error_snackbar">Serwis pogodowy chwilowo niedostępny</string>
 
     <!-- Weather codes -->
     <string name="wc_clear">Bezchmurnie</string>

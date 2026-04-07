@@ -212,10 +212,12 @@ fun WeatherScreen(
         }
     }
 
-    val refreshErrorMessage = stringResource(R.string.refresh_error_snackbar)
+    val refreshNoInternet = stringResource(R.string.refresh_error_snackbar)
+    val refreshApiError = stringResource(R.string.refresh_api_error_snackbar)
     LaunchedEffect(state.error) {
         if (state.error != null && state.weather != null) {
-            snackbarHostState.showSnackbar(refreshErrorMessage)
+            val msg = if (state.errorType == ErrorType.API_ERROR) refreshApiError else refreshNoInternet
+            snackbarHostState.showSnackbar(msg)
         }
     }
 
@@ -253,7 +255,7 @@ fun WeatherScreen(
         state.weather == null && state.error != null -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 ErrorContent(
-                    message = state.error!!,
+                    errorType = state.errorType,
                     onRetry = { viewModel.fetchWeather() }
                 )
             }
@@ -1027,7 +1029,9 @@ fun HourlyForecastSection(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -1248,7 +1252,12 @@ fun DailyForecastItem(
 }
 
 @Composable
-fun ErrorContent(message: String, onRetry: () -> Unit) {
+fun ErrorContent(errorType: ErrorType, onRetry: () -> Unit) {
+    val isApiError = errorType == ErrorType.API_ERROR
+    val icon = if (isApiError) "⚠️" else "📡"
+    val title = stringResource(if (isApiError) R.string.api_error else R.string.connection_error)
+    val desc = stringResource(if (isApiError) R.string.api_error_desc else R.string.connection_error_desc)
+
     Card(
         modifier = Modifier.padding(24.dp),
         colors = CardDefaults.cardColors(
@@ -1262,16 +1271,16 @@ fun ErrorContent(message: String, onRetry: () -> Unit) {
                 .fillMaxWidth()
                 .padding(32.dp)
         ) {
-            Text(text = "📡", fontSize = 56.sp)
+            Text(text = icon, fontSize = 56.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = stringResource(R.string.connection_error),
+                text = title,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(R.string.connection_error_desc),
+                text = desc,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

@@ -97,7 +97,10 @@
 
     <!-- Error -->
     <string name="connection_error">Verbindungsfehler</string>
+    <string name="api_error">Dienst nicht verfügbar</string>
+    <string name="api_error_desc">Der Wetterdienst ist vorübergehend nicht erreichbar. Das Problem löst sich meist innerhalb weniger Minuten. Bitte versuchen Sie es gleich erneut.</string>
     <string name="retry">Erneut versuchen</string>
+    <string name="change_location_btn">Standort ändern</string>
     <string name="unknown_error">Unbekannter Fehler</string>
     <string name="refresh_error">Aktualisierung fehlgeschlagen</string>
 
