@@ -55,6 +55,8 @@
     <string name="search_city">Miasto lub współrzędne…</string>
     <string name="use_gps">Użyj aktualnej pozycji</string>
     <string name="no_results">Brak wyników</string>
+    <string name="search_places">Miejsca</string>
+    <string name="search_cities">Miasta</string>
     <string name="location_permission_needed">Wymagane uprawnienie do lokalizacji</string>
     <string name="gps_locating">Pobieranie lokalizacji…</string>
 

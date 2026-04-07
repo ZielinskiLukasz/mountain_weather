@@ -166,7 +166,7 @@ fun LocationScreen(
                         CircularProgressIndicator()
                     }
                 }
-                isSearchActive && state.results.isEmpty() && !state.isSearching -> {
+                isSearchActive && state.results.isEmpty() && state.placeResults.isEmpty() && !state.isSearching -> {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -182,11 +182,27 @@ fun LocationScreen(
                 }
                 isSearchActive -> {
                     LazyColumn {
-                        items(state.results, key = { it.id }) { result ->
-                            SearchResultItem(
-                                result = result,
-                                onClick = { viewModel.selectSearchResult(result) }
-                            )
+                        if (state.placeResults.isNotEmpty()) {
+                            item(key = "places_header") {
+                                SectionHeader(stringResource(R.string.search_places))
+                            }
+                            items(state.placeResults, key = { "p_${it.id}" }) { result ->
+                                SearchResultItem(
+                                    result = result,
+                                    onClick = { viewModel.selectSearchResult(result) }
+                                )
+                            }
+                        }
+                        if (state.results.isNotEmpty()) {
+                            item(key = "cities_header") {
+                                SectionHeader(stringResource(R.string.search_cities))
+                            }
+                            items(state.results, key = { "c_${it.id}" }) { result ->
+                                SearchResultItem(
+                                    result = result,
+                                    onClick = { viewModel.selectSearchResult(result) }
+                                )
+                            }
                         }
                     }
                 }

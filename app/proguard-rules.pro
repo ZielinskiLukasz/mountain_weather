@@ -6,6 +6,7 @@
 -keep,allowobfuscation interface com.ergonomic.mountainweather.data.OpenMeteoApi
 -keep,allowobfuscation interface com.ergonomic.mountainweather.data.AirQualityApi
 -keep,allowobfuscation interface com.ergonomic.mountainweather.data.GeocodingApi
+-keep,allowobfuscation interface com.ergonomic.mountainweather.data.PhotonApi
 -dontwarn retrofit2.**
 -dontwarn okhttp3.**
 -dontwarn okio.**
@@ -23,6 +24,10 @@
 -keep class com.ergonomic.mountainweather.data.AirQualityCurrent { *; }
 -keep class com.ergonomic.mountainweather.data.GeocodingResponse { *; }
 -keep class com.ergonomic.mountainweather.data.GeocodingResult { *; }
+-keep class com.ergonomic.mountainweather.data.PhotonResponse { *; }
+-keep class com.ergonomic.mountainweather.data.PhotonFeature { *; }
+-keep class com.ergonomic.mountainweather.data.PhotonGeometry { *; }
+-keep class com.ergonomic.mountainweather.data.PhotonProperties { *; }
 
 # Room: keep database, entities, and DAOs
 -keep class * extends androidx.room.RoomDatabase { *; }

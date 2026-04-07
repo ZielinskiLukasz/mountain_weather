@@ -55,6 +55,8 @@
     <string name="search_city">Ciudad o coordenadas…</string>
     <string name="use_gps">Usar ubicación actual</string>
     <string name="no_results">No se encontraron resultados</string>
+    <string name="search_places">Lugares</string>
+    <string name="search_cities">Ciudades</string>
     <string name="location_permission_needed">Se necesita permiso de ubicación para GPS</string>
     <string name="gps_locating">Obteniendo ubicación…</string>
 

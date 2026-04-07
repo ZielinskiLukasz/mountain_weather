@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ergonomic.mountainweather.data.GeocodingApi
 import com.ergonomic.mountainweather.data.GeocodingResult
+import com.ergonomic.mountainweather.data.PhotonApi
 import com.ergonomic.mountainweather.data.local.AppDatabase
 import com.ergonomic.mountainweather.data.local.SavedLocationEntity
 import com.ergonomic.mountainweather.data.repository.SavedLocationRepository
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -29,6 +31,7 @@ import java.util.Locale
 data class LocationUiState(
     val query: String = "",
     val results: List<GeocodingResult> = emptyList(),
+    val placeResults: List<GeocodingResult> = emptyList(),
     val isSearching: Boolean = false,
     val isLocating: Boolean = false,
     val error: String? = null
@@ -44,6 +47,7 @@ data class SelectedLocation(
 class LocationViewModel(application: Application) : AndroidViewModel(application) {
 
     private val geocodingApi = GeocodingApi.create()
+    private val photonApi = PhotonApi.create()
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
     private val savedLocationRepo = SavedLocationRepository(
         AppDatabase.getInstance(application).savedLocationDao()
@@ -79,7 +83,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         _uiState.update { it.copy(query = query) }
         _queryFlow.value = query
         if (query.length < 2) {
-            _uiState.update { it.copy(results = emptyList(), isSearching = false) }
+            _uiState.update { it.copy(results = emptyList(), placeResults = emptyList(), isSearching = false) }
         }
     }
 
@@ -95,6 +99,14 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         return lat to lon
     }
 
+    companion object {
+        private val CITY_OSM_VALUES = setOf(
+            "city", "town", "village", "hamlet", "suburb",
+            "borough", "quarter", "neighbourhood",
+            "municipality", "administrative", "county", "state", "country"
+        )
+    }
+
     private suspend fun performSearch(query: String) {
         val coords = parseCoordinates(query)
         if (coords != null) {
@@ -102,18 +114,58 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
             return
         }
         _uiState.update { it.copy(isSearching = true, error = null) }
-        try {
-            val lang = Locale.getDefault().language
-            val response = geocodingApi.searchCity(name = query, language = lang)
+        val lang = Locale.getDefault().language
+
+        viewModelScope.launch {
+            val cityDeferred = async {
+                try {
+                    geocodingApi.searchCity(name = query, language = lang).results ?: emptyList()
+                } catch (_: Exception) { emptyList() }
+            }
+            val placeDeferred = async {
+                try {
+                    val response = photonApi.search(query = query, lang = lang)
+                    response.features
+                        ?.filter { f ->
+                            val v = f.properties?.osmValue
+                            val k = f.properties?.osmKey
+                            v !in CITY_OSM_VALUES && k != "boundary"
+                        }
+                        ?.mapNotNull { f ->
+                            val coords2 = f.geometry?.coordinates ?: return@mapNotNull null
+                            if (coords2.size < 2) return@mapNotNull null
+                            val name = f.properties?.name ?: return@mapNotNull null
+                            val props = f.properties
+                            val detail = listOfNotNull(props.city, props.state, props.country)
+                                .joinToString(", ")
+                            GeocodingResult(
+                                id = (name.hashCode().toLong() * 31 + coords2[1].hashCode()),
+                                name = name,
+                                latitude = coords2[1],
+                                longitude = coords2[0],
+                                country = props.country,
+                                region = detail.ifEmpty { null }
+                            )
+                        }
+                        ?.distinctBy { "%.4f_%.4f".format(it.latitude, it.longitude) }
+                        ?: emptyList()
+                } catch (_: Exception) { emptyList() }
+            }
+
+            val cities = cityDeferred.await()
+            val places = placeDeferred.await()
+
+            val cityCoords = cities.map { "%.3f_%.3f".format(it.latitude, it.longitude) }.toSet()
+            val filteredPlaces = places.filter {
+                "%.3f_%.3f".format(it.latitude, it.longitude) !in cityCoords
+            }
+
             _uiState.update {
                 it.copy(
                     isSearching = false,
-                    results = response.results ?: emptyList()
+                    placeResults = filteredPlaces,
+                    results = cities
                 )
-            }
-        } catch (e: Exception) {
-            _uiState.update {
-                it.copy(isSearching = false, error = e.message)
             }
         }
     }
