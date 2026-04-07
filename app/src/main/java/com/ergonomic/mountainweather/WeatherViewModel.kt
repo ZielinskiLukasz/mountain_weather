@@ -91,6 +91,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private var settingsJob: Job? = null
     private var networkJob: Job? = null
     private var lastEnabledParams: Set<String>? = null
+    private var lastShowHourly: Boolean? = null
+    private var lastDailyDays: Int? = null
 
     init {
         viewModelScope.launch {
@@ -217,12 +219,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     _uiState.update { it.copy(dailyForecast = emptyList()) }
                 }
                 val isFirst = lastEnabledParams == null
-                val paramsChanged = lastEnabledParams != null && lastEnabledParams != settings.enabledCurrentParams
+                val paramsChanged = lastEnabledParams != settings.enabledCurrentParams
+                val forecastChanged = lastShowHourly != settings.showHourly
+                        || lastDailyDays != settings.dailyForecastDays
                 lastEnabledParams = settings.enabledCurrentParams
-                if (isFirst || paramsChanged) {
+                lastShowHourly = settings.showHourly
+                lastDailyDays = settings.dailyForecastDays
+                if (isFirst || paramsChanged || forecastChanged) {
                     fetchWeatherWithSettings(settings)
                 }
-                fetchForecasts(settings)
             }
         }
     }
@@ -253,7 +258,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         if (settings.showHourly) observeHourlyCache()
         if (settings.dailyForecastDays > 0) observeDailyCache()
         fetchWeatherWithSettings(settings)
-        fetchForecasts(settings)
     }
 
     private fun observeFavoriteStatus() {
@@ -366,14 +370,28 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     private fun fetchWeatherEnriched(settings: ForecastSettings) {
         val state = _uiState.value
+        val key = WeatherRepository.locationKey(state.latitude, state.longitude)
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
-            handleResult(
-                repository.refreshEnrichedWeather(
-                    state.latitude, state.longitude,
-                    state.locationName, settings.enabledCurrentParams
-                )
+            val result = repository.refreshAll(
+                latitude = state.latitude,
+                longitude = state.longitude,
+                locationName = state.locationName,
+                enabledParams = settings.enabledCurrentParams,
+                showHourly = settings.showHourly,
+                dailyDays = settings.dailyForecastDays
             )
+            handleResult(result.weather)
+            if (result.hourly.isNotEmpty()) {
+                val hMap = _uiState.value.hourlyByLocation.toMutableMap()
+                hMap[key] = result.hourly
+                _uiState.update { it.copy(hourlyForecast = result.hourly, hourlyByLocation = hMap) }
+            }
+            if (result.daily.isNotEmpty()) {
+                val dMap = _uiState.value.dailyByLocation.toMutableMap()
+                dMap[key] = result.daily
+                _uiState.update { it.copy(dailyForecast = result.daily, dailyByLocation = dMap) }
+            }
         }
     }
 
@@ -389,7 +407,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun fetchForecasts(settings: ForecastSettings) {
-        if (settings.resilientSync) return
+        // When not using resilientSync, refreshAll already fetches everything in one request.
+        // This method is only needed for resilientSync fallback.
+        if (!settings.resilientSync) return
 
         val state = _uiState.value
         val key = WeatherRepository.locationKey(state.latitude, state.longitude)
@@ -423,6 +443,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     fun refresh() {
         val state = _uiState.value
         val settings = forecastSettings.value
+        val key = WeatherRepository.locationKey(state.latitude, state.longitude)
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, error = null) }
             if (settings.resilientSync) {
@@ -430,14 +451,27 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     state.latitude, state.longitude, state.locationName, settings
                 )
                 syncResult.currentWeather?.let { handleResult(it) }
-            } else {
-                handleResult(
-                    repository.refreshEnrichedWeather(
-                        state.latitude, state.longitude,
-                        state.locationName, settings.enabledCurrentParams
-                    )
-                )
                 fetchForecasts(settings)
+            } else {
+                val result = repository.refreshAll(
+                    latitude = state.latitude,
+                    longitude = state.longitude,
+                    locationName = state.locationName,
+                    enabledParams = settings.enabledCurrentParams,
+                    showHourly = settings.showHourly,
+                    dailyDays = settings.dailyForecastDays
+                )
+                handleResult(result.weather)
+                if (result.hourly.isNotEmpty()) {
+                    val hMap = _uiState.value.hourlyByLocation.toMutableMap()
+                    hMap[key] = result.hourly
+                    _uiState.update { it.copy(hourlyForecast = result.hourly, hourlyByLocation = hMap) }
+                }
+                if (result.daily.isNotEmpty()) {
+                    val dMap = _uiState.value.dailyByLocation.toMutableMap()
+                    dMap[key] = result.daily
+                    _uiState.update { it.copy(dailyForecast = result.daily, dailyByLocation = dMap) }
+                }
             }
         }
     }

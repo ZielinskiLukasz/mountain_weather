@@ -204,6 +204,161 @@ class WeatherRepository(
         return if (fields.isEmpty()) null else fields.joinToString(",")
     }
 
+    data class AllForecastResult(
+        val weather: Result<WeatherEntity>,
+        val hourly: List<HourlyForecastEntity>,
+        val daily: List<DailyForecastEntity>
+    )
+
+    suspend fun refreshAll(
+        latitude: Double,
+        longitude: Double,
+        locationName: String,
+        enabledParams: Set<String>,
+        showHourly: Boolean,
+        dailyDays: Int
+    ): AllForecastResult {
+        val key = locationKey(latitude, longitude)
+        val forecastDays = if (dailyDays > 0) dailyDays + 1 else if (showHourly) 1 else null
+        val today = LocalDate.now()
+        val endDate = if (forecastDays != null) today.plusDays((forecastDays - 1).toLong().coerceAtLeast(0)) else null
+
+        val currentFields = buildCurrentQuery(enabledParams)
+        val enrichedDailyFields = buildDailyQuery(enabledParams)
+        val enrichedHourlyFields = buildHourlyQuery(enabledParams)
+
+        val hourlyFields = if (showHourly) {
+            val base = mutableListOf("temperature_2m", "weather_code", "precipitation")
+            enrichedHourlyFields?.split(",")?.forEach { f -> if (f !in base) base.add(f) }
+            base.joinToString(",")
+        } else enrichedHourlyFields
+
+        val dailyFields = if (dailyDays > 0) {
+            val base = mutableListOf("weather_code", "temperature_2m_max", "temperature_2m_min", "precipitation_sum", "wind_speed_10m_max")
+            enrichedDailyFields?.split(",")?.forEach { f -> if (f !in base) base.add(f) }
+            base.joinToString(",")
+        } else enrichedDailyFields
+
+        return try {
+            val response = api.getCombinedForecast(
+                latitude = latitude,
+                longitude = longitude,
+                current = currentFields,
+                daily = dailyFields,
+                hourly = hourlyFields,
+                forecastDays = forecastDays,
+                startDate = if (showHourly || dailyDays > 0) today.toString() else null,
+                endDate = endDate?.toString()
+            )
+
+            val aqData = if (enabledParams.any { it in WeatherParams.AIR_QUALITY_KEYS }) {
+                try {
+                    val aqQuery = buildAirQualityQuery(enabledParams)
+                    if (aqQuery != null) airQualityApi.getCurrent(latitude, longitude, aqQuery).current
+                    else null
+                } catch (_: Exception) { null }
+            } else null
+
+            val todayDaily = response.daily
+            val currentHourIndex = response.hourly?.let { h ->
+                val targetHour = response.current.time.take(13)
+                h.time.indexOfFirst { it.startsWith(targetHour) }.takeIf { it >= 0 }
+            }
+
+            val entity = WeatherEntity(
+                locationKey = key,
+                locationName = locationName,
+                latitude = latitude,
+                longitude = longitude,
+                temperature = response.current.temperature,
+                apparentTemperature = response.current.apparentTemperature,
+                weatherCode = response.current.weatherCode,
+                windSpeed = response.current.windSpeed,
+                windDirection = response.current.windDirection,
+                humidity = response.current.humidity,
+                precipitation = response.current.precipitation,
+                pressure = response.current.pressure,
+                time = response.current.time,
+                cachedAt = System.currentTimeMillis(),
+                cloudCover = response.current.cloudCover,
+                windGusts = response.current.windGusts,
+                snowfall = response.current.snowfall,
+                rain = response.current.rain,
+                temperatureMax = todayDaily?.temperatureMax?.firstOrNull(),
+                temperatureMin = todayDaily?.temperatureMin?.firstOrNull(),
+                sunrise = todayDaily?.sunrise?.firstOrNull(),
+                sunset = todayDaily?.sunset?.firstOrNull(),
+                uvIndexMax = todayDaily?.uvIndexMax?.firstOrNull(),
+                rainSum = todayDaily?.rainSum?.firstOrNull(),
+                showersSum = todayDaily?.showersSum?.firstOrNull(),
+                snowfallSum = todayDaily?.snowfallSum?.firstOrNull(),
+                precipitationHours = todayDaily?.precipitationHours?.firstOrNull(),
+                precipitationProbabilityMax = todayDaily?.precipitationProbabilityMax?.firstOrNull(),
+                sunshineDuration = todayDaily?.sunshineDuration?.firstOrNull(),
+                windGustsMax = todayDaily?.windGustsMax?.firstOrNull(),
+                dominantWindDirection = todayDaily?.windDirectionDominant?.firstOrNull(),
+                dewPoint = currentHourIndex?.let { response.hourly?.dewPoint?.getOrNull(it) },
+                visibility = currentHourIndex?.let { response.hourly?.visibility?.getOrNull(it) },
+                freezingLevelHeight = currentHourIndex?.let { response.hourly?.freezingLevelHeight?.getOrNull(it) },
+                aqiEu = aqData?.europeanAqi,
+                aqiUs = aqData?.usAqi,
+                pm25 = aqData?.pm25,
+                pm10 = aqData?.pm10,
+                ozone = aqData?.ozone,
+                elevation = response.elevation
+            )
+            dao.insertWeather(entity)
+
+            val now = System.currentTimeMillis()
+
+            val hourlyEntities = if (showHourly && response.hourly != null) {
+                val h = response.hourly
+                h.time.indices.map { i ->
+                    HourlyForecastEntity(
+                        locationKey = key,
+                        time = h.time[i],
+                        temperature = h.temperature?.get(i) ?: 0.0,
+                        weatherCode = h.weatherCode?.get(i) ?: 0,
+                        precipitation = h.precipitation?.get(i) ?: 0.0,
+                        cachedAt = now
+                    )
+                }.also { hourlyDao.replaceForLocation(key, it) }
+            } else emptyList()
+
+            val dailyEntities = if (dailyDays > 0 && response.daily != null) {
+                val d = response.daily
+                d.time.indices.map { i ->
+                    DailyForecastEntity(
+                        locationKey = key,
+                        date = d.time[i],
+                        weatherCode = d.weatherCode?.get(i) ?: 0,
+                        temperatureMax = d.temperatureMax?.get(i) ?: 0.0,
+                        temperatureMin = d.temperatureMin?.get(i) ?: 0.0,
+                        precipitationSum = d.precipitationSum?.get(i) ?: 0.0,
+                        windSpeedMax = d.windSpeedMax?.get(i) ?: 0.0,
+                        cachedAt = now
+                    )
+                }.also { dailyDao.replaceForLocation(key, it) }
+            } else emptyList()
+
+            AllForecastResult(
+                weather = Result.success(entity),
+                hourly = hourlyEntities,
+                daily = dailyEntities
+            )
+        } catch (e: Exception) {
+            val cached = dao.getWeather(key)
+            val weatherResult: Result<WeatherEntity> = if (cached != null) {
+                Result.failure(CachedDataException(e, cached))
+            } else {
+                Result.failure(e)
+            }
+            val cachedHourly = if (showHourly) hourlyDao.getAll(key) else emptyList()
+            val cachedDaily = if (dailyDays > 0) dailyDao.getAll(key) else emptyList()
+            AllForecastResult(weather = weatherResult, hourly = cachedHourly, daily = cachedDaily)
+        }
+    }
+
     suspend fun refreshHourlyForecast(
         latitude: Double,
         longitude: Double,

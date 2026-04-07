@@ -28,6 +28,19 @@ interface OpenMeteoApi {
     ): WeatherResponse
 
     @GET("v1/forecast")
+    suspend fun getCombinedForecast(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("current") current: String,
+        @Query("daily") daily: String? = null,
+        @Query("hourly") hourly: String? = null,
+        @Query("forecast_days") forecastDays: Int? = null,
+        @Query("start_date") startDate: String? = null,
+        @Query("end_date") endDate: String? = null,
+        @Query("timezone") timezone: String = "auto"
+    ): WeatherResponse
+
+    @GET("v1/forecast")
     suspend fun getHourlyForecast(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
