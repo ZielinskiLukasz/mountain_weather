@@ -16,3 +16,4 @@ keystore/
 *.jks
 *.keystore
 /*.code-workspace
+/.kotlin/errors

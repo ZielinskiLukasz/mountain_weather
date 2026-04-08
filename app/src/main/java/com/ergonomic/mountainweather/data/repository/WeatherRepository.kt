@@ -220,8 +220,6 @@ class WeatherRepository(
     ): AllForecastResult {
         val key = locationKey(latitude, longitude)
         val forecastDays = if (dailyDays > 0) dailyDays + 1 else if (showHourly) 1 else null
-        val today = LocalDate.now()
-        val endDate = if (forecastDays != null) today.plusDays((forecastDays - 1).toLong().coerceAtLeast(0)) else null
 
         val currentFields = buildCurrentQuery(enabledParams)
         val enrichedDailyFields = buildDailyQuery(enabledParams)
@@ -246,9 +244,7 @@ class WeatherRepository(
                 current = currentFields,
                 daily = dailyFields,
                 hourly = hourlyFields,
-                forecastDays = forecastDays,
-                startDate = if (showHourly || dailyDays > 0) today.toString() else null,
-                endDate = endDate?.toString()
+                forecastDays = forecastDays
             )
 
             val aqData = if (enabledParams.any { it in WeatherParams.AIR_QUALITY_KEYS }) {
