@@ -2,16 +2,19 @@
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+GRADLE_KTS="$PROJECT_DIR/app/build.gradle.kts"
 AAB="$PROJECT_DIR/app/build/outputs/bundle/release/app-release.aab"
 APK="$PROJECT_DIR/app/build/outputs/apk/release/app-release.apk"
+DEST_DIR="/home/zieloo/Pulpit/projects/weather_android/app/build/outputs"
 
 usage() {
     cat <<EOF
 Usage: $(basename "$0") [command]
 
 Commands:
-  bundle      Build signed AAB for Google Play (default)
-  apk         Build release APK (unsigned)
+  publish     Bump version, build APK+AAB, copy to releases (default)
+  bundle      Build signed AAB for Google Play
+  apk         Build release APK
   clean       Clean build cache and rebuild AAB
   verify      Verify AAB signature
   info        Show AAB/APK size and signing info
@@ -19,6 +22,42 @@ Commands:
 
 EOF
     exit 0
+}
+
+do_publish() {
+    echo "==> Bumping version..."
+    local old_code old_name new_code new_name
+    old_code=$(grep -oP 'versionCode\s*=\s*\K\d+' "$GRADLE_KTS")
+    old_name=$(grep -oP 'versionName\s*=\s*"\K[^"]+' "$GRADLE_KTS")
+
+    new_code=$((old_code + 1))
+    # increment last segment of versionName
+    local prefix="${old_name%.*}"
+    local last="${old_name##*.}"
+    new_name="${prefix}.$((last + 1))"
+
+    sed -i "s/versionCode = $old_code/versionCode = $new_code/" "$GRADLE_KTS"
+    sed -i "s/versionName = \"$old_name\"/versionName = \"$new_name\"/" "$GRADLE_KTS"
+    echo "  $old_name ($old_code) → $new_name ($new_code)"
+
+    echo ""
+    echo "==> Building release APK and AAB..."
+    cd "$PROJECT_DIR"
+    ./gradlew assembleRelease bundleRelease --no-daemon
+
+    local ts
+    ts=$(date +%Y%m%d_%H%M)
+    local tag="${new_name}(${new_code})_${ts}"
+
+    mkdir -p "$DEST_DIR/apk/release" "$DEST_DIR/bundle/release"
+    cp "$APK" "$DEST_DIR/apk/release/app-release-${tag}.apk"
+    cp "$AAB" "$DEST_DIR/bundle/release/app-release-${tag}.aab"
+
+    echo ""
+    echo "==> Done! Version $new_name ($new_code)"
+    echo ""
+    ls -lh "$DEST_DIR/apk/release/app-release-${tag}.apk"
+    ls -lh "$DEST_DIR/bundle/release/app-release-${tag}.aab"
 }
 
 do_bundle() {
@@ -75,10 +114,11 @@ do_version() {
     grep -E "versionCode|versionName" "$PROJECT_DIR/app/build.gradle.kts" | sed 's/^[ \t]*/  /'
 }
 
-CMD="${1:-bundle}"
+CMD="${1:-publish}"
 shift 2>/dev/null || true
 
 case "$CMD" in
+    publish) do_publish ;;
     bundle)  do_bundle ;;
     apk)     do_apk ;;
     clean)   do_clean ;;

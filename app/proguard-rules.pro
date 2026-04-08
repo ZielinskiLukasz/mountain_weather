@@ -7,6 +7,7 @@
 -keep,allowobfuscation interface com.ergonomic.mountainweather.data.AirQualityApi
 -keep,allowobfuscation interface com.ergonomic.mountainweather.data.GeocodingApi
 -keep,allowobfuscation interface com.ergonomic.mountainweather.data.PhotonApi
+-keep class com.ergonomic.mountainweather.data.PhotonApi$Companion { *; }
 -dontwarn retrofit2.**
 -dontwarn okhttp3.**
 -dontwarn okio.**
