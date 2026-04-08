@@ -68,6 +68,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _queryFlow = MutableStateFlow("")
+    private var searchJob: kotlinx.coroutines.Job? = null
 
     init {
         viewModelScope.launch {
@@ -88,7 +89,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     private val coordPattern = Regex(
-        """^\s*(-?\d+[.,]\d+)\s*[,;\s]\s*(-?\d+[.,]\d+)\s*$"""
+        """^\s*(-?\d+(?:[.,]\d+)?)\s*[,;\s]\s*(-?\d+(?:[.,]\d+)?)\s*$"""
     )
 
     private fun parseCoordinates(query: String): Pair<Double, Double>? {
@@ -105,9 +106,16 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
             "borough", "quarter", "neighbourhood",
             "municipality", "administrative", "county", "state", "country"
         )
+        private val PHOTON_LANGUAGES = setOf("de", "en", "fr")
+    }
+
+    private fun photonLang(): String {
+        val lang = Locale.getDefault().language
+        return if (lang in PHOTON_LANGUAGES) lang else "en"
     }
 
     private suspend fun performSearch(query: String) {
+        searchJob?.cancel()
         val coords = parseCoordinates(query)
         if (coords != null) {
             performCoordinateSearch(coords.first, coords.second)
@@ -115,16 +123,23 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         }
         _uiState.update { it.copy(isSearching = true, error = null) }
         val lang = Locale.getDefault().language
+        val pLang = photonLang()
+        val queryParts = query.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        val cityName = queryParts.first()
 
-        viewModelScope.launch {
+        searchJob = viewModelScope.launch {
             val cityDeferred = async {
                 try {
-                    geocodingApi.searchCity(name = query, language = lang).results ?: emptyList()
+                    val results = geocodingApi.searchCity(name = query, language = lang).results
+                    if (!results.isNullOrEmpty()) results
+                    else if (queryParts.size > 1) {
+                        geocodingApi.searchCity(name = cityName, language = lang).results ?: emptyList()
+                    } else emptyList()
                 } catch (_: Exception) { emptyList() }
             }
             val placeDeferred = async {
                 try {
-                    val response = photonApi.search(query = query, lang = lang)
+                    val response = photonApi.search(query = query, lang = pLang)
                     response.features
                         ?.filter { f ->
                             val v = f.properties?.osmValue
@@ -171,7 +186,7 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     private suspend fun performCoordinateSearch(lat: Double, lon: Double) {
-        _uiState.update { it.copy(isSearching = true, error = null) }
+        _uiState.update { it.copy(isSearching = true, error = null, placeResults = emptyList()) }
         val name = resolveLocationName(lat, lon)
         val result = GeocodingResult(
             id = 0,
@@ -179,9 +194,9 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
             latitude = lat,
             longitude = lon,
             country = null,
-            region = null
+            region = "(%.4f, %.4f)".format(lat, lon)
         )
-        _uiState.update { it.copy(isSearching = false, results = listOf(result)) }
+        _uiState.update { it.copy(isSearching = false, results = listOf(result), placeResults = emptyList()) }
     }
 
     fun selectSearchResult(result: GeocodingResult) {
