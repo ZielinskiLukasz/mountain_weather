@@ -125,19 +125,29 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     private fun rebuildLocationPages(favorites: List<SavedLocationEntity>) {
         val state = _uiState.value
-        val currentPage = LocationPage(
-            name = state.locationName,
-            latitude = state.latitude,
-            longitude = state.longitude,
-            isCurrent = true
-        )
-        val favPages = favorites
-            .filter { !(it.latitude == state.latitude && it.longitude == state.longitude) }
-            .take(10)
-            .map { LocationPage(it.name, it.latitude, it.longitude) }
-        val pages = listOf(currentPage) + favPages
-        val currentIndex = _uiState.value.currentPageIndex.coerceIn(0, pages.lastIndex)
-        _uiState.update { it.copy(locationPages = pages, currentPageIndex = currentIndex) }
+        val favPages = favorites.take(10).map {
+            LocationPage(it.name, it.latitude, it.longitude)
+        }
+        val favIndex = favPages.indexOfFirst {
+            Math.abs(it.latitude - state.latitude) < 0.005 &&
+            Math.abs(it.longitude - state.longitude) < 0.005
+        }
+        val pages: List<LocationPage>
+        val newIndex: Int
+        if (favIndex >= 0) {
+            pages = favPages
+            newIndex = favIndex
+        } else {
+            val currentPage = LocationPage(
+                name = state.locationName,
+                latitude = state.latitude,
+                longitude = state.longitude,
+                isCurrent = true
+            )
+            pages = listOf(currentPage) + favPages
+            newIndex = 0
+        }
+        _uiState.update { it.copy(locationPages = pages, currentPageIndex = newIndex) }
         preloadCacheForPages(pages)
     }
 
@@ -245,7 +255,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 isOfflineData = false,
                 isFavorite = false,
                 error = null,
-                currentPageIndex = 0,
                 locationSelectionVersion = it.locationSelectionVersion + 1,
                 selectedHourlyDate = null
             )

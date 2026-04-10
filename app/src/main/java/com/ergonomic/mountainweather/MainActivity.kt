@@ -234,8 +234,9 @@ fun WeatherScreen(
     }
 
     LaunchedEffect(state.locationSelectionVersion) {
-        if (pagerState.currentPage != 0) {
-            pagerState.scrollToPage(0)
+        val target = state.currentPageIndex.coerceIn(0, pageCount - 1)
+        if (pagerState.currentPage != target) {
+            pagerState.scrollToPage(target)
         }
     }
 
