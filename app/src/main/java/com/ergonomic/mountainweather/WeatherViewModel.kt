@@ -47,9 +47,9 @@ data class WeatherUiState(
     val dailyForecast: List<DailyForecastEntity> = emptyList(),
     val isOfflineData: Boolean = false,
     val isFavorite: Boolean = false,
-    val locationName: String = "Kraków",
-    val latitude: Double = 50.06,
-    val longitude: Double = 19.94,
+    val locationName: String = "New York",
+    val latitude: Double = 40.7128,
+    val longitude: Double = -74.006,
     val error: String? = null,
     val errorType: ErrorType = ErrorType.NONE,
     val locationPages: List<LocationPage> = emptyList(),
@@ -60,7 +60,8 @@ data class WeatherUiState(
     val dailyByLocation: Map<String, List<DailyForecastEntity>> = emptyMap(),
     val selectedHourlyDate: String? = null,
     val gpsAltitude: Double? = null,
-    val gpsAltitudeError: Boolean = false
+    val gpsAltitudeError: Boolean = false,
+    val needsInitialSetup: Boolean = false
 )
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -105,6 +106,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                         longitude = saved.longitude
                     )
                 }
+            } else {
+                _uiState.update { it.copy(needsInitialSetup = true) }
             }
             observeCache()
             observeFavoriteStatus()
@@ -112,6 +115,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             observeSettings()
             observeNetwork()
         }
+    }
+
+    fun clearInitialSetup() {
+        _uiState.update { it.copy(needsInitialSetup = false) }
     }
 
     private fun observeFavoritesList() {
@@ -243,6 +250,11 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setLocation(name: String, lat: Double, lon: Double) {
+        val currentPages = _uiState.value.locationPages
+        val favIndex = currentPages.indexOfFirst {
+            Math.abs(it.latitude - lat) < 0.005 && Math.abs(it.longitude - lon) < 0.005
+        }
+        val pageIndex = if (favIndex >= 0) favIndex else 0
         _uiState.update {
             it.copy(
                 locationName = name,
@@ -255,6 +267,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 isOfflineData = false,
                 isFavorite = false,
                 error = null,
+                currentPageIndex = pageIndex,
                 locationSelectionVersion = it.locationSelectionVersion + 1,
                 selectedHourlyDate = null
             )
@@ -294,15 +307,20 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             val dao = db.savedLocationDao()
             val existing = dao.findByCoordinates(state.latitude, state.longitude)
-            if (existing != null) {
+            if (existing != null && existing.isFavorite) {
                 dao.toggleFavorite(existing.id)
+            } else if (existing != null) {
+                dao.shiftFavoriteSortOrders()
+                dao.makeFavoriteFirst(existing.id)
             } else {
+                dao.shiftFavoriteSortOrders()
                 dao.insert(
                     SavedLocationEntity(
                         name = state.locationName,
                         latitude = state.latitude,
                         longitude = state.longitude,
-                        isFavorite = true
+                        isFavorite = true,
+                        sortOrder = 0
                     )
                 )
             }

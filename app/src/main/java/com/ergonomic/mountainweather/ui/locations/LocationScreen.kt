@@ -71,7 +71,8 @@ import kotlin.math.roundToInt
 fun LocationScreen(
     onLocationSelected: (name: String, lat: Double, lon: Double) -> Unit,
     onBack: () -> Unit,
-    viewModel: LocationViewModel = viewModel()
+    viewModel: LocationViewModel = viewModel(),
+    requestGpsOnOpen: Boolean = false
 ) {
     val state by viewModel.uiState.collectAsState()
     val selected by viewModel.selectedLocation.collectAsState()
@@ -92,6 +93,17 @@ fun LocationScreen(
         val granted = permissions.values.any { it }
         if (granted) {
             viewModel.requestGpsLocation()
+        }
+    }
+
+    LaunchedEffect(requestGpsOnOpen) {
+        if (requestGpsOnOpen) {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
         }
     }
 

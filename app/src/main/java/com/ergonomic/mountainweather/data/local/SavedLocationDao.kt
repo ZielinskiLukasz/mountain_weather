@@ -38,6 +38,12 @@ interface SavedLocationDao {
     @Query("UPDATE saved_locations SET isFavorite = NOT isFavorite WHERE id = :id")
     suspend fun toggleFavorite(id: Long)
 
+    @Query("UPDATE saved_locations SET sortOrder = sortOrder + 1 WHERE isFavorite = 1")
+    suspend fun shiftFavoriteSortOrders()
+
+    @Query("UPDATE saved_locations SET sortOrder = 0, isFavorite = 1 WHERE id = :id")
+    suspend fun makeFavoriteFirst(id: Long)
+
     @Query("DELETE FROM saved_locations WHERE id = :id")
     suspend fun delete(id: Long)
 

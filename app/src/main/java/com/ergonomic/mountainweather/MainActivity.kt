@@ -145,6 +145,16 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(weatherViewModel: WeatherViewModel = viewModel()) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
+    val state by weatherViewModel.uiState.collectAsState()
+
+    LaunchedEffect(state.needsInitialSetup) {
+        if (state.needsInitialSetup) {
+            weatherViewModel.clearInitialSetup()
+            navController.navigate("locations_initial") {
+                launchSingleTop = true
+            }
+        }
+    }
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
@@ -167,6 +177,16 @@ fun AppNavigation(weatherViewModel: WeatherViewModel = viewModel()) {
                     navController.popBackStack()
                 },
                 onBack = { navController.popBackStack() }
+            )
+        }
+        composable("locations_initial") {
+            LocationScreen(
+                onLocationSelected = { name, lat, lon ->
+                    weatherViewModel.setLocation(name, lat, lon)
+                    navController.popBackStack("home", inclusive = false)
+                },
+                onBack = { navController.popBackStack() },
+                requestGpsOnOpen = true
             )
         }
         composable("settings") {
