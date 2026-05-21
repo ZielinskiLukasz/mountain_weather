@@ -34,7 +34,8 @@ data class LocationUiState(
     val placeResults: List<GeocodingResult> = emptyList(),
     val isSearching: Boolean = false,
     val isLocating: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val showEnableLocation: Boolean = false
 )
 
 data class SelectedLocation(
@@ -246,8 +247,20 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     @SuppressLint("MissingPermission")
+    fun dismissEnableLocation() {
+        _uiState.update { it.copy(showEnableLocation = false) }
+    }
+
     fun requestGpsLocation() {
         viewModelScope.launch {
+            val lm = getApplication<android.app.Application>()
+                .getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager
+            val gpsEnabled = lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+            val networkEnabled = lm.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
+            if (!gpsEnabled && !networkEnabled) {
+                _uiState.update { it.copy(showEnableLocation = true) }
+                return@launch
+            }
             _uiState.update { it.copy(isLocating = true, error = null) }
             try {
                 val location = fusedLocationClient.getCurrentLocation(

@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
 data class ForecastSettings(
     val showHourly: Boolean = true,
     val showDaily3: Boolean = false,
@@ -26,7 +28,8 @@ data class ForecastSettings(
     val resilientSync: Boolean = false,
     val syncIntervalMinutes: Int = 0,
     val enabledCurrentParams: Set<String> = WeatherParams.DEFAULTS,
-    val paramOrder: List<String> = WeatherParams.ALL.map { it.key }
+    val paramOrder: List<String> = WeatherParams.ALL.map { it.key },
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
 ) {
     val dailyForecastDays: Int get() = when {
         showDaily14 -> 14
@@ -52,6 +55,7 @@ class SettingsRepository(private val context: Context) {
         val LAST_LOCATION_LON = doublePreferencesKey("last_location_lon")
         val ENABLED_CURRENT_PARAMS = stringSetPreferencesKey("enabled_current_params")
         val PARAM_ORDER = stringPreferencesKey("param_order")
+        val THEME_MODE = stringPreferencesKey("theme_mode")
     }
 
     val forecastSettings: Flow<ForecastSettings> = context.dataStore.data.map { prefs ->
@@ -65,7 +69,10 @@ class SettingsRepository(private val context: Context) {
             syncIntervalMinutes = prefs[Keys.SYNC_INTERVAL_MINUTES] ?: 0,
             enabledCurrentParams = prefs[Keys.ENABLED_CURRENT_PARAMS] ?: WeatherParams.DEFAULTS,
             paramOrder = prefs[Keys.PARAM_ORDER]?.split(",")?.filter { it.isNotBlank() }
-                ?: WeatherParams.ALL.map { it.key }
+                ?: WeatherParams.ALL.map { it.key },
+            themeMode = prefs[Keys.THEME_MODE]?.let {
+                try { ThemeMode.valueOf(it) } catch (_: Exception) { ThemeMode.SYSTEM }
+            } ?: ThemeMode.SYSTEM
         )
     }
 
@@ -100,6 +107,10 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun saveParamOrder(order: List<String>) {
         context.dataStore.edit { it[Keys.PARAM_ORDER] = order.joinToString(",") }
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        context.dataStore.edit { it[Keys.THEME_MODE] = mode.name }
     }
 
     suspend fun toggleCurrentParam(key: String) {

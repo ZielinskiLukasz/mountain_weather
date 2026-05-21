@@ -1,6 +1,8 @@
 package com.ergonomic.mountainweather.ui.locations
 
 import android.Manifest
+import android.content.Intent
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -53,6 +56,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -105,6 +109,29 @@ fun LocationScreen(
                 )
             )
         }
+    }
+
+    val context = LocalContext.current
+
+    if (state.showEnableLocation) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissEnableLocation() },
+            title = { Text(stringResource(R.string.location_disabled_title)) },
+            text = { Text(stringResource(R.string.location_disabled_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.dismissEnableLocation()
+                    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }) {
+                    Text(stringResource(R.string.location_disabled_enable))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.dismissEnableLocation() }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     Scaffold(

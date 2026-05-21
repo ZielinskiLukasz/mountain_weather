@@ -13,11 +13,13 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -30,6 +32,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -40,13 +43,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -76,6 +79,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -122,7 +126,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         reconcileBackgroundSync()
         setContent {
-            MountainWeatherTheme {
+            val settingsRepo = remember {
+                com.ergonomic.mountainweather.data.repository.SettingsRepository(this)
+            }
+            val settings by settingsRepo.forecastSettings.collectAsState(
+                initial = com.ergonomic.mountainweather.data.repository.ForecastSettings()
+            )
+            val darkTheme = when (settings.themeMode) {
+                com.ergonomic.mountainweather.data.repository.ThemeMode.LIGHT -> false
+                com.ergonomic.mountainweather.data.repository.ThemeMode.DARK -> true
+                com.ergonomic.mountainweather.data.repository.ThemeMode.SYSTEM -> isSystemInDarkTheme()
+            }
+            MountainWeatherTheme(darkTheme = darkTheme) {
                 AppNavigation()
             }
         }
@@ -218,6 +233,31 @@ fun WeatherScreen(
         if (granted) viewModel.refreshGpsAltitude()
     }
 
+    val gpsLocationLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions.values.any { it }) viewModel.requestGpsWeather()
+    }
+
+    if (state.showEnableLocation) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissEnableLocation() },
+            title = { Text(stringResource(R.string.location_disabled_title)) },
+            text = { Text(stringResource(R.string.location_disabled_message)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    viewModel.dismissEnableLocation()
+                    context.startActivity(android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }) { Text(stringResource(R.string.location_disabled_enable)) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { viewModel.dismissEnableLocation() }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
     val gpsAltitudeEnabled = WeatherParams.GPS_ALTITUDE in settings.enabledCurrentParams
     LaunchedEffect(gpsAltitudeEnabled) {
         if (gpsAltitudeEnabled) {
@@ -234,10 +274,17 @@ fun WeatherScreen(
 
     val refreshNoInternet = stringResource(R.string.refresh_error_snackbar)
     val refreshApiError = stringResource(R.string.refresh_api_error_snackbar)
+    val favLimitMsg = stringResource(R.string.favorite_limit_reached)
     LaunchedEffect(state.error) {
         if (state.error != null && state.weather != null) {
             val msg = if (state.errorType == ErrorType.API_ERROR) refreshApiError else refreshNoInternet
             snackbarHostState.showSnackbar(msg)
+        }
+    }
+    LaunchedEffect(state.favoriteLimitReached) {
+        if (state.favoriteLimitReached) {
+            snackbarHostState.showSnackbar(favLimitMsg)
+            viewModel.clearFavoriteLimitReached()
         }
     }
 
@@ -337,6 +384,16 @@ fun WeatherScreen(
                                 gpsAltitude = state.gpsAltitude,
                                 onChangeLocation = onChangeLocation,
                                 onOpenSettings = onOpenSettings,
+                                onGpsLocate = {
+                                    val hasPerm = ContextCompat.checkSelfPermission(
+                                        context, Manifest.permission.ACCESS_FINE_LOCATION
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                    if (hasPerm) viewModel.requestGpsWeather()
+                                    else gpsLocationLauncher.launch(arrayOf(
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION
+                                    ))
+                                },
                                 onToggleFavorite = { viewModel.toggleFavorite() },
                                 onReorder = { viewModel.saveParamOrder(it) },
                                 onSelectDay = { viewModel.selectHourlyDay(it) }
@@ -445,6 +502,7 @@ fun WeatherContent(
     gpsAltitude: Double? = null,
     onChangeLocation: () -> Unit,
     onOpenSettings: () -> Unit,
+    onGpsLocate: () -> Unit,
     onToggleFavorite: () -> Unit,
     onReorder: (List<String>) -> Unit,
     onSelectDay: (String?) -> Unit
@@ -486,11 +544,12 @@ fun WeatherContent(
                     else MaterialTheme.colorScheme.outlineVariant
                 )
             }
-            IconButton(onClick = onChangeLocation) {
+            IconButton(onClick = onGpsLocate) {
                 Icon(
-                    Icons.Default.LocationOn,
-                    contentDescription = "Change location",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    painter = painterResource(R.drawable.ic_gps_crosshair),
+                    contentDescription = "GPS location",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
                 )
             }
             IconButton(onClick = onOpenSettings) {
@@ -1048,7 +1107,19 @@ fun HourlyForecastSection(
         stringResource(R.string.hourly_forecast)
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pointerInput(listState) {
+                detectHorizontalDragGestures { _, dragAmount ->
+                    coroutineScope.launch {
+                        listState.scrollBy(-dragAmount)
+                    }
+                }
+            }
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1100,7 +1171,7 @@ fun HourlyForecastSection(
         ) {
             LazyRow(
                 state = listState,
-                modifier = Modifier.padding(vertical = 12.dp)
+                modifier = Modifier.padding(vertical = 16.dp)
             ) {
                 items(hourlyForecast, key = { it.time }) { item ->
                     val itemHour = remember(item.time) {

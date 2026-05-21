@@ -61,7 +61,9 @@ data class WeatherUiState(
     val selectedHourlyDate: String? = null,
     val gpsAltitude: Double? = null,
     val gpsAltitudeError: Boolean = false,
-    val needsInitialSetup: Boolean = false
+    val needsInitialSetup: Boolean = false,
+    val showEnableLocation: Boolean = false,
+    val favoriteLimitReached: Boolean = false
 )
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
@@ -119,6 +121,39 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     fun clearInitialSetup() {
         _uiState.update { it.copy(needsInitialSetup = false) }
+    }
+
+    fun requestGpsWeather() {
+        viewModelScope.launch {
+            val lm = getApplication<android.app.Application>()
+                .getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager
+            if (!lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+                && !lm.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)) {
+                _uiState.update { it.copy(showEnableLocation = true) }
+                return@launch
+            }
+            try {
+                val location = fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    CancellationTokenSource().token
+                ).await() ?: return@launch
+                val name = try {
+                    val geocoder = android.location.Geocoder(getApplication(), java.util.Locale.getDefault())
+                    @Suppress("DEPRECATION")
+                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    addresses?.firstOrNull()?.locality
+                        ?: addresses?.firstOrNull()?.subAdminArea
+                        ?: "(%.2f, %.2f)".format(location.latitude, location.longitude)
+                } catch (_: Exception) {
+                    "(%.2f, %.2f)".format(location.latitude, location.longitude)
+                }
+                setLocation(name, location.latitude, location.longitude)
+            } catch (_: Exception) { }
+        }
+    }
+
+    fun dismissEnableLocation() {
+        _uiState.update { it.copy(showEnableLocation = false) }
     }
 
     private fun observeFavoritesList() {
@@ -302,6 +337,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch { settingsRepo.saveParamOrder(order) }
     }
 
+    fun clearFavoriteLimitReached() {
+        _uiState.update { it.copy(favoriteLimitReached = false) }
+    }
+
     fun toggleFavorite() {
         val state = _uiState.value
         viewModelScope.launch {
@@ -309,20 +348,27 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             val existing = dao.findByCoordinates(state.latitude, state.longitude)
             if (existing != null && existing.isFavorite) {
                 dao.toggleFavorite(existing.id)
-            } else if (existing != null) {
-                dao.shiftFavoriteSortOrders()
-                dao.makeFavoriteFirst(existing.id)
             } else {
-                dao.shiftFavoriteSortOrders()
-                dao.insert(
-                    SavedLocationEntity(
-                        name = state.locationName,
-                        latitude = state.latitude,
-                        longitude = state.longitude,
-                        isFavorite = true,
-                        sortOrder = 0
+                val currentCount = dao.getFavorites().size
+                if (currentCount >= 10) {
+                    _uiState.update { it.copy(favoriteLimitReached = true) }
+                    return@launch
+                }
+                if (existing != null) {
+                    dao.shiftFavoriteSortOrders()
+                    dao.makeFavoriteFirst(existing.id)
+                } else {
+                    dao.shiftFavoriteSortOrders()
+                    dao.insert(
+                        SavedLocationEntity(
+                            name = state.locationName,
+                            latitude = state.latitude,
+                            longitude = state.longitude,
+                            isFavorite = true,
+                            sortOrder = 0
+                        )
                     )
-                )
+                }
             }
         }
     }

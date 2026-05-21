@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.ergonomic.mountainweather.R
 import com.ergonomic.mountainweather.data.repository.ForecastSettings
 import com.ergonomic.mountainweather.data.repository.SettingsRepository
+import com.ergonomic.mountainweather.data.repository.ThemeMode
 import com.ergonomic.mountainweather.data.sync.SyncScheduler
 import com.ergonomic.mountainweather.util.WeatherParams
 import kotlinx.coroutines.launch
@@ -76,6 +77,35 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
+            Text(
+                text = stringResource(R.string.theme_section),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy((-4).dp)
+            ) {
+                data class ThemeOption(val mode: ThemeMode, val labelRes: Int)
+                val themeOptions = listOf(
+                    ThemeOption(ThemeMode.SYSTEM, R.string.theme_system),
+                    ThemeOption(ThemeMode.LIGHT, R.string.theme_light),
+                    ThemeOption(ThemeMode.DARK, R.string.theme_dark)
+                )
+                themeOptions.forEach { opt ->
+                    FilterChip(
+                        selected = settings.themeMode == opt.mode,
+                        onClick = { scope.launch { settingsRepo.setThemeMode(opt.mode) } },
+                        label = { Text(stringResource(opt.labelRes)) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = stringResource(R.string.forecast_types),
                 style = MaterialTheme.typography.titleMedium,

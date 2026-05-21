@@ -59,6 +59,10 @@
     <string name="search_cities">Ciudades</string>
     <string name="location_permission_needed">Se necesita permiso de ubicación para el GPS</string>
     <string name="gps_locating">Obteniendo ubicación…</string>
+    <string name="location_disabled_title">Ubicación desactivada</string>
+    <string name="location_disabled_message">Los servicios de ubicación están desactivados. Actívelos para usar el posicionamiento GPS.</string>
+    <string name="location_disabled_enable">Activar</string>
+    <string name="cancel">Cancelar</string>
 
     <!-- Saved locations -->
     <string name="favorites">Favoritos</string>
@@ -66,6 +70,7 @@
     <string name="no_saved_locations">No hay ubicaciones guardadas</string>
     <string name="added_to_favorites">Añadido a favoritos</string>
     <string name="removed_from_favorites">Eliminado de favoritos</string>
+    <string name="favorite_limit_reached">Máximo de 10 ubicaciones favoritas</string>
     <string name="location_deleted">Ubicación eliminada</string>
 
     <!-- Forecasts -->
@@ -77,6 +82,10 @@
 
     <!-- Settings -->
     <string name="settings">Ajustes</string>
+    <string name="theme_section">Apariencia</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
     <string name="forecast_types">Tipos de previsión</string>
     <string name="show_hourly_24h">Por horas (24h)</string>
     <string name="show_daily_3">Diaria (3 días)</string>
