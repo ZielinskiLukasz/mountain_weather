@@ -8,6 +8,11 @@
     <string name="pull_to_refresh_hint">Pociągnij w dół, aby załadować pogodę</string>
     <string name="update_time">Aktualizacja: %1$s</string>
     <string name="offline_data">Dane offline z: %1$s</string>
+    <string name="update_available">Dostępna nowa wersja</string>
+    <string name="update_ready">Aktualizacja pobrana</string>
+    <string name="update_action">Aktualizuj</string>
+    <string name="update_install">Zainstaluj</string>
+    <string name="update_dismiss">Zamknij</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperatura</string>

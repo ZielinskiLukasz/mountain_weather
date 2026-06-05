@@ -8,6 +8,11 @@
     <string name="pull_to_refresh_hint">Pull down to load weather</string>
     <string name="update_time">Updated: %1$s</string>
     <string name="offline_data">Offline data from: %1$s</string>
+    <string name="update_available">New version available</string>
+    <string name="update_ready">Update downloaded</string>
+    <string name="update_action">Update</string>
+    <string name="update_install">Install</string>
+    <string name="update_dismiss">Dismiss</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperature</string>

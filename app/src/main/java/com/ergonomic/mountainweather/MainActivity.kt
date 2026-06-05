@@ -15,6 +15,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
@@ -226,6 +227,7 @@ fun WeatherScreen(
     val settings by viewModel.forecastSettings.collectAsState()
     val pages = state.locationPages
     val context = LocalContext.current
+    val updateState = com.ergonomic.mountainweather.util.rememberUpdateState()
 
     val gpsPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -350,6 +352,16 @@ fun WeatherScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp, bottom = 4.dp)
+                        )
+                    }
+                    if (updateState.visible) {
+                        UpdateBanner(
+                            isDownloaded = updateState.downloaded,
+                            onAction = {
+                                if (updateState.downloaded) updateState.completeUpdate()
+                                else updateState.startUpdate()
+                            },
+                            onDismiss = { updateState.dismiss() }
                         )
                     }
                     if (state.isOfflineData) {
@@ -484,6 +496,45 @@ fun OfflineBanner(cachedAt: Long) {
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onTertiaryContainer
         )
+    }
+}
+
+@Composable
+fun UpdateBanner(
+    isDownloaded: Boolean,
+    onAction: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(
+                if (isDownloaded) R.string.update_ready else R.string.update_available
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.weight(1f)
+        )
+        androidx.compose.material3.TextButton(onClick = onAction) {
+            Text(
+                text = stringResource(
+                    if (isDownloaded) R.string.update_install else R.string.update_action
+                ),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+        IconButton(onClick = onDismiss) {
+            Text(
+                text = "\u2715",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     }
 }
 
@@ -1252,26 +1303,35 @@ fun DailyForecastSection(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        Card(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, cardBorder, cardShape),
-            shape = cardShape,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+                .clip(cardShape)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 dailyForecast.forEachIndexed { index, item ->
                     val isSelected = item.date == selectedDate
+                    val isFirst = index == 0
+                    val isLast = index == dailyForecast.lastIndex
+                    val rowShape = RoundedCornerShape(
+                        topStart = if (isFirst) 16.dp else 0.dp,
+                        topEnd = if (isFirst) 16.dp else 0.dp,
+                        bottomStart = if (isLast) 16.dp else 0.dp,
+                        bottomEnd = if (isLast) 16.dp else 0.dp
+                    )
                     DailyForecastItem(
                         item = item,
                         isSelected = isSelected,
                         isClickable = showHourly,
-                        onClick = { onDayClick(item.date) }
+                        onClick = { onDayClick(item.date) },
+                        backgroundShape = rowShape
                     )
                     if (index < dailyForecast.lastIndex) {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+                        )
                     }
                 }
             }
@@ -1284,7 +1344,8 @@ fun DailyForecastItem(
     item: DailyForecastEntity,
     isSelected: Boolean = false,
     isClickable: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    backgroundShape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(0.dp)
 ) {
     val dayLabel = remember(item.date) {
         try {
@@ -1303,16 +1364,14 @@ fun DailyForecastItem(
         modifier = Modifier
             .fillMaxWidth()
             .then(
-                if (isSelected) Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(selectedBg, RoundedCornerShape(8.dp))
+                if (isSelected) Modifier.background(selectedBg, backgroundShape)
                 else Modifier
             )
             .then(
                 if (isClickable) Modifier.clickable(onClick = onClick)
                 else Modifier
             )
-            .padding(vertical = 2.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

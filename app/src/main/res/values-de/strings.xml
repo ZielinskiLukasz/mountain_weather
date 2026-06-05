@@ -8,6 +8,11 @@
     <string name="pull_to_refresh_hint">Zum Laden nach unten ziehen</string>
     <string name="update_time">Aktualisiert: %1$s</string>
     <string name="offline_data">Offline-Daten von: %1$s</string>
+    <string name="update_available">Neue Version verfügbar</string>
+    <string name="update_ready">Update heruntergeladen</string>
+    <string name="update_action">Aktualisieren</string>
+    <string name="update_install">Installieren</string>
+    <string name="update_dismiss">Schließen</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperatur</string>

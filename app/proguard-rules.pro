@@ -49,3 +49,9 @@
 -keep class com.google.android.gms.location.** { *; }
 -keep class com.google.android.gms.tasks.** { *; }
 -dontwarn com.google.android.gms.**
+
+# Google Play In-App Updates
+-keep class com.google.android.play.core.appupdate.** { *; }
+-keep class com.google.android.play.core.install.** { *; }
+-keep class com.google.android.play.core.tasks.** { *; }
+-dontwarn com.google.android.play.**
