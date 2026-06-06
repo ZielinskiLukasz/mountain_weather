@@ -22,8 +22,8 @@ android {
         applicationId = "com.ergonomic.mountainweather"
         minSdk = 26
         targetSdk = 35
-        versionCode = 41
-        versionName = "0.1.34"
+        versionCode = 42
+        versionName = "0.1.35"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

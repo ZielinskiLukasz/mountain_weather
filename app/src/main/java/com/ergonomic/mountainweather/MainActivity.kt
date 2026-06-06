@@ -20,7 +20,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -228,6 +229,7 @@ fun WeatherScreen(
     val pages = state.locationPages
     val context = LocalContext.current
     val updateState = com.ergonomic.mountainweather.util.rememberUpdateState()
+    var isHourlyPressed by remember { mutableStateOf(false) }
 
     val gpsPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -369,6 +371,7 @@ fun WeatherScreen(
                     }
                     HorizontalPager(
                         state = pagerState,
+                        userScrollEnabled = !isHourlyPressed,
                         modifier = Modifier.fillMaxSize()
                     ) { pageIndex ->
                         val page = pages.getOrNull(pageIndex)
@@ -408,7 +411,8 @@ fun WeatherScreen(
                                 },
                                 onToggleFavorite = { viewModel.toggleFavorite() },
                                 onReorder = { viewModel.saveParamOrder(it) },
-                                onSelectDay = { viewModel.selectHourlyDay(it) }
+                                onSelectDay = { viewModel.selectHourlyDay(it) },
+                                onHourlyPressChange = { isHourlyPressed = it }
                             )
                         } else {
                             Box(
@@ -556,7 +560,8 @@ fun WeatherContent(
     onGpsLocate: () -> Unit,
     onToggleFavorite: () -> Unit,
     onReorder: (List<String>) -> Unit,
-    onSelectDay: (String?) -> Unit
+    onSelectDay: (String?) -> Unit,
+    onHourlyPressChange: (Boolean) -> Unit = {}
 ) {
     val weatherInfo = weatherCodeToInfo(weather.weatherCode)
     val scrollState = rememberScrollState()
@@ -672,7 +677,8 @@ fun WeatherContent(
                     hourlyForecast = displayHourly,
                     selectedDate = effectiveDate,
                     onBackToToday = { onSelectDay(null) },
-                    noDataForDate = filteredHourly.isEmpty() && selectedHourlyDate != null
+                    noDataForDate = filteredHourly.isEmpty() && selectedHourlyDate != null,
+                    onPressChange = onHourlyPressChange
                 )
             }
         }
@@ -1128,7 +1134,8 @@ fun HourlyForecastSection(
     hourlyForecast: List<HourlyForecastEntity>,
     selectedDate: String? = null,
     onBackToToday: () -> Unit = {},
-    noDataForDate: Boolean = false
+    noDataForDate: Boolean = false,
+    onPressChange: (Boolean) -> Unit = {}
 ) {
     val cardShape = RoundedCornerShape(16.dp)
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
@@ -1164,9 +1171,36 @@ fun HourlyForecastSection(
         modifier = Modifier
             .fillMaxWidth()
             .pointerInput(listState) {
-                detectHorizontalDragGestures { _, dragAmount ->
-                    coroutineScope.launch {
-                        listState.scrollBy(-dragAmount)
+                val slop = 4.dp.toPx()
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    onPressChange(true)
+                    try {
+                        var horizontalClaimed = false
+                        var totalDx = 0f
+                        var totalDy = 0f
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                            if (!change.pressed) break
+                            val dx = change.position.x - change.previousPosition.x
+                            val dy = change.position.y - change.previousPosition.y
+                            totalDx += dx
+                            totalDy += dy
+                            if (!horizontalClaimed) {
+                                if (kotlin.math.abs(totalDx) > kotlin.math.abs(totalDy) &&
+                                    kotlin.math.abs(totalDx) > slop
+                                ) {
+                                    horizontalClaimed = true
+                                }
+                            }
+                            if (horizontalClaimed) {
+                                coroutineScope.launch { listState.scrollBy(-dx) }
+                                change.consume()
+                            }
+                        }
+                    } finally {
+                        onPressChange(false)
                     }
                 }
             }
@@ -1393,8 +1427,9 @@ fun DailyForecastItem(
         )
         if (item.precipitationSum > 0) {
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+            val precipText = String.format(Locale.getDefault(), "%.1fmm", item.precipitationSum)
             Text(
-                text = "${item.precipitationSum}mm",
+                text = precipText,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary
             )

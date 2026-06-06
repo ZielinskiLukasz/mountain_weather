@@ -226,14 +226,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             _uiState.update { it.copy(currentPageIndex = pageIndex) }
             return
         }
+        val newKey = WeatherRepository.locationKey(page.latitude, page.longitude)
         _uiState.update {
             it.copy(
                 currentPageIndex = pageIndex,
                 locationName = page.name,
                 latitude = page.latitude,
                 longitude = page.longitude,
-                hourlyForecast = emptyList(),
-                dailyForecast = emptyList(),
+                hourlyForecast = it.hourlyByLocation[newKey] ?: emptyList(),
+                dailyForecast = it.dailyByLocation[newKey] ?: emptyList(),
                 isOfflineData = false,
                 error = null
             )
@@ -244,6 +245,14 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val settings = forecastSettings.value
         if (settings.showHourly) observeHourlyCache()
         if (settings.dailyForecastDays > 0) observeDailyCache()
+
+        val cachedHourly = _uiState.value.hourlyByLocation[newKey].orEmpty()
+        val cachedDaily = _uiState.value.dailyByLocation[newKey].orEmpty()
+        val needsHourly = settings.showHourly && cachedHourly.isEmpty()
+        val needsDaily = settings.dailyForecastDays > 0 && cachedDaily.isEmpty()
+        if (needsHourly || needsDaily) {
+            fetchWeatherEnriched(settings)
+        }
     }
 
     private fun observeNetwork() {
