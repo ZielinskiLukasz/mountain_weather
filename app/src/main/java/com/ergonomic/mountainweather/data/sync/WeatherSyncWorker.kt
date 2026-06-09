@@ -8,6 +8,7 @@ import com.ergonomic.mountainweather.data.OpenMeteoApi
 import com.ergonomic.mountainweather.data.local.AppDatabase
 import com.ergonomic.mountainweather.data.repository.SettingsRepository
 import com.ergonomic.mountainweather.data.repository.WeatherRepository
+import com.ergonomic.mountainweather.widget.WeatherWidgetUpdater
 import kotlinx.coroutines.flow.first
 
 class WeatherSyncWorker(
@@ -74,6 +75,8 @@ class WeatherSyncWorker(
                 }
             }
         }
+
+        WeatherWidgetUpdater.refreshAll(applicationContext)
 
         return if (allOk) Result.success() else Result.retry()
     }

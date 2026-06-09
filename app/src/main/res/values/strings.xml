@@ -14,6 +14,11 @@
     <string name="update_install">Install</string>
     <string name="update_dismiss">Dismiss</string>
 
+    <!-- Widgets -->
+    <string name="widget_name_minimal">Weather (minimal)</string>
+    <string name="widget_description_minimal">Compact 1x1 widget with temperature and condition icon for the currently selected city.</string>
+    <string name="widget_no_data">No data</string>
+
     <!-- Detail card -->
     <string name="temperature">Temperature</string>
     <string name="wind">Wind</string>

@@ -931,7 +931,7 @@ fun buildDetailItems(
         allItems[WeatherParams.PRECIPITATION] = DetailItem(
             WeatherParams.PRECIPITATION,
             "🌧️", stringResource(R.string.param_precipitation),
-            "${weather.precipitation} mm"
+            String.format(Locale.getDefault(), "%.1f mm", weather.precipitation)
         )
     }
     if (WeatherParams.PRESSURE in enabled) {
@@ -966,14 +966,14 @@ fun buildDetailItems(
         allItems[WeatherParams.SNOWFALL] = DetailItem(
             WeatherParams.SNOWFALL,
             "❄️", stringResource(R.string.param_snowfall),
-            "${weather.snowfall} cm"
+            String.format(Locale.getDefault(), "%.1f cm", weather.snowfall)
         )
     }
     if (WeatherParams.RAIN in enabled && weather.rain != null) {
         allItems[WeatherParams.RAIN] = DetailItem(
             WeatherParams.RAIN,
             "🌦️", stringResource(R.string.param_rain),
-            "${weather.rain} mm"
+            String.format(Locale.getDefault(), "%.1f mm", weather.rain)
         )
     }
     if (WeatherParams.SUNRISE_SUNSET in enabled && weather.sunrise != null && weather.sunset != null) {
@@ -996,21 +996,21 @@ fun buildDetailItems(
         allItems[WeatherParams.RAIN_SUM] = DetailItem(
             WeatherParams.RAIN_SUM,
             "💦", stringResource(R.string.param_rain_sum),
-            "${weather.rainSum} mm"
+            String.format(Locale.getDefault(), "%.1f mm", weather.rainSum)
         )
     }
     if (WeatherParams.SHOWERS_SUM in enabled && weather.showersSum != null) {
         allItems[WeatherParams.SHOWERS_SUM] = DetailItem(
             WeatherParams.SHOWERS_SUM,
             "🚿", stringResource(R.string.param_showers_sum),
-            "${weather.showersSum} mm"
+            String.format(Locale.getDefault(), "%.1f mm", weather.showersSum)
         )
     }
     if (WeatherParams.SNOWFALL_SUM in enabled && weather.snowfallSum != null) {
         allItems[WeatherParams.SNOWFALL_SUM] = DetailItem(
             WeatherParams.SNOWFALL_SUM,
             "🌨️", stringResource(R.string.param_snowfall_sum),
-            "${weather.snowfallSum} cm"
+            String.format(Locale.getDefault(), "%.1f cm", weather.snowfallSum)
         )
     }
     if (WeatherParams.PRECIP_HOURS in enabled && weather.precipitationHours != null) {
@@ -1309,7 +1309,7 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
         Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
             if (item.precipitation > 0) {
                 Text(
-                    text = "${item.precipitation}mm",
+                    text = String.format(Locale.getDefault(), "%.1fmm", item.precipitation),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center

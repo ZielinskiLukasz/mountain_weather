@@ -55,3 +55,9 @@
 -keep class com.google.android.play.core.install.** { *; }
 -keep class com.google.android.play.core.tasks.** { *; }
 -dontwarn com.google.android.play.**
+
+# Home screen widgets (Jetpack Glance)
+-keep class com.ergonomic.mountainweather.widget.** { *; }
+-keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver
+-keep class * extends androidx.glance.appwidget.GlanceAppWidget
+-dontwarn androidx.glance.**

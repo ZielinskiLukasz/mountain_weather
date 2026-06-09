@@ -14,6 +14,11 @@
     <string name="update_install">Instalar</string>
     <string name="update_dismiss">Cerrar</string>
 
+    <!-- Widgets -->
+    <string name="widget_name_minimal">Clima (mini)</string>
+    <string name="widget_description_minimal">Widget compacto 1x1 con temperatura e icono del tiempo para la ciudad seleccionada.</string>
+    <string name="widget_no_data">Sin datos</string>
+
     <!-- Detail card -->
     <string name="temperature">Temperatura</string>
     <string name="wind">Viento</string>

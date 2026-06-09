@@ -14,6 +14,11 @@
     <string name="update_install">Installieren</string>
     <string name="update_dismiss">Schließen</string>
 
+    <!-- Widgets -->
+    <string name="widget_name_minimal">Wetter (Mini)</string>
+    <string name="widget_description_minimal">Kompaktes 1x1 Widget mit Temperatur und Wettersymbol für die aktuell gewählte Stadt.</string>
+    <string name="widget_no_data">Keine Daten</string>
+
     <!-- Detail card -->
     <string name="temperature">Temperatur</string>
     <string name="wind">Wind</string>

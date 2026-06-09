@@ -22,8 +22,8 @@ android {
         applicationId = "com.ergonomic.mountainweather"
         minSdk = 26
         targetSdk = 35
-        versionCode = 42
-        versionName = "0.1.35"
+        versionCode = 46
+        versionName = "0.1.39"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -88,6 +88,8 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
+
+    implementation("androidx.glance:glance-appwidget:1.1.1")
 
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")

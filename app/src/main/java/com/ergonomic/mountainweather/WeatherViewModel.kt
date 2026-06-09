@@ -18,6 +18,7 @@ import com.ergonomic.mountainweather.data.repository.WeatherRepository
 import com.ergonomic.mountainweather.data.sync.NetworkMonitor
 import com.ergonomic.mountainweather.data.sync.ResilientSyncManager
 import com.ergonomic.mountainweather.util.WeatherParams
+import com.ergonomic.mountainweather.widget.WeatherWidgetUpdater
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -239,7 +240,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 error = null
             )
         }
-        viewModelScope.launch { settingsRepo.saveLastLocation(page.name, page.latitude, page.longitude) }
+        viewModelScope.launch {
+            settingsRepo.saveLastLocation(page.name, page.latitude, page.longitude)
+            WeatherWidgetUpdater.refreshAll(getApplication())
+        }
         observeCache()
         observeFavoriteStatus()
         val settings = forecastSettings.value
@@ -316,7 +320,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 selectedHourlyDate = null
             )
         }
-        viewModelScope.launch { settingsRepo.saveLastLocation(name, lat, lon) }
+        viewModelScope.launch {
+            settingsRepo.saveLastLocation(name, lat, lon)
+            WeatherWidgetUpdater.refreshAll(getApplication())
+        }
         observeCache()
         observeFavoriteStatus()
         observeFavoritesList()
@@ -606,6 +613,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     errorType = ErrorType.NONE,
                     weatherByLocation = updatedMap
                 )
+                viewModelScope.launch { WeatherWidgetUpdater.refreshAll(getApplication()) }
             },
             onFailure = { error ->
                 val type = classifyError(error)
