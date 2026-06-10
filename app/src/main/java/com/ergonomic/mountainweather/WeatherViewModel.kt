@@ -2,6 +2,7 @@ package com.ergonomic.mountainweather
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ergonomic.mountainweather.data.OpenMeteoApi
@@ -66,6 +67,8 @@ data class WeatherUiState(
     val showEnableLocation: Boolean = false,
     val favoriteLimitReached: Boolean = false
 )
+
+private const val TAG_WIDGET = "WidgetVM"
 
 class WeatherViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -221,9 +224,18 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
 
     fun onPageChanged(pageIndex: Int) {
         val pages = _uiState.value.locationPages
-        if (pageIndex !in pages.indices) return
+        if (pageIndex !in pages.indices) {
+            Log.d(TAG_WIDGET, "onPageChanged: pageIndex=$pageIndex out of range (size=${pages.size})")
+            return
+        }
         val page = pages[pageIndex]
+        Log.d(
+            TAG_WIDGET,
+            "onPageChanged: idx=$pageIndex page=${page.name} " +
+                "(curState=${_uiState.value.locationName})"
+        )
         if (page.latitude == _uiState.value.latitude && page.longitude == _uiState.value.longitude) {
+            Log.d(TAG_WIDGET, "onPageChanged: same location -> no save/refresh")
             _uiState.update { it.copy(currentPageIndex = pageIndex) }
             return
         }
@@ -242,6 +254,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
         viewModelScope.launch {
             settingsRepo.saveLastLocation(page.name, page.latitude, page.longitude)
+            Log.d(TAG_WIDGET, "onPageChanged: saved lastLocation=${page.name}; calling refreshAll")
             WeatherWidgetUpdater.refreshAll(getApplication())
         }
         observeCache()
@@ -386,6 +399,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     )
                 }
             }
+            WeatherWidgetUpdater.refreshAll(getApplication())
         }
     }
 
@@ -629,6 +643,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                             errorType = type
                         )
                     }
+                    viewModelScope.launch { WeatherWidgetUpdater.refreshAll(getApplication()) }
                 } else {
                     _uiState.update {
                         it.copy(

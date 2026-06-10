@@ -130,11 +130,12 @@ class SettingsRepository(private val context: Context) {
 
     data class SavedLocation(val name: String, val latitude: Double, val longitude: Double)
 
-    suspend fun getLastLocation(): SavedLocation? {
-        val prefs = context.dataStore.data.first()
-        val name = prefs[Keys.LAST_LOCATION_NAME] ?: return null
-        val lat = prefs[Keys.LAST_LOCATION_LAT] ?: return null
-        val lon = prefs[Keys.LAST_LOCATION_LON] ?: return null
-        return SavedLocation(name, lat, lon)
+    val lastLocationFlow: Flow<SavedLocation?> = context.dataStore.data.map { prefs ->
+        val name = prefs[Keys.LAST_LOCATION_NAME] ?: return@map null
+        val lat = prefs[Keys.LAST_LOCATION_LAT] ?: return@map null
+        val lon = prefs[Keys.LAST_LOCATION_LON] ?: return@map null
+        SavedLocation(name, lat, lon)
     }
+
+    suspend fun getLastLocation(): SavedLocation? = lastLocationFlow.first()
 }

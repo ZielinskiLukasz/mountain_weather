@@ -18,6 +18,8 @@
     <string name="widget_name_minimal">Tiempo (mini)</string>
     <string name="widget_description_minimal">Widget compacto 1x1 con temperatura e icono del tiempo para la ciudad seleccionada.</string>
     <string name="widget_no_data">Sin datos</string>
+    <string name="widget_no_favorites">Añade una ciudad favorita en la app</string>
+    <string name="widget_open_app">Abrir aplicación</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperatura</string>

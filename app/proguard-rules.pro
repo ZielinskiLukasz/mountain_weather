@@ -60,4 +60,5 @@
 -keep class com.ergonomic.mountainweather.widget.** { *; }
 -keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver
 -keep class * extends androidx.glance.appwidget.GlanceAppWidget
+-keep class * implements androidx.glance.appwidget.action.ActionCallback { *; }
 -dontwarn androidx.glance.**

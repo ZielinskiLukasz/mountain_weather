@@ -18,6 +18,8 @@
     <string name="widget_name_minimal">Pogoda (mini)</string>
     <string name="widget_description_minimal">Kompaktowy widget 1x1 z temperaturą i ikoną pogody dla aktualnie wybranego miasta.</string>
     <string name="widget_no_data">Brak danych</string>
+    <string name="widget_no_favorites">Dodaj ulubione miasto w aplikacji</string>
+    <string name="widget_open_app">Otwórz aplikację</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperatura</string>

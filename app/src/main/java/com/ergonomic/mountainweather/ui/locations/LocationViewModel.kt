@@ -11,6 +11,7 @@ import com.ergonomic.mountainweather.data.PhotonApi
 import com.ergonomic.mountainweather.data.local.AppDatabase
 import com.ergonomic.mountainweather.data.local.SavedLocationEntity
 import com.ergonomic.mountainweather.data.repository.SavedLocationRepository
+import com.ergonomic.mountainweather.widget.WeatherWidgetUpdater
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -235,15 +236,24 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun toggleFavorite(id: Long) {
-        viewModelScope.launch { savedLocationRepo.toggleFavorite(id) }
+        viewModelScope.launch {
+            savedLocationRepo.toggleFavorite(id)
+            WeatherWidgetUpdater.refreshAll(getApplication())
+        }
     }
 
     fun deleteLocation(id: Long) {
-        viewModelScope.launch { savedLocationRepo.delete(id) }
+        viewModelScope.launch {
+            savedLocationRepo.delete(id)
+            WeatherWidgetUpdater.refreshAll(getApplication())
+        }
     }
 
     fun reorderFavorites(orderedIds: List<Long>) {
-        viewModelScope.launch { savedLocationRepo.reorderFavorites(orderedIds) }
+        viewModelScope.launch {
+            savedLocationRepo.reorderFavorites(orderedIds)
+            WeatherWidgetUpdater.refreshAll(getApplication())
+        }
     }
 
     @SuppressLint("MissingPermission")

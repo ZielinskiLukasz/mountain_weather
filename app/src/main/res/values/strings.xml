@@ -18,6 +18,8 @@
     <string name="widget_name_minimal">Weather (minimal)</string>
     <string name="widget_description_minimal">Compact 1x1 widget with temperature and condition icon for the currently selected city.</string>
     <string name="widget_no_data">No data</string>
+    <string name="widget_no_favorites">Add a favorite city in the app</string>
+    <string name="widget_open_app">Open app</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperature</string>

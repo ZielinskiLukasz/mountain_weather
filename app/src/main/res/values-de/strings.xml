@@ -18,6 +18,8 @@
     <string name="widget_name_minimal">Wetter (Mini)</string>
     <string name="widget_description_minimal">Kompaktes 1x1 Widget mit Temperatur und Wettersymbol für die aktuell gewählte Stadt.</string>
     <string name="widget_no_data">Keine Daten</string>
+    <string name="widget_no_favorites">Favoritenstadt in der App hinzufügen</string>
+    <string name="widget_open_app">App öffnen</string>
 
     <!-- Detail card -->
     <string name="temperature">Temperatur</string>

@@ -111,6 +111,7 @@ import com.ergonomic.mountainweather.util.WeatherParams
 import com.ergonomic.mountainweather.util.WeatherInfo
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -299,12 +300,32 @@ fun WeatherScreen(
     )
 
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.settledPage }.collect { page ->
-            viewModel.onPageChanged(page)
-        }
+        // Drop the initial snapshotFlow emission. It's just the value at
+        // subscription time (pagerState.settledPage == initialPage == 0), not a
+        // real user swipe — without this, opening MainActivity from the widget
+        // immediately fires onPageChanged(0), which overwrites lastLocation to
+        // the first favorite before our LaunchedEffect below can scroll the
+        // pager to the city the widget actually shows.
+        snapshotFlow { pagerState.settledPage }
+            .drop(1)
+            .collect { page ->
+                viewModel.onPageChanged(page)
+            }
     }
 
     LaunchedEffect(state.locationSelectionVersion) {
+        val target = state.currentPageIndex.coerceIn(0, pageCount - 1)
+        if (pagerState.currentPage != target) {
+            pagerState.scrollToPage(target)
+        }
+    }
+
+    // Snap the pager to the index the ViewModel computed after init (which reads
+    // lastLocation from DataStore and locates the matching favorite). Without
+    // this, opening the app from the widget always lands on page 0 instead of
+    // the city the widget currently displays.
+    LaunchedEffect(state.currentPageIndex, pageCount) {
+        if (pageCount <= 0) return@LaunchedEffect
         val target = state.currentPageIndex.coerceIn(0, pageCount - 1)
         if (pagerState.currentPage != target) {
             pagerState.scrollToPage(target)
