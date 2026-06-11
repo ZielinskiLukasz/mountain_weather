@@ -15,8 +15,17 @@
     <string name="update_dismiss">Cerrar</string>
 
     <!-- Widgets -->
-    <string name="widget_name_minimal">Clima (mini)</string>
-    <string name="widget_description_minimal">Widget compacto 1x1 con temperatura e icono del tiempo para la ciudad seleccionada.</string>
+    <string name="widget_name_minimal">Carrusel de favoritos</string>
+    <string name="widget_description_minimal">Vista compacta 1×1; toca para cambiar favoritos. Más ancho: ciudad anterior, actual y siguiente.</string>
+    <string name="widget_name_daily">Pronóstico diario</string>
+    <string name="widget_description_daily">Hoy y próximos días (más al ampliar). Toca para desplazar la previsión. Redimensionable desde 1×1.</string>
+    <string name="widget_name_current">Una ciudad favorita</string>
+    <string name="widget_description_current">Siempre una sola ciudad en pantalla. Toca para cambiar al siguiente favorito.</string>
+    <string name="widget_name_params">Ciudad + parámetros</string>
+    <string name="widget_description_params">Una ciudad; al ampliar muestra parámetros a la derecha o abajo. Toca para cambiar favorito.</string>
+    <string name="widget_day_today">Hoy</string>
+    <string name="widget_day_tomorrow">Mañana</string>
+    <string name="widget_no_daily_data">Sin pronóstico diario</string>
     <string name="widget_no_data">Sin datos</string>
     <string name="widget_no_favorites">Añade una ciudad favorita en la app</string>
     <string name="widget_open_app">Abrir aplicación</string>

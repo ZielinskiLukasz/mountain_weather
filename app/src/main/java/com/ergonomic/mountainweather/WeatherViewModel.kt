@@ -27,6 +27,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -163,11 +164,17 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     private fun observeFavoritesList() {
         favoritesListJob?.cancel()
         favoritesListJob = viewModelScope.launch {
-            savedLocationRepo.observeFavorites().collect { favorites ->
-                rebuildLocationPages(favorites)
-            }
+            savedLocationRepo.observeFavorites()
+                .distinctUntilChanged { a, b -> favoritesFingerprint(a) == favoritesFingerprint(b) }
+                .collect { favorites ->
+                    rebuildLocationPages(favorites)
+                    WeatherWidgetUpdater.refreshAll(getApplication())
+                }
         }
     }
+
+    private fun favoritesFingerprint(favorites: List<SavedLocationEntity>): String =
+        favorites.joinToString("|") { "${it.id}:${it.sortOrder}:${it.isFavorite}:${it.name}" }
 
     private fun rebuildLocationPages(favorites: List<SavedLocationEntity>) {
         val state = _uiState.value

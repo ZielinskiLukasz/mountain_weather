@@ -20,6 +20,8 @@ data class WeatherEntity(
     val pressure: Double,
     val time: String,
     val cachedAt: Long = System.currentTimeMillis(),
+    /** 1 = day, 0 = night (from Open-Meteo `is_day`). */
+    val isDay: Int? = null,
     val cloudCover: Int? = null,
     val windGusts: Double? = null,
     val snowfall: Double? = null,

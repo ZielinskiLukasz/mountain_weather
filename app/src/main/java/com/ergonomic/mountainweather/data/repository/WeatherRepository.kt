@@ -51,7 +51,8 @@ class WeatherRepository(
                 precipitation = response.current.precipitation,
                 pressure = response.current.pressure,
                 time = response.current.time,
-                cachedAt = System.currentTimeMillis()
+                cachedAt = System.currentTimeMillis(),
+                isDay = response.current.isDay
             )
             dao.insertWeather(entity)
             Result.success(entity)
@@ -116,6 +117,7 @@ class WeatherRepository(
                 pressure = response.current.pressure,
                 time = response.current.time,
                 cachedAt = System.currentTimeMillis(),
+                isDay = response.current.isDay,
                 cloudCover = response.current.cloudCover,
                 windGusts = response.current.windGusts,
                 snowfall = response.current.snowfall,
@@ -276,6 +278,7 @@ class WeatherRepository(
                 pressure = response.current.pressure,
                 time = response.current.time,
                 cachedAt = System.currentTimeMillis(),
+                isDay = response.current.isDay,
                 cloudCover = response.current.cloudCover,
                 windGusts = response.current.windGusts,
                 snowfall = response.current.snowfall,

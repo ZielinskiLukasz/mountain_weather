@@ -17,6 +17,19 @@ sealed interface WidgetData {
         val cityName: String,
         val temperature: Double,
         val weatherCode: Int,
-        val cachedAt: Long
+        val cachedAt: Long,
+        val isDay: Boolean = true,
+        /** Previous favorite in the carousel (only populated when ≥2 favorites). */
+        val previous: WidgetCitySnapshot? = null,
+        /** Next favorite in the carousel (only populated when ≥2 favorites). */
+        val next: WidgetCitySnapshot? = null
     ) : WidgetData
 }
+
+/** Compact city display used for prev/next previews on wide widget layouts. */
+data class WidgetCitySnapshot(
+    val cityName: String,
+    val temperature: Double?,
+    val weatherCode: Int?,
+    val isDay: Boolean = true
+)

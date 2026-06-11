@@ -14,7 +14,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         HourlyForecastEntity::class,
         DailyForecastEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -129,6 +129,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                try { db.execSQL("ALTER TABLE weather_cache ADD COLUMN isDay INTEGER") }
+                catch (_: Exception) { }
+            }
+        }
+
         private fun addElevationColumn(db: SupportSQLiteDatabase) {
             try { db.execSQL("ALTER TABLE weather_cache ADD COLUMN elevation REAL") }
             catch (_: Exception) { }
@@ -149,7 +156,7 @@ abstract class AppDatabase : RoomDatabase() {
                 "visibility REAL", "freezingLevelHeight REAL",
                 "temperatureMax REAL", "temperatureMin REAL",
                 "aqiEu INTEGER", "aqiUs INTEGER", "pm25 REAL", "pm10 REAL", "ozone REAL",
-                "elevation REAL"
+                "elevation REAL", "isDay INTEGER"
             )
             columns.forEach { col ->
                 try { db.execSQL("ALTER TABLE weather_cache ADD COLUMN $col") }
@@ -211,8 +218,8 @@ abstract class AppDatabase : RoomDatabase() {
                     .addMigrations(
                         MIGRATION_1_8, MIGRATION_2_8, MIGRATION_3_8,
                         MIGRATION_4_8, MIGRATION_4_5, MIGRATION_5_6,
-                        MIGRATION_5_8, MIGRATION_6_7, MIGRATION_6_8,
-                        MIGRATION_7_8
+                        MIGRATION_5_8,                         MIGRATION_6_7, MIGRATION_6_8,
+                        MIGRATION_7_8, MIGRATION_8_9
                     )
                     .build()
                     .also { INSTANCE = it }

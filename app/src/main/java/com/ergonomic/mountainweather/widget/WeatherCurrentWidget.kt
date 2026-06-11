@@ -25,7 +25,6 @@ import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
-import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
@@ -37,7 +36,10 @@ import com.ergonomic.mountainweather.MainActivity
 import com.ergonomic.mountainweather.R
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 
-class WeatherMinimalWidget : GlanceAppWidget() {
+/**
+ * Widget #3: always one city on screen; tap cycles to the next favorite (no carousel).
+ */
+class WeatherCurrentWidget : GlanceAppWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Exact
 
@@ -49,7 +51,7 @@ class WeatherMinimalWidget : GlanceAppWidget() {
             GlanceTheme {
                 val data by WidgetDataLoader.widgetDataFlow(context)
                     .collectAsState(initial = initial)
-                MinimalContent(data, context)
+                CurrentContent(data, context)
             }
         }
     }
@@ -63,51 +65,19 @@ class WeatherMinimalWidget : GlanceAppWidget() {
         val showCity: Boolean
     )
 
-    /** Side columns use smaller sizes; temp is further capped to the column width. */
-    private fun sideSizes(center: LayoutSizes, widgetWidthDp: Float): LayoutSizes {
-        val colWidth = widgetWidthDp / 3f
-        return LayoutSizes(
-            iconDp = (center.iconDp * 0.55f).toInt().coerceAtLeast(14),
-            tempSp = fitTempSp((center.tempSp * 0.65f).toInt(), colWidth),
-            citySp = (center.citySp * 0.75f).toInt().coerceAtLeast(8),
-            cornerDp = center.cornerDp,
-            cornerPaddingDp = center.cornerPaddingDp,
-            showCity = center.showCity
-        )
-    }
-
-    /** Keep temperature on one line by limiting font size to what fits the column. */
-    private fun fitTempSp(requestedSp: Int, columnWidthDp: Float): Int {
-        if (columnWidthDp <= 0f) return requestedSp
-        // "~2.5dp" per sp unit fits a bold "−12°" (4 chars) without wrapping.
-        val maxByWidth = (columnWidthDp / 2.5f).toInt().coerceAtLeast(8)
-        return minOf(requestedSp, maxByWidth)
-    }
-
-    private fun centerSizesForCarousel(base: LayoutSizes, widgetWidthDp: Float): LayoutSizes {
-        val colWidth = widgetWidthDp / 3f
-        return base.copy(tempSp = fitTempSp(base.tempSp, colWidth))
-    }
-
-    /** Wide layout when there is at least one distinct neighbor to show. */
-    private fun shouldShowWideLayout(widthDp: Float, data: WidgetData.Ready): Boolean {
-        if (widthDp < 95f) return false
-        return data.previous != null || data.next != null
-    }
-
     @Composable
-    private fun MinimalContent(data: WidgetData, context: Context) {
+    private fun CurrentContent(data: WidgetData, context: Context) {
         val size = LocalSize.current
         val w = size.width.value
         val h = size.height.value
         val minSide = minOf(w, h)
 
         val sizes = when {
-            minSide < 70 -> LayoutSizes(iconDp = 26, tempSp = 16, citySp = 9, cornerDp = 14, cornerPaddingDp = 6, showCity = h >= 70)
-            minSide < 110 -> LayoutSizes(iconDp = 34, tempSp = 22, citySp = 11, cornerDp = 18, cornerPaddingDp = 8, showCity = true)
-            minSide < 170 -> LayoutSizes(iconDp = 54, tempSp = 36, citySp = 14, cornerDp = 24, cornerPaddingDp = 10, showCity = true)
-            minSide < 240 -> LayoutSizes(iconDp = 78, tempSp = 52, citySp = 18, cornerDp = 30, cornerPaddingDp = 12, showCity = true)
-            else -> LayoutSizes(iconDp = 100, tempSp = 64, citySp = 22, cornerDp = 36, cornerPaddingDp = 14, showCity = true)
+            minSide < 70 -> LayoutSizes(26, 16, 9, 14, 6, h >= 70)
+            minSide < 110 -> LayoutSizes(34, 22, 11, 18, 8, true)
+            minSide < 170 -> LayoutSizes(54, 36, 14, 24, 10, true)
+            minSide < 240 -> LayoutSizes(78, 52, 18, 30, 12, true)
+            else -> LayoutSizes(100, 64, 22, 36, 14, true)
         }
 
         val cycle: Action = actionRunCallback<CycleFavoriteAction>()
@@ -121,9 +91,7 @@ class WeatherMinimalWidget : GlanceAppWidget() {
                 .clickable(tap)
         ) {
             Box(
-                modifier = GlanceModifier
-                    .fillMaxSize()
-                    .clickable(tap),
+                modifier = GlanceModifier.fillMaxSize().clickable(tap),
                 contentAlignment = Alignment.Center
             ) {
                 when (data) {
@@ -140,25 +108,14 @@ class WeatherMinimalWidget : GlanceAppWidget() {
                         context = context
                     )
 
-                    is WidgetData.Ready -> {
-                        if (shouldShowWideLayout(w, data)) {
-                            WidgetCarouselContent(
-                                data = data,
-                                centerSizes = centerSizesForCarousel(sizes, w),
-                                sideSizes = sideSizes(sizes, w),
-                                tap = tap
-                            )
-                        } else {
-                            WidgetCityColumn(
-                                cityName = data.cityName,
-                                temperature = data.temperature,
-                                weatherCode = data.weatherCode,
-                                isDay = data.isDay,
-                                sizes = sizes,
-                                tap = tap
-                            )
-                        }
-                    }
+                    is WidgetData.Ready -> WidgetCityColumn(
+                        cityName = data.cityName,
+                        temperature = data.temperature,
+                        weatherCode = data.weatherCode,
+                        isDay = data.isDay,
+                        sizes = sizes,
+                        tap = tap
+                    )
                 }
             }
 
@@ -184,77 +141,11 @@ class WeatherMinimalWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun WidgetCarouselContent(
-        data: WidgetData.Ready,
-        centerSizes: LayoutSizes,
-        sideSizes: LayoutSizes,
-        tap: Action
-    ) {
-        Row(
-            modifier = GlanceModifier
-                .fillMaxSize()
-                .padding(horizontal = 4.dp, vertical = 4.dp)
-                .clickable(tap),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Left slot — previous neighbor (empty when none).
-            Box(
-                modifier = GlanceModifier.defaultWeight().clickable(tap),
-                contentAlignment = Alignment.Center
-            ) {
-                data.previous?.let { prev ->
-                    WidgetCityColumn(
-                        cityName = prev.cityName,
-                        temperature = prev.temperature,
-                        weatherCode = prev.weatherCode,
-                        isDay = prev.isDay,
-                        sizes = sideSizes,
-                        tap = tap
-                    )
-                }
-            }
-            // Center slot — always the selected city.
-            Box(
-                modifier = GlanceModifier.defaultWeight().clickable(tap),
-                contentAlignment = Alignment.Center
-            ) {
-                WidgetCityColumn(
-                    cityName = data.cityName,
-                    temperature = data.temperature,
-                    weatherCode = data.weatherCode,
-                    isDay = data.isDay,
-                    sizes = centerSizes,
-                    tap = tap
-                )
-            }
-            // Right slot — next favorite in list order (empty when current is last).
-            Box(
-                modifier = GlanceModifier.defaultWeight().clickable(tap),
-                contentAlignment = Alignment.Center
-            ) {
-                data.next?.let { next ->
-                    WidgetCityColumn(
-                        cityName = next.cityName,
-                        temperature = next.temperature,
-                        weatherCode = next.weatherCode,
-                        isDay = next.isDay,
-                        sizes = sideSizes,
-                        tap = tap
-                    )
-                }
-            }
-        }
-    }
-
-    @Composable
     private fun WidgetMessage(text: String, fontSizeSp: Int, tap: Action) {
         Text(
             text = text,
             maxLines = 3,
-            modifier = GlanceModifier
-                .clickable(tap)
-                .padding(horizontal = 8.dp, vertical = 6.dp),
+            modifier = GlanceModifier.clickable(tap).padding(horizontal = 8.dp, vertical = 6.dp),
             style = TextStyle(
                 color = GlanceTheme.colors.onSurface,
                 fontSize = fontSizeSp.sp,
@@ -271,9 +162,7 @@ class WeatherMinimalWidget : GlanceAppWidget() {
         context: Context
     ) {
         Column(
-            modifier = GlanceModifier
-                .padding(horizontal = 6.dp, vertical = 4.dp)
-                .clickable(tap),
+            modifier = GlanceModifier.padding(horizontal = 6.dp, vertical = 4.dp).clickable(tap),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -318,9 +207,7 @@ class WeatherMinimalWidget : GlanceAppWidget() {
         }
 
         Column(
-            modifier = GlanceModifier
-                .padding(horizontal = 2.dp, vertical = 2.dp)
-                .clickable(tap),
+            modifier = GlanceModifier.padding(horizontal = 2.dp, vertical = 2.dp).clickable(tap),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -328,9 +215,7 @@ class WeatherMinimalWidget : GlanceAppWidget() {
                 Image(
                     provider = ImageProvider(iconResId),
                     contentDescription = null,
-                    modifier = GlanceModifier
-                        .size(sizes.iconDp.dp)
-                        .clickable(tap)
+                    modifier = GlanceModifier.size(sizes.iconDp.dp).clickable(tap)
                 )
             }
             Text(
@@ -360,6 +245,6 @@ class WeatherMinimalWidget : GlanceAppWidget() {
     }
 
     companion object {
-        private const val TAG = "WeatherMinimalWidget"
+        private const val TAG = "WeatherCurrentWidget"
     }
 }

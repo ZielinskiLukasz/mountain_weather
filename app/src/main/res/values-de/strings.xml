@@ -15,8 +15,17 @@
     <string name="update_dismiss">Schließen</string>
 
     <!-- Widgets -->
-    <string name="widget_name_minimal">Wetter (Mini)</string>
-    <string name="widget_description_minimal">Kompaktes 1x1 Widget mit Temperatur und Wettersymbol für die aktuell gewählte Stadt.</string>
+    <string name="widget_name_minimal">Favoriten-Karussell</string>
+    <string name="widget_description_minimal">Kompakte 1×1-Ansicht; tippen zum Wechseln der Favoriten. Breiter: vorherige, aktuelle und nächste Stadt nebeneinander.</string>
+    <string name="widget_name_daily">Mehrtagesvorhersage</string>
+    <string name="widget_description_daily">Heute und kommende Tage (mehr bei größerer Breite). Tippen zum Durchblättern. Größe ab 1×1.</string>
+    <string name="widget_name_current">Eine Favoritenstadt</string>
+    <string name="widget_description_current">Immer nur eine Stadt auf dem Bildschirm. Tippen wechselt zum nächsten Favoriten.</string>
+    <string name="widget_name_params">Stadt + Parameter</string>
+    <string name="widget_description_params">Eine Stadt; bei Größenänderung Parameter rechts oder unten. Tippen wechselt Favoriten. Parameter aus den Einstellungen.</string>
+    <string name="widget_day_today">Heute</string>
+    <string name="widget_day_tomorrow">Morgen</string>
+    <string name="widget_no_daily_data">Keine Tagesprognose</string>
     <string name="widget_no_data">Keine Daten</string>
     <string name="widget_no_favorites">Favoritenstadt in der App hinzufügen</string>
     <string name="widget_open_app">App öffnen</string>

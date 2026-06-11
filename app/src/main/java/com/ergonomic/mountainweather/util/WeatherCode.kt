@@ -58,6 +58,42 @@ fun weatherCodeToInfo(code: Int, isDay: Boolean = true): WeatherInfo = when (cod
     else -> WeatherInfo(R.string.wc_unknown, "❓")
 }
 
+/**
+ * Resolve whether it is currently day at the given location/time.
+ *
+ * Priority: Open-Meteo `is_day` flag → sunrise/sunset window → hour heuristic
+ * (6–20, same as hourly forecast).
+ */
+fun resolveIsDay(
+    isDayFromApi: Int? = null,
+    timeIso: String? = null,
+    sunriseIso: String? = null,
+    sunsetIso: String? = null
+): Boolean {
+    if (isDayFromApi != null) return isDayFromApi == 1
+
+    val time = parseIsoLocalDateTime(timeIso)
+    if (time != null && sunriseIso != null && sunsetIso != null) {
+        val sunrise = parseIsoLocalDateTime(sunriseIso)
+        val sunset = parseIsoLocalDateTime(sunsetIso)
+        if (sunrise != null && sunset != null) {
+            return !time.isBefore(sunrise) && time.isBefore(sunset)
+        }
+    }
+
+    val hour = time?.hour ?: java.time.LocalDateTime.now().hour
+    return hour in 6..20
+}
+
+private fun parseIsoLocalDateTime(value: String?): java.time.LocalDateTime? {
+    if (value.isNullOrBlank()) return null
+    return try {
+        java.time.LocalDateTime.parse(value, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    } catch (_: Exception) {
+        null
+    }
+}
+
 fun windDirectionToArrow(degrees: Int): String = when ((degrees + 22) / 45 % 8) {
     0 -> "↓ N"
     1 -> "↙ NE"

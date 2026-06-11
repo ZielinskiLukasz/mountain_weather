@@ -15,8 +15,17 @@
     <string name="update_dismiss">Zamknij</string>
 
     <!-- Widgets -->
-    <string name="widget_name_minimal">Pogoda (mini)</string>
-    <string name="widget_description_minimal">Kompaktowy widget 1x1 z temperaturą i ikoną pogody dla aktualnie wybranego miasta.</string>
+    <string name="widget_name_minimal">Karuzela ulubionych</string>
+    <string name="widget_description_minimal">Kompaktowy widok 1×1; kliknij, aby przełączać ulubione. Szerszy układ: poprzednie, bieżące i następne miasto obok siebie.</string>
+    <string name="widget_name_daily">Prognoza wielodniowa</string>
+    <string name="widget_description_daily">Pokazuje dziś i kolejne dni (więcej przy szerszym rozmiarze). Kliknij, aby przewijać prognozę. Rozciągalny od 1×1.</string>
+    <string name="widget_name_current">Jedno ulubione miasto</string>
+    <string name="widget_description_current">Zawsze tylko jedno miasto na ekranie. Kliknij, aby przełączyć na kolejne ulubione.</string>
+    <string name="widget_name_params">Miasto i parametry</string>
+    <string name="widget_description_params">Jedno miasto; po rozciągnięciu parametry z ustawień po prawej lub na dole. Kliknij, aby zmienić miasto.</string>
+    <string name="widget_day_today">Dziś</string>
+    <string name="widget_day_tomorrow">Jutro</string>
+    <string name="widget_no_daily_data">Brak prognozy dziennej</string>
     <string name="widget_no_data">Brak danych</string>
     <string name="widget_no_favorites">Dodaj ulubione miasto w aplikacji</string>
     <string name="widget_open_app">Otwórz aplikację</string>

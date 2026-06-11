@@ -109,6 +109,7 @@ import com.ergonomic.mountainweather.ui.theme.CardBorderLight
 import com.ergonomic.mountainweather.ui.theme.MountainWeatherTheme
 import com.ergonomic.mountainweather.util.WeatherParams
 import com.ergonomic.mountainweather.util.WeatherInfo
+import com.ergonomic.mountainweather.util.resolveIsDay
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
 import kotlinx.coroutines.flow.drop
@@ -584,7 +585,10 @@ fun WeatherContent(
     onSelectDay: (String?) -> Unit,
     onHourlyPressChange: (Boolean) -> Unit = {}
 ) {
-    val weatherInfo = weatherCodeToInfo(weather.weatherCode)
+    val weatherInfo = weatherCodeToInfo(
+        weather.weatherCode,
+        isDay = resolveIsDay(weather.isDay, weather.time, weather.sunrise, weather.sunset)
+    )
     val scrollState = rememberScrollState()
 
     val cardShape = RoundedCornerShape(16.dp)
@@ -1303,7 +1307,7 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
         }
     }
     val hour = hourData.first
-    val isDay = hourData.second in 6..20
+    val isDay = resolveIsDay(timeIso = item.time)
     val info = weatherCodeToInfo(item.weatherCode, isDay)
 
     Column(

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Widget background: 75% opacity (0xBF). Configurable opacity planned for Stage 5. -->
-    <color name="widget_bg_light">#BFF6F6F6</color>
-    <color name="widget_bg_dark">#BF1F2128</color>
+    <!-- Widget background: 65% opacity (0xA6). Configurable opacity planned for Stage 5. -->
+    <color name="widget_bg_light">#A6F6F6F6</color>
+    <color name="widget_bg_dark">#A61F2128</color>
 </resources>

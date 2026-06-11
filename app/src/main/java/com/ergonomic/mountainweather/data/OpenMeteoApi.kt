@@ -11,7 +11,7 @@ interface OpenMeteoApi {
     suspend fun getCurrentWeather(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("current") current: String = "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,pressure_msl",
+        @Query("current") current: String = "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,pressure_msl,is_day",
         @Query("timezone") timezone: String = "auto"
     ): WeatherResponse
 

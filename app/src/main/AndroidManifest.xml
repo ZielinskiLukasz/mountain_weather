@@ -35,5 +35,41 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_minimal" />
         </receiver>
+
+        <receiver
+            android:name=".widget.WeatherDailyReceiver"
+            android:exported="true"
+            android:label="@string/widget_name_daily">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_daily" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.WeatherCurrentReceiver"
+            android:exported="true"
+            android:label="@string/widget_name_current">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_current" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.WeatherParamsReceiver"
+            android:exported="true"
+            android:label="@string/widget_name_params">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_params" />
+        </receiver>
     </application>
 </manifest>

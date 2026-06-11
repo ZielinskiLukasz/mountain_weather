@@ -1,11 +1,38 @@
 package com.ergonomic.mountainweather
 
+import com.ergonomic.mountainweather.util.resolveIsDay
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
 import org.junit.Assert.*
 import org.junit.Test
 
 class WeatherCodeTest {
+
+    @Test
+    fun `resolveIsDay uses API flag when available`() {
+        assertTrue(resolveIsDay(isDayFromApi = 1))
+        assertFalse(resolveIsDay(isDayFromApi = 0))
+    }
+
+    @Test
+    fun `resolveIsDay uses sunrise and sunset window`() {
+        assertTrue(resolveIsDay(
+            timeIso = "2024-06-09T12:00",
+            sunriseIso = "2024-06-09T05:00",
+            sunsetIso = "2024-06-09T21:00"
+        ))
+        assertFalse(resolveIsDay(
+            timeIso = "2024-06-09T22:00",
+            sunriseIso = "2024-06-09T05:00",
+            sunsetIso = "2024-06-09T21:00"
+        ))
+    }
+
+    @Test
+    fun `resolveIsDay falls back to hour heuristic`() {
+        assertTrue(resolveIsDay(timeIso = "2024-06-09T12:00"))
+        assertFalse(resolveIsDay(timeIso = "2024-06-09T22:00"))
+    }
 
     @Test
     fun `clear sky returns sun icon`() {

@@ -15,8 +15,17 @@
     <string name="update_dismiss">Dismiss</string>
 
     <!-- Widgets -->
-    <string name="widget_name_minimal">Weather (minimal)</string>
-    <string name="widget_description_minimal">Compact 1x1 widget with temperature and condition icon for the currently selected city.</string>
+    <string name="widget_name_minimal">Favorites carousel</string>
+    <string name="widget_description_minimal">Compact 1×1 view; tap to cycle favorites. Wider sizes show previous, current and next city side by side.</string>
+    <string name="widget_name_daily">Multi-day forecast</string>
+    <string name="widget_description_daily">Shows today and upcoming days (more when wider). Tap to scroll through the forecast. Resizable from 1×1.</string>
+    <string name="widget_name_current">One favorite at a time</string>
+    <string name="widget_description_current">Always a single city on screen. Tap to switch to the next favorite.</string>
+    <string name="widget_name_params">City + parameters</string>
+    <string name="widget_description_params">One city; when resized, shows enabled parameters on the right or below. Tap to switch favorites.</string>
+    <string name="widget_day_today">Today</string>
+    <string name="widget_day_tomorrow">Tomorrow</string>
+    <string name="widget_no_daily_data">No daily forecast</string>
     <string name="widget_no_data">No data</string>
     <string name="widget_no_favorites">Add a favorite city in the app</string>
     <string name="widget_open_app">Open app</string>
