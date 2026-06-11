@@ -30,10 +30,15 @@ object WeatherWidgetUpdater {
             .onSuccess { Log.d(TAG, "Params updateAll OK") }
             .onFailure { Log.w(TAG, "Params updateAll failed: ${it.message}", it) }
 
+        runCatching { WeatherHourlyWidget().updateAll(appCtx) }
+            .onSuccess { Log.d(TAG, "Hourly updateAll OK") }
+            .onFailure { Log.w(TAG, "Hourly updateAll failed: ${it.message}", it) }
+
         broadcastUpdate(appCtx, WeatherMinimalReceiver::class.java)
         broadcastUpdate(appCtx, WeatherDailyReceiver::class.java)
         broadcastUpdate(appCtx, WeatherCurrentReceiver::class.java)
         broadcastUpdate(appCtx, WeatherParamsReceiver::class.java)
+        broadcastUpdate(appCtx, WeatherHourlyReceiver::class.java)
     }
 
     private fun broadcastUpdate(appCtx: Context, receiver: Class<*>) {

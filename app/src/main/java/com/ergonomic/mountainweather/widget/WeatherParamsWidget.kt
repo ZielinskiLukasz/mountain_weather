@@ -152,12 +152,15 @@ class WeatherParamsWidget : GlanceAppWidget() {
                             )
                         )
                         when (effectivePlacement) {
-                            WidgetParamsPlacement.Compact -> WidgetIconTempColumn(
+                            WidgetParamsPlacement.Compact -> WidgetCityColumn(
+                                cityName = data.cityName,
                                 temperature = data.temperature,
                                 weatherCode = data.weatherCode,
                                 isDay = data.isDay,
                                 sizes = citySizes,
-                                tap = tap
+                                widgetWidthDp = w,
+                                tap = tap,
+                                stripCompact = true
                             )
 
                             WidgetParamsPlacement.Split -> if (sideBySide) {

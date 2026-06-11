@@ -5,10 +5,10 @@ import android.util.Log
 import com.ergonomic.mountainweather.data.local.AppDatabase
 import com.ergonomic.mountainweather.data.local.SavedLocationEntity
 import com.ergonomic.mountainweather.data.local.WeatherEntity
+import com.ergonomic.mountainweather.data.repository.ForecastSettings
 import com.ergonomic.mountainweather.data.repository.SettingsRepository
 import com.ergonomic.mountainweather.data.repository.WeatherRepository
 import com.ergonomic.mountainweather.util.WeatherParamFormatter
-import com.ergonomic.mountainweather.util.WeatherParams
 import com.ergonomic.mountainweather.util.resolveIsDay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -41,8 +41,16 @@ object WidgetParamsDataLoader {
 
         val key = WeatherRepository.locationKey(resolved.latitude, resolved.longitude)
         val weather = db.weatherDao().getWeather(key)
+        val gpsAltitude = settingsRepo.getLastGpsAltitude()
         return if (weather != null) {
-            buildReady(appCtx, resolved.name, weather, settings.enabledCurrentParams, settings.paramOrder)
+            buildReady(
+                appCtx,
+                resolved.name,
+                weather,
+                settings.enabledCurrentParams,
+                settings.paramOrder,
+                gpsAltitude
+            )
         } else {
             WidgetParamsData.NoData(resolved.name)
         }
@@ -57,10 +65,13 @@ object WidgetParamsDataLoader {
         return combine(
             settingsRepo.lastLocationFlow,
             settingsRepo.forecastSettings,
+            settingsRepo.lastGpsAltitudeFlow,
             db.savedLocationDao().observeFavorites(limit = 10)
-        ) { saved, settings, favorites -> Triple(saved, settings, favorites) }
+        ) { saved, settings, gpsAltitude, favorites ->
+            WidgetInputs(saved, settings, gpsAltitude, favorites)
+        }
             .distinctUntilChanged()
-            .flatMapLatest { (saved, settings, favorites) ->
+            .flatMapLatest { (saved, settings, gpsAltitude, favorites) ->
                 val resolved = resolveLocation(saved, favorites)
                 if (resolved == null) {
                     flowOf(WidgetParamsData.NoFavorites)
@@ -73,7 +84,8 @@ object WidgetParamsDataLoader {
                                 resolved.name,
                                 weather,
                                 settings.enabledCurrentParams,
-                                settings.paramOrder
+                                settings.paramOrder,
+                                gpsAltitude
                             )
                         } else {
                             WidgetParamsData.NoData(resolved.name)
@@ -84,15 +96,28 @@ object WidgetParamsDataLoader {
             .distinctUntilChanged()
     }
 
+    private data class WidgetInputs(
+        val saved: SettingsRepository.SavedLocation?,
+        val settings: ForecastSettings,
+        val gpsAltitude: Double?,
+        val favorites: List<SavedLocationEntity>
+    )
+
     private fun buildReady(
         context: Context,
         cityName: String,
         weather: WeatherEntity,
         enabledParams: Set<String>,
-        paramOrder: List<String>
+        paramOrder: List<String>,
+        gpsAltitude: Double?
     ): WidgetParamsData.Ready {
-        val enabled = enabledParams - WeatherParams.GPS_ALTITUDE
-        val params = WeatherParamFormatter.buildLines(context, weather, enabled, paramOrder)
+        val params = WeatherParamFormatter.buildLines(
+            context,
+            weather,
+            enabledParams,
+            paramOrder,
+            gpsAltitude
+        )
         Log.d(TAG, "buildReady: $cityName params=${params.size}")
         return WidgetParamsData.Ready(
             cityName = cityName,

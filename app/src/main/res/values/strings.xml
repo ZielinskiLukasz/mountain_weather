@@ -23,6 +23,9 @@
     <string name="widget_description_current">Always a single city on screen. Tap to switch to the next favorite.</string>
     <string name="widget_name_params">City + parameters</string>
     <string name="widget_description_params">One city; when resized, shows enabled parameters on the right or below. Tap to switch favorites.</string>
+    <string name="widget_name_hourly">Hourly timeline</string>
+    <string name="widget_description_hourly">Fixed 4×1 strip: next 6 hours for the selected city. Tap opens the app.</string>
+    <string name="widget_hourly_disabled">Enable hourly forecast in settings</string>
     <string name="widget_day_today">Today</string>
     <string name="widget_day_tomorrow">Tomorrow</string>
     <string name="widget_no_daily_data">No daily forecast</string>

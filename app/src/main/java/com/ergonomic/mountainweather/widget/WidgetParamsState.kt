@@ -125,15 +125,16 @@ object WidgetParamsLayout {
         val minSide = minOf(widthDp, heightDp)
         val placement = placement(widthDp, heightDp, minSide)
         if (placement == WidgetParamsPlacement.Compact) {
+            val city = leftColumnCityBlock(heightDp, widthDp)
             return WidgetParamsLayoutSpec(
                 placement = placement,
-                cityIconDp = iconFor(minSide),
-                cityTempSp = tempFor(minSide),
-                cityLabelSp = labelFor(minSide),
+                cityIconDp = city.iconDp,
+                cityTempSp = city.tempSp,
+                cityLabelSp = city.labelSp,
                 paramSp = 8,
                 maxParamLines = 0,
                 compactParams = true,
-                showCity = false
+                showCity = true
             )
         }
 
@@ -343,11 +344,7 @@ object WidgetParamsLayout {
         val count = paramCount.coerceAtLeast(1)
         val short = heightDp < 100f
         val wide = widthDp >= 240f
-        val cellSide = minOf(heightDp, widthDp * 0.48f).coerceIn(70f, 110f)
-
-        val iconDp = iconFor(cellSide)
-        val tempSp = tempFor(cellSide)
-        val citySp = labelFor(cellSide)
+        val city = leftColumnCityBlock(heightDp, widthDp * 0.48f)
 
         // Scale all param lines to fit height — show every enabled param when possible.
         val paramAreaH = (heightDp - 4f).coerceAtLeast(36f)
@@ -365,9 +362,9 @@ object WidgetParamsLayout {
 
         return WidgetParamsLayoutSpec(
             placement = WidgetParamsPlacement.Right,
-            cityIconDp = iconDp,
-            cityTempSp = tempSp,
-            cityLabelSp = citySp,
+            cityIconDp = city.iconDp,
+            cityTempSp = city.tempSp,
+            cityLabelSp = city.labelSp,
             paramSp = paramSp,
             maxParamLines = count,
             paramColumns = 1,
@@ -405,6 +402,12 @@ object WidgetParamsLayout {
     }
 
     private data class CityBlock(val iconDp: Int, val tempSp: Int, val labelSp: Int)
+
+    /** Icon + temp + city label sizes for a vertical city column (1×1 or left half of 1×2). */
+    private fun leftColumnCityBlock(heightDp: Float, contentWidthDp: Float): CityBlock {
+        val cellSide = minOf(heightDp, contentWidthDp).coerceIn(70f, 110f)
+        return CityBlock(iconFor(cellSide), tempFor(cellSide), labelFor(cellSide))
+    }
 
     private fun cityBlockFor(
         placement: WidgetParamsPlacement,

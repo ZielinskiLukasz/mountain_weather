@@ -595,7 +595,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     CancellationTokenSource().token
                 ).await()
                 if (location != null && location.hasAltitude()) {
+                    settingsRepo.saveGpsAltitude(location.altitude)
                     _uiState.update { it.copy(gpsAltitude = location.altitude, gpsAltitudeError = false) }
+                    WeatherWidgetUpdater.refreshAll(getApplication())
                 } else {
                     _uiState.update { it.copy(gpsAltitudeError = true) }
                 }

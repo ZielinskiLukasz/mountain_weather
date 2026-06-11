@@ -24,7 +24,8 @@ object WeatherParamFormatter {
         context: Context,
         weather: WeatherEntity,
         enabled: Set<String>,
-        paramOrder: List<String>
+        paramOrder: List<String>,
+        gpsAltitude: Double? = null
     ): List<WeatherParamLine> {
         val allItems = linkedMapOf<String, WeatherParamLine>()
 
@@ -249,10 +250,15 @@ object WeatherParamFormatter {
             )
         }
         if (WeatherParams.GPS_ALTITUDE in enabled) {
+            val altitudeValue = if (gpsAltitude != null) {
+                "${"%.0f".format(Locale.getDefault(), gpsAltitude)} m"
+            } else {
+                "— m"
+            }
             allItems[WeatherParams.GPS_ALTITUDE] = line(
                 WeatherParams.GPS_ALTITUDE,
                 context.getString(R.string.param_gps_altitude),
-                "—"
+                altitudeValue
             )
         }
 

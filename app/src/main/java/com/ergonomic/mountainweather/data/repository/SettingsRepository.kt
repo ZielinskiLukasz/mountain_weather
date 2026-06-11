@@ -53,6 +53,7 @@ class SettingsRepository(private val context: Context) {
         val LAST_LOCATION_NAME = stringPreferencesKey("last_location_name")
         val LAST_LOCATION_LAT = doublePreferencesKey("last_location_lat")
         val LAST_LOCATION_LON = doublePreferencesKey("last_location_lon")
+        val LAST_GPS_ALTITUDE = doublePreferencesKey("last_gps_altitude")
         val ENABLED_CURRENT_PARAMS = stringSetPreferencesKey("enabled_current_params")
         val PARAM_ORDER = stringPreferencesKey("param_order")
         val THEME_MODE = stringPreferencesKey("theme_mode")
@@ -138,4 +139,14 @@ class SettingsRepository(private val context: Context) {
     }
 
     suspend fun getLastLocation(): SavedLocation? = lastLocationFlow.first()
+
+    val lastGpsAltitudeFlow: Flow<Double?> = context.dataStore.data.map { prefs ->
+        prefs[Keys.LAST_GPS_ALTITUDE]
+    }
+
+    suspend fun saveGpsAltitude(altitude: Double) {
+        context.dataStore.edit { it[Keys.LAST_GPS_ALTITUDE] = altitude }
+    }
+
+    suspend fun getLastGpsAltitude(): Double? = lastGpsAltitudeFlow.first()
 }

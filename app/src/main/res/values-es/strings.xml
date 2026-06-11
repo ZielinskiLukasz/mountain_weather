@@ -23,6 +23,9 @@
     <string name="widget_description_current">Siempre una sola ciudad en pantalla. Toca para cambiar al siguiente favorito.</string>
     <string name="widget_name_params">Ciudad + parámetros</string>
     <string name="widget_description_params">Una ciudad; al ampliar muestra parámetros a la derecha o abajo. Toca para cambiar favorito.</string>
+    <string name="widget_name_hourly">Línea horaria</string>
+    <string name="widget_description_hourly">Franja fija 4×1: próximas 6 horas de la ciudad seleccionada. Toca para abrir la app.</string>
+    <string name="widget_hourly_disabled">Activa el pronóstico por horas en ajustes</string>
     <string name="widget_day_today">Hoy</string>
     <string name="widget_day_tomorrow">Mañana</string>
     <string name="widget_no_daily_data">Sin pronóstico diario</string>
