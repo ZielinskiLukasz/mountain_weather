@@ -24,7 +24,7 @@
     <string name="widget_name_params">Miasto i parametry</string>
     <string name="widget_description_params">Jedno miasto; po rozciągnięciu parametry z ustawień po prawej lub na dole. Kliknij, aby zmienić miasto.</string>
     <string name="widget_name_hourly">Prognoza godzinowa</string>
-    <string name="widget_description_hourly">Stały pasek 4×1: następne 6 godzin dla wybranego miasta. Kliknięcie otwiera aplikację.</string>
+    <string name="widget_description_hourly">Pasek godzinowy (4×1, rozszerzalny do 5×1+): następne godziny dla wybranego miasta. Kliknięcie otwiera aplikację.</string>
     <string name="widget_hourly_disabled">Włącz prognozę godzinową w ustawieniach</string>
     <string name="widget_day_today">Dziś</string>
     <string name="widget_day_tomorrow">Jutro</string>

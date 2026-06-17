@@ -24,7 +24,7 @@
     <string name="widget_name_params">Stadt + Parameter</string>
     <string name="widget_description_params">Eine Stadt; bei Größenänderung Parameter rechts oder unten. Tippen wechselt Favoriten. Parameter aus den Einstellungen.</string>
     <string name="widget_name_hourly">Stündliche Timeline</string>
-    <string name="widget_description_hourly">Fester 4×1-Streifen: nächste 6 Stunden für die gewählte Stadt. Tippen öffnet die App.</string>
+    <string name="widget_description_hourly">Stündlicher Streifen (4×1, erweiterbar auf 5×1+): nächste Stunden für die gewählte Stadt. Tippen öffnet die App.</string>
     <string name="widget_hourly_disabled">Stündliche Vorhersage in den Einstellungen aktivieren</string>
     <string name="widget_day_today">Heute</string>
     <string name="widget_day_tomorrow">Morgen</string>

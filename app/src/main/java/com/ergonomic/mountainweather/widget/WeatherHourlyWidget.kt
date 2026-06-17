@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
@@ -39,7 +40,7 @@ import com.ergonomic.mountainweather.util.resolveIsDay
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 
 /**
- * Fixed horizontal 4×1 hourly strip for the currently selected city.
+ * Horizontal hourly strip (4×1 default, resizable to 5×1 and wider).
  * Tap anywhere opens the app — no favorite cycling.
  */
 class WeatherHourlyWidget : GlanceAppWidget() {
@@ -54,7 +55,7 @@ class WeatherHourlyWidget : GlanceAppWidget() {
             GlanceTheme {
                 val data by WidgetHourlyDataLoader.widgetDataFlow(context)
                     .collectAsState(initial = initial)
-                HourlyContent(data, context)
+                HourlyContent(data, context, id)
             }
         }
     }
@@ -83,11 +84,12 @@ class WeatherHourlyWidget : GlanceAppWidget() {
         ((widgetWidthDp - 8f) * 0.22f).toInt().coerceIn(iconDp + 32, (widgetWidthDp * 0.28f).toInt())
 
     @Composable
-    private fun HourlyContent(data: HourlyWidgetData, context: Context) {
+    private fun HourlyContent(data: HourlyWidgetData, context: Context, glanceId: GlanceId) {
         val size = LocalSize.current
-        val w = size.width.value
+        val localW = size.width.value
+        val layoutW = WidgetHourlyWindow.resolveLayoutWidthDp(context, glanceId, localW)
         val h = size.height.value
-        val sizes = layoutSizes(w, h)
+        val sizes = layoutSizes(layoutW, h)
         val openApp: Action = actionStartActivity<MainActivity>()
 
         Box(
@@ -120,7 +122,7 @@ class WeatherHourlyWidget : GlanceAppWidget() {
 
                     is HourlyWidgetData.Ready -> HourlyStripRow(
                         data = data,
-                        widgetWidthDp = w,
+                        layoutWidthDp = layoutW,
                         sizes = sizes,
                         tap = openApp
                     )
@@ -132,11 +134,16 @@ class WeatherHourlyWidget : GlanceAppWidget() {
     @Composable
     private fun HourlyStripRow(
         data: HourlyWidgetData.Ready,
-        widgetWidthDp: Float,
+        layoutWidthDp: Float,
         sizes: HourlyLayoutSizes,
         tap: Action
     ) {
-        val leftWidthDp = leftPanelWidthDp(widgetWidthDp, sizes.headerIconDp)
+        val hourCount = WidgetHourlyWindow.visibleHourCount(layoutWidthDp)
+        val visibleHours = data.hours.take(hourCount)
+        val leftWidthDp = leftPanelWidthDp(layoutWidthDp, sizes.headerIconDp)
+        val hoursAreaDp = (layoutWidthDp - leftWidthDp - 10f).coerceAtLeast(60f)
+        val columnWidthDp = hoursAreaDp / hourCount.coerceAtLeast(1)
+        val colPaddingDp = if (layoutWidthDp < 325f) 1 else 3
 
         Row(
             modifier = GlanceModifier
@@ -166,23 +173,24 @@ class WeatherHourlyWidget : GlanceAppWidget() {
                 modifier = GlanceModifier
                     .defaultWeight()
                     .fillMaxHeight()
-                    .padding(start = 4.dp, end = 2.dp)
+                    .padding(start = 2.dp, end = 2.dp)
                     .clickable(tap),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                data.hours.forEachIndexed { index, hour ->
+                visibleHours.forEachIndexed { index, hour ->
                     Box(
                         modifier = GlanceModifier
                             .defaultWeight()
                             .fillMaxHeight()
-                            .padding(horizontal = 5.dp)
+                            .padding(horizontal = colPaddingDp.dp)
                             .clickable(tap),
                         contentAlignment = Alignment.Center
                     ) {
                         HourColumn(
                             hour = hour,
                             sizes = sizes,
+                            columnWidthDp = columnWidthDp,
                             isCurrent = index == 0,
                             tap = tap
                         )
@@ -247,6 +255,7 @@ class WeatherHourlyWidget : GlanceAppWidget() {
     private fun HourColumn(
         hour: HourlyHourSnapshot,
         sizes: HourlyLayoutSizes,
+        columnWidthDp: Float,
         isCurrent: Boolean,
         tap: Action
     ) {
@@ -254,18 +263,18 @@ class WeatherHourlyWidget : GlanceAppWidget() {
         val info = weatherCodeToInfo(hour.weatherCode, isDay)
         val iconResId = if (info.iconRes != 0) info.iconRes else R.drawable.ic_weather_overcast
         val label = WidgetHourlyWindow.formatHourLabel(hour.time)
+        val labelSp = WidgetHourlyWindow.hourLabelSp(label, columnWidthDp, sizes.hourLabelSp)
         val weight = if (isCurrent) FontWeight.Bold else FontWeight.Normal
 
         Box(
             modifier = GlanceModifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(horizontal = 1.dp)
                 .clickable(tap),
             contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = GlanceModifier.clickable(tap),
+                modifier = GlanceModifier.fillMaxWidth().clickable(tap),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -273,11 +282,12 @@ class WeatherHourlyWidget : GlanceAppWidget() {
                     text = label,
                     maxLines = 1,
                     modifier = GlanceModifier
+                        .fillMaxWidth()
                         .padding(bottom = 1.dp)
                         .clickable(tap),
                     style = TextStyle(
                         color = GlanceTheme.colors.onSurface,
-                        fontSize = sizes.hourLabelSp.sp,
+                        fontSize = labelSp.sp,
                         fontWeight = weight,
                         textAlign = TextAlign.Center
                     )
