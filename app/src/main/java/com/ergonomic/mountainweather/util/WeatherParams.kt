@@ -76,7 +76,7 @@ object WeatherParams {
         WeatherParamDef(PM10, "💨", R.string.param_pm10),
         WeatherParamDef(OZONE, "🛡️", R.string.param_ozone),
         WeatherParamDef(ELEVATION, "⛰️", R.string.param_elevation),
-        WeatherParamDef(GPS_ALTITUDE, "📍", R.string.param_gps_altitude)
+        WeatherParamDef(GPS_ALTITUDE, "🛰️", R.string.param_gps_altitude)
     )
 
     val AIR_QUALITY_KEYS = setOf(AQI_EU, AQI_US, PM25, PM10, OZONE)

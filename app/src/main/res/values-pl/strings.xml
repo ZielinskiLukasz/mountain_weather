@@ -91,6 +91,8 @@
     <!-- Saved locations -->
     <string name="favorites">Ulubione</string>
     <string name="recent_locations">Ostatnie</string>
+    <string name="clear_all_recent">Wyczyść wszystkie</string>
+    <string name="clear_all_recent_confirm">Usunąć wszystkie miejscowości z listy „Ostatnie"? Ulubione pozostaną nietknięte.</string>
     <string name="no_saved_locations">Brak zapisanych lokalizacji</string>
     <string name="added_to_favorites">Dodano do ulubionych</string>
     <string name="removed_from_favorites">Usunięto z ulubionych</string>

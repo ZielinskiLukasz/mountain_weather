@@ -249,6 +249,13 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun clearAllRecent() {
+        viewModelScope.launch {
+            savedLocationRepo.clearAllRecent()
+            WeatherWidgetUpdater.refreshAll(getApplication())
+        }
+    }
+
     fun reorderFavorites(orderedIds: List<Long>) {
         viewModelScope.launch {
             savedLocationRepo.reorderFavorites(orderedIds)

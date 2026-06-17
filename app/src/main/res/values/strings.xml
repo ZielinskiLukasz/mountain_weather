@@ -91,6 +91,8 @@
     <!-- Saved locations -->
     <string name="favorites">Favorites</string>
     <string name="recent_locations">Recent</string>
+    <string name="clear_all_recent">Clear all</string>
+    <string name="clear_all_recent_confirm">Remove all locations from the Recent list? Favorites are not affected.</string>
     <string name="no_saved_locations">No saved locations yet</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>

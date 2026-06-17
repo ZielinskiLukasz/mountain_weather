@@ -47,6 +47,9 @@ interface SavedLocationDao {
     @Query("DELETE FROM saved_locations WHERE id = :id")
     suspend fun delete(id: Long)
 
+    @Query("DELETE FROM saved_locations WHERE isFavorite = 0")
+    suspend fun deleteAllRecent()
+
     @Query(
         "SELECT isFavorite FROM saved_locations " +
                 "WHERE ABS(latitude - :lat) < 0.005 AND ABS(longitude - :lon) < 0.005 LIMIT 1"

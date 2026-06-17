@@ -91,6 +91,8 @@
     <!-- Saved locations -->
     <string name="favorites">Favoriten</string>
     <string name="recent_locations">Zuletzt verwendet</string>
+    <string name="clear_all_recent">Alle löschen</string>
+    <string name="clear_all_recent_confirm">Alle Orte aus der Liste „Zuletzt verwendet" entfernen? Favoriten bleiben erhalten.</string>
     <string name="no_saved_locations">Keine gespeicherten Orte</string>
     <string name="added_to_favorites">Zu Favoriten hinzugefügt</string>
     <string name="removed_from_favorites">Aus Favoriten entfernt</string>

@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -252,7 +253,8 @@ fun LocationScreen(
                         onSelect = { viewModel.selectSavedLocation(it) },
                         onToggleFavorite = { viewModel.toggleFavorite(it) },
                         onDelete = { viewModel.deleteLocation(it) },
-                        onReorder = { viewModel.reorderFavorites(it) }
+                        onReorder = { viewModel.reorderFavorites(it) },
+                        onClearAllRecent = { viewModel.clearAllRecent() }
                     )
                 }
             }
@@ -267,8 +269,32 @@ fun SavedLocationsContent(
     onSelect: (SavedLocationEntity) -> Unit,
     onToggleFavorite: (Long) -> Unit,
     onDelete: (Long) -> Unit,
-    onReorder: (List<Long>) -> Unit
+    onReorder: (List<Long>) -> Unit,
+    onClearAllRecent: () -> Unit
 ) {
+    var showClearRecentDialog by remember { mutableStateOf(false) }
+
+    if (showClearRecentDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearRecentDialog = false },
+            title = { Text(stringResource(R.string.clear_all_recent)) },
+            text = { Text(stringResource(R.string.clear_all_recent_confirm)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showClearRecentDialog = false
+                    onClearAllRecent()
+                }) {
+                    Text(stringResource(R.string.clear_all_recent))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearRecentDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
     if (favorites.isEmpty() && recent.isEmpty()) {
         Box(
             modifier = Modifier
@@ -365,7 +391,11 @@ fun SavedLocationsContent(
 
         if (recent.isNotEmpty()) {
             item(key = "recent_header") {
-                SectionHeader(stringResource(R.string.recent_locations))
+                RecentSectionHeader(
+                    title = stringResource(R.string.recent_locations),
+                    showClearAll = recent.size >= 5,
+                    onClearAll = { showClearRecentDialog = true }
+                )
             }
             items(recent, key = { "rec_${it.id}" }) { location ->
                 SavedLocationItem(
@@ -388,6 +418,33 @@ fun SectionHeader(title: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     )
+}
+
+@Composable
+fun RecentSectionHeader(
+    title: String,
+    showClearAll: Boolean,
+    onClearAll: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f)
+        )
+        if (showClearAll) {
+            TextButton(onClick = onClearAll) {
+                Text(stringResource(R.string.clear_all_recent))
+            }
+        }
+    }
 }
 
 @Composable

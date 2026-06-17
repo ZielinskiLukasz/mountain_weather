@@ -58,20 +58,41 @@ object WidgetHourlyWindow {
         else -> 8
     }
 
-    fun filterHoursForWidget(hours: List<HourlyHourSnapshot>): List<HourlyHourSnapshot> {
+    fun filterHoursForWidget(hours: List<HourlyHourSnapshot>): List<HourlyHourSnapshot> =
+        filterHoursForWidget(hours, LocalDateTime.now())
+
+    /**
+     * Pick a [MAX_HOURS]-wide window of hours around [now]:
+     * - normally: current hour + future hours (today, then spilling into tomorrow if needed),
+     * - late in the day (when fewer than [MAX_HOURS] future hours remain in the cache):
+     *   pad with earlier hours so the strip is always full and current is on the right.
+     */
+    fun filterHoursForWidget(
+        hours: List<HourlyHourSnapshot>,
+        now: LocalDateTime
+    ): List<HourlyHourSnapshot> {
         if (hours.isEmpty()) return emptyList()
-        val now = LocalDateTime.now()
-        val today = LocalDate.now().toString()
-        val todayHours = hours.filter { it.time.startsWith(today) }
-        if (todayHours.isEmpty()) return hours.take(MAX_HOURS)
 
-        val startIdx = todayHours.indexOfFirst { entry ->
-            runCatching {
-                LocalDateTime.parse(entry.time, isoFormatter).hour >= now.hour
-            }.getOrDefault(false)
-        }.let { if (it < 0) 0 else it }
+        val sorted = hours.sortedBy { it.time }
+        val hourFloor = now.withMinute(0).withSecond(0).withNano(0)
+        val futureStartIdx = sorted.indexOfFirst { entry ->
+            val parsed = runCatching {
+                LocalDateTime.parse(entry.time, isoFormatter)
+            }.getOrNull()
+            parsed != null && !parsed.isBefore(hourFloor)
+        }
 
-        return todayHours.drop(startIdx).take(MAX_HOURS)
+        if (futureStartIdx < 0) {
+            return sorted.takeLast(MAX_HOURS)
+        }
+
+        val futureCount = sorted.size - futureStartIdx
+        if (futureCount >= MAX_HOURS) {
+            return sorted.subList(futureStartIdx, futureStartIdx + MAX_HOURS)
+        }
+
+        val start = (sorted.size - MAX_HOURS).coerceAtLeast(0)
+        return sorted.subList(start, sorted.size)
     }
 
     fun formatHourLabel(timeIso: String): String = runCatching {

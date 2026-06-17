@@ -1145,7 +1145,7 @@ fun buildDetailItems(
         val altitudeValue = if (gpsAltitude != null) "${"%.0f".format(gpsAltitude)} m" else "— m"
         allItems[WeatherParams.GPS_ALTITUDE] = DetailItem(
             WeatherParams.GPS_ALTITUDE,
-            "📍", stringResource(R.string.param_gps_altitude),
+            "🛰️", stringResource(R.string.param_gps_altitude),
             altitudeValue
         )
     }

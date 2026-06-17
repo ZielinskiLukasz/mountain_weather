@@ -9,7 +9,9 @@ class SavedLocationRepository(private val dao: SavedLocationDao) {
 
     fun observeFavorites(): Flow<List<SavedLocationEntity>> = dao.observeFavorites()
 
-    fun observeRecent(limit: Int = 5): Flow<List<SavedLocationEntity>> = dao.observeRecent(limit)
+    fun observeRecent(limit: Int = 10): Flow<List<SavedLocationEntity>> = dao.observeRecent(limit)
+
+    suspend fun clearAllRecent() = dao.deleteAllRecent()
 
     suspend fun saveAsRecent(
         name: String,
