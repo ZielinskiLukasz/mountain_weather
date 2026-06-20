@@ -12,6 +12,7 @@
     <string name="update_ready">Update heruntergeladen</string>
     <string name="update_action">Aktualisieren</string>
     <string name="update_install">Installieren</string>
+    <string name="update_downloading">Update wird heruntergeladen…</string>
     <string name="update_dismiss">Schließen</string>
 
     <!-- Widgets -->
@@ -26,6 +27,26 @@
     <string name="widget_name_hourly">Stündliche Timeline</string>
     <string name="widget_description_hourly">Stündlicher Streifen (4×1, erweiterbar auf 5×1+): nächste Stunden für die gewählte Stadt. Tippen öffnet die App.</string>
     <string name="widget_hourly_disabled">Stündliche Vorhersage in den Einstellungen aktivieren</string>
+    <string name="widget_name_compact">Angeheftete Stadt</string>
+    <string name="widget_description_compact">Skalierbares 2×1 / 2×2 Widget. Lieblingsstadt anheften oder der App folgen lassen.</string>
+    <string name="widget_name_rain">Regenleiste 24 Std.</string>
+    <string name="widget_description_rain">Horizontales 3×1-Widget mit dem Niederschlagsverlauf der nächsten 24 Stunden. Folgt dem Standort der Haupt-App.</string>
+    <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_config_title">Stadt wählen</string>
+    <string name="widget_config_follow_main">Der App folgen</string>
+    <string name="widget_config_favorites">Lieblingsstädte</string>
+    <string name="widget_config_save">Speichern</string>
+    <string name="widget_config_no_favorites">Noch keine Lieblingsstädte. Bitte zuerst eine in der App hinzufügen.</string>
+    <string name="widget_config_params">Parameter</string>
+    <string name="widget_config_params_hint">Wähle bis zu %1$d Elemente, die unter der Temperatur angezeigt werden.</string>
+    <string name="widget_config_theme">Design</string>
+    <string name="widget_config_theme_system">System</string>
+    <string name="widget_config_theme_light">Hell</string>
+    <string name="widget_config_theme_dark">Dunkel</string>
+    <string name="widget_config_opacity">Hintergrunddeckkraft</string>
+    <string name="widget_config_opacity_label">%1$d%%</string>
+    <string name="widget_config_preview">Vorschau</string>
+    <string name="widget_config_restore_defaults">Standard wiederherstellen</string>
     <string name="widget_day_today">Heute</string>
     <string name="widget_day_tomorrow">Morgen</string>
     <string name="widget_no_daily_data">Keine Tagesprognose</string>

@@ -12,6 +12,7 @@
     <string name="update_ready">Aktualizacja pobrana</string>
     <string name="update_action">Aktualizuj</string>
     <string name="update_install">Zainstaluj</string>
+    <string name="update_downloading">Pobieranie aktualizacji…</string>
     <string name="update_dismiss">Zamknij</string>
 
     <!-- Widgets -->
@@ -26,6 +27,26 @@
     <string name="widget_name_hourly">Prognoza godzinowa</string>
     <string name="widget_description_hourly">Pasek godzinowy (4×1, rozszerzalny do 5×1+): następne godziny dla wybranego miasta. Kliknięcie otwiera aplikację.</string>
     <string name="widget_hourly_disabled">Włącz prognozę godzinową w ustawieniach</string>
+    <string name="widget_name_compact">Przypięte miasto</string>
+    <string name="widget_description_compact">Skalowalny widget 2×1 / 2×2. Przypnij ulubione miasto albo pozwól mu śledzić główny ekran apki.</string>
+    <string name="widget_name_rain">Pasek opadów 24h</string>
+    <string name="widget_description_rain">Poziomy widget 3×1 z prognozą opadów na najbliższe 24 godziny. Śledzi lokalizację z głównego ekranu apki.</string>
+    <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_config_title">Wybierz miasto</string>
+    <string name="widget_config_follow_main">Podążaj za główną apką</string>
+    <string name="widget_config_favorites">Ulubione miasta</string>
+    <string name="widget_config_save">Zapisz</string>
+    <string name="widget_config_no_favorites">Brak ulubionych miast. Najpierw dodaj jedno w apce.</string>
+    <string name="widget_config_params">Parametry</string>
+    <string name="widget_config_params_hint">Wybierz do %1$d elementów pokazywanych pod temperaturą.</string>
+    <string name="widget_config_theme">Motyw</string>
+    <string name="widget_config_theme_system">Systemowy</string>
+    <string name="widget_config_theme_light">Jasny</string>
+    <string name="widget_config_theme_dark">Ciemny</string>
+    <string name="widget_config_opacity">Przezroczystość tła</string>
+    <string name="widget_config_opacity_label">%1$d%%</string>
+    <string name="widget_config_preview">Podgląd</string>
+    <string name="widget_config_restore_defaults">Przywróć domyślne</string>
     <string name="widget_day_today">Dziś</string>
     <string name="widget_day_tomorrow">Jutro</string>
     <string name="widget_no_daily_data">Brak prognozy dziennej</string>

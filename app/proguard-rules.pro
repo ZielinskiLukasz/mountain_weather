@@ -58,6 +58,7 @@
 
 # Home screen widgets (Jetpack Glance)
 -keep class com.ergonomic.mountainweather.widget.** { *; }
+-keep class com.ergonomic.mountainweather.widget.config.** { *; }
 -keep class * extends androidx.glance.appwidget.GlanceAppWidgetReceiver
 -keep class * extends androidx.glance.appwidget.GlanceAppWidget
 -keep class * implements androidx.glance.appwidget.action.ActionCallback { *; }

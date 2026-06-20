@@ -12,6 +12,7 @@
     <string name="update_ready">Actualización descargada</string>
     <string name="update_action">Actualizar</string>
     <string name="update_install">Instalar</string>
+    <string name="update_downloading">Descargando actualización…</string>
     <string name="update_dismiss">Cerrar</string>
 
     <!-- Widgets -->
@@ -26,6 +27,26 @@
     <string name="widget_name_hourly">Línea horaria</string>
     <string name="widget_description_hourly">Franja horaria (4×1, ampliable a 5×1+): próximas horas de la ciudad seleccionada. Toca para abrir la app.</string>
     <string name="widget_hourly_disabled">Activa la previsión por horas en ajustes</string>
+    <string name="widget_name_compact">Ciudad fijada</string>
+    <string name="widget_description_compact">Widget redimensionable 2×1 / 2×2. Fija una ciudad favorita o deja que siga la app principal.</string>
+    <string name="widget_name_rain">Lluvia 24 h</string>
+    <string name="widget_description_rain">Widget horizontal 3×1 con un gráfico de precipitación de las próximas 24 horas. Sigue la ubicación de la app principal.</string>
+    <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_config_title">Elegir ciudad</string>
+    <string name="widget_config_follow_main">Seguir la app principal</string>
+    <string name="widget_config_favorites">Ciudades favoritas</string>
+    <string name="widget_config_save">Guardar</string>
+    <string name="widget_config_no_favorites">Aún no hay ciudades favoritas. Añade una en la app primero.</string>
+    <string name="widget_config_params">Parámetros</string>
+    <string name="widget_config_params_hint">Selecciona hasta %1$d elementos que se mostrarán debajo de la temperatura.</string>
+    <string name="widget_config_theme">Tema</string>
+    <string name="widget_config_theme_system">Sistema</string>
+    <string name="widget_config_theme_light">Claro</string>
+    <string name="widget_config_theme_dark">Oscuro</string>
+    <string name="widget_config_opacity">Opacidad del fondo</string>
+    <string name="widget_config_opacity_label">%1$d%%</string>
+    <string name="widget_config_preview">Vista previa</string>
+    <string name="widget_config_restore_defaults">Restablecer valores</string>
     <string name="widget_day_today">Hoy</string>
     <string name="widget_day_tomorrow">Mañana</string>
     <string name="widget_no_daily_data">Sin pronóstico diario</string>

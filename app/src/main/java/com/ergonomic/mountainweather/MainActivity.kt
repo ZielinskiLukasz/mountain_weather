@@ -1,6 +1,7 @@
 package com.ergonomic.mountainweather
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -125,10 +126,21 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
+
+    private var pendingWidgetIntent by mutableStateOf<WidgetDeeplink?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         reconcileBackgroundSync()
+        val deeplink = extractWidgetDeeplink(intent)
+        if (deeplink != null) {
+            // Persist the pinned city to DataStore synchronously so the
+            // WeatherViewModel.init reads the pinned location instead of
+            // whichever city the main app was last viewing.
+            persistDeeplinkSync(deeplink)
+            pendingWidgetIntent = deeplink
+        }
         setContent {
             val settingsRepo = remember {
                 com.ergonomic.mountainweather.data.repository.SettingsRepository(this)
@@ -142,7 +154,28 @@ class MainActivity : ComponentActivity() {
                 com.ergonomic.mountainweather.data.repository.ThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
             MountainWeatherTheme(darkTheme = darkTheme) {
-                AppNavigation()
+                AppNavigation(
+                    pendingWidgetDeeplink = pendingWidgetIntent,
+                    onWidgetDeeplinkConsumed = { pendingWidgetIntent = null }
+                )
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        extractWidgetDeeplink(intent)?.let {
+            persistDeeplinkSync(it)
+            pendingWidgetIntent = it
+        }
+    }
+
+    private fun persistDeeplinkSync(deeplink: WidgetDeeplink) {
+        runCatching {
+            kotlinx.coroutines.runBlocking {
+                com.ergonomic.mountainweather.data.repository.SettingsRepository(applicationContext)
+                    .saveLastLocation(deeplink.name, deeplink.latitude, deeplink.longitude)
             }
         }
     }
@@ -158,10 +191,28 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun extractWidgetDeeplink(intent: Intent?): WidgetDeeplink? {
+        val extras = intent?.extras ?: return null
+        if (!extras.containsKey(com.ergonomic.mountainweather.widget.WeatherCompactWidget.EXTRA_LAT)) {
+            return null
+        }
+        val lat = extras.getDouble(com.ergonomic.mountainweather.widget.WeatherCompactWidget.EXTRA_LAT)
+        val lon = extras.getDouble(com.ergonomic.mountainweather.widget.WeatherCompactWidget.EXTRA_LON)
+        val name = extras.getString(com.ergonomic.mountainweather.widget.WeatherCompactWidget.EXTRA_NAME) ?: ""
+        if (name.isBlank()) return null
+        return WidgetDeeplink(name, lat, lon)
+    }
 }
 
+data class WidgetDeeplink(val name: String, val latitude: Double, val longitude: Double)
+
 @Composable
-fun AppNavigation(weatherViewModel: WeatherViewModel = viewModel()) {
+fun AppNavigation(
+    weatherViewModel: WeatherViewModel = viewModel(),
+    pendingWidgetDeeplink: WidgetDeeplink? = null,
+    onWidgetDeeplinkConsumed: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
     val state by weatherViewModel.uiState.collectAsState()
@@ -173,6 +224,12 @@ fun AppNavigation(weatherViewModel: WeatherViewModel = viewModel()) {
                 launchSingleTop = true
             }
         }
+    }
+
+    LaunchedEffect(pendingWidgetDeeplink) {
+        val dl = pendingWidgetDeeplink ?: return@LaunchedEffect
+        weatherViewModel.setLocation(dl.name, dl.latitude, dl.longitude)
+        onWidgetDeeplinkConsumed()
     }
 
     NavHost(navController = navController, startDestination = "home") {
@@ -380,11 +437,8 @@ fun WeatherScreen(
                     }
                     if (updateState.visible) {
                         UpdateBanner(
-                            isDownloaded = updateState.downloaded,
-                            onAction = {
-                                if (updateState.downloaded) updateState.completeUpdate()
-                                else updateState.startUpdate()
-                            },
+                            isDownloading = updateState.downloading,
+                            onAction = { updateState.startUpdate() },
                             onDismiss = { updateState.dismiss() }
                         )
                     }
@@ -527,7 +581,7 @@ fun OfflineBanner(cachedAt: Long) {
 
 @Composable
 fun UpdateBanner(
-    isDownloaded: Boolean,
+    isDownloading: Boolean,
     onAction: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -540,19 +594,27 @@ fun UpdateBanner(
     ) {
         Text(
             text = stringResource(
-                if (isDownloaded) R.string.update_ready else R.string.update_available
+                if (isDownloading) R.string.update_downloading else R.string.update_available
             ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier.weight(1f)
         )
-        androidx.compose.material3.TextButton(onClick = onAction) {
-            Text(
-                text = stringResource(
-                    if (isDownloaded) R.string.update_install else R.string.update_action
-                ),
-                style = MaterialTheme.typography.labelMedium
+        if (isDownloading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(18.dp)
+                    .padding(end = 8.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
+        } else {
+            androidx.compose.material3.TextButton(onClick = onAction) {
+                Text(
+                    text = stringResource(R.string.update_action),
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
         IconButton(onClick = onDismiss) {
             Text(

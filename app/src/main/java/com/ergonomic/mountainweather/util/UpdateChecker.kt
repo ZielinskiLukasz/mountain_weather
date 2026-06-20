@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,18 +30,12 @@ class UpdateState(
 ) {
     var available: Boolean by mutableStateOf(false)
         internal set
-    var downloaded: Boolean by mutableStateOf(false)
+    var downloading: Boolean by mutableStateOf(false)
         internal set
     var dismissed: Boolean by mutableStateOf(false)
         internal set
 
-    val visible: Boolean get() = (available || downloaded) && !dismissed
-
-    private var pendingLauncher: ((IntentSenderRequest) -> Unit)? = null
-
-    internal fun setLauncher(launcher: (IntentSenderRequest) -> Unit) {
-        pendingLauncher = launcher
-    }
+    val visible: Boolean get() = (available || downloading) && !dismissed
 
     fun startUpdate() {
         val act = activity ?: return
@@ -48,12 +44,19 @@ class UpdateState(
                 val canStart = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     && info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
                 if (canStart) {
-                    manager.startUpdateFlowForResult(
-                        info,
-                        act,
-                        AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
-                        UPDATE_REQUEST_CODE
-                    )
+                    downloading = true
+                    runCatching {
+                        manager.startUpdateFlowForResult(
+                            info,
+                            act,
+                            AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
+                            UPDATE_REQUEST_CODE
+                        )
+                    }.onFailure {
+                        Log.w(TAG, "startUpdateFlowForResult failed: ${it.message}", it)
+                        downloading = false
+                        openPlayStore(act)
+                    }
                 } else {
                     openPlayStore(act)
                 }
@@ -78,8 +81,10 @@ class UpdateState(
         }
     }
 
-    fun completeUpdate() {
-        manager.completeUpdate()
+    internal fun completeUpdate() {
+        Log.d(TAG, "Auto-completing flexible update")
+        runCatching { manager.completeUpdate() }
+            .onFailure { Log.w(TAG, "completeUpdate failed: ${it.message}", it) }
     }
 
     fun dismiss() {
@@ -88,6 +93,7 @@ class UpdateState(
 
     companion object {
         const val UPDATE_REQUEST_CODE = 9001
+        private const val TAG = "UpdateState"
     }
 }
 
@@ -100,8 +106,8 @@ fun rememberUpdateState(): UpdateState {
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
-    ) { /* result is reflected in InstallStateUpdatedListener */ }
-    state.setLauncher { req -> launcher.launch(req) }
+    ) { /* result reflected via InstallStateUpdatedListener */ }
+    remember(launcher) { launcher }
 
     LaunchedEffect(manager) {
         runCatching {
@@ -112,22 +118,34 @@ fun rememberUpdateState(): UpdateState {
                     state.available = true
                 }
                 if (info.installStatus() == InstallStatus.DOWNLOADED) {
-                    state.downloaded = true
+                    state.completeUpdate()
                 }
             }
         }
     }
 
-    val listener = remember {
-        InstallStateUpdatedListener { installState ->
-            if (installState.installStatus() == InstallStatus.DOWNLOADED) {
-                state.downloaded = true
+    DisposableEffect(manager) {
+        val listener = InstallStateUpdatedListener { installState ->
+            when (installState.installStatus()) {
+                InstallStatus.PENDING,
+                InstallStatus.DOWNLOADING -> {
+                    state.downloading = true
+                }
+                InstallStatus.DOWNLOADED -> {
+                    state.downloading = false
+                    state.completeUpdate()
+                }
+                InstallStatus.FAILED,
+                InstallStatus.CANCELED -> {
+                    state.downloading = false
+                }
+                else -> Unit
             }
         }
-    }
-
-    LaunchedEffect(manager, listener) {
         runCatching { manager.registerListener(listener) }
+        onDispose {
+            runCatching { manager.unregisterListener(listener) }
+        }
     }
 
     return state

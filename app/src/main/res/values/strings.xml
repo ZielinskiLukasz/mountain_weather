@@ -12,6 +12,7 @@
     <string name="update_ready">Update downloaded</string>
     <string name="update_action">Update</string>
     <string name="update_install">Install</string>
+    <string name="update_downloading">Downloading update…</string>
     <string name="update_dismiss">Dismiss</string>
 
     <!-- Widgets -->
@@ -26,6 +27,26 @@
     <string name="widget_name_hourly">Hourly timeline</string>
     <string name="widget_description_hourly">Hourly strip (4×1, resizable to 5×1+): next hours for the selected city. Tap opens the app.</string>
     <string name="widget_hourly_disabled">Enable hourly forecast in settings</string>
+    <string name="widget_name_compact">Pinned city</string>
+    <string name="widget_description_compact">Resizable 2×1 / 2×2 widget. Pick any favorite city per instance, or let it follow the main app.</string>
+    <string name="widget_name_rain">Rain bar 24h</string>
+    <string name="widget_description_rain">Horizontal 3×1 bar chart of precipitation for the next 24 hours. Follows the main app location.</string>
+    <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_config_title">Choose city</string>
+    <string name="widget_config_follow_main">Follow the main app</string>
+    <string name="widget_config_favorites">Favorite cities</string>
+    <string name="widget_config_save">Save</string>
+    <string name="widget_config_no_favorites">No favorite cities yet. Add one in the app first.</string>
+    <string name="widget_config_params">Parameters</string>
+    <string name="widget_config_params_hint">Pick up to %1$d items shown below the temperature.</string>
+    <string name="widget_config_theme">Theme</string>
+    <string name="widget_config_theme_system">System</string>
+    <string name="widget_config_theme_light">Light</string>
+    <string name="widget_config_theme_dark">Dark</string>
+    <string name="widget_config_opacity">Background opacity</string>
+    <string name="widget_config_opacity_label">%1$d%%</string>
+    <string name="widget_config_preview">Preview</string>
+    <string name="widget_config_restore_defaults">Restore defaults</string>
     <string name="widget_day_today">Today</string>
     <string name="widget_day_tomorrow">Tomorrow</string>
     <string name="widget_no_daily_data">No daily forecast</string>

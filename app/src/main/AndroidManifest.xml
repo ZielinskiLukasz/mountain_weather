@@ -83,5 +83,38 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_hourly" />
         </receiver>
+
+        <receiver
+            android:name=".widget.WeatherCompactReceiver"
+            android:exported="true"
+            android:label="@string/widget_name_compact">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_compact" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.WeatherRainReceiver"
+            android:exported="true"
+            android:label="@string/widget_name_rain">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_rain" />
+        </receiver>
+
+        <activity
+            android:name=".widget.config.WidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MountainWeather">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
