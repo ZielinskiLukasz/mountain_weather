@@ -667,3 +667,5 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         )
     }
 }
+
+

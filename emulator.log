@@ -1,0 +1,114 @@
+INFO         | Android emulator version 36.4.9.0 (build_id 14788078) (CL:N/A)
+INFO         | Graphics backend: gfxstream
+INFO         | Found systemPath /home/zieloo/Android/Sdk/system-images/android-36.1/google_apis_playstore/x86_64/
+WARNING      | Please update the emulator to one that supports the feature(s): VulkanVirtualQueue
+INFO         | Guest GLES Driver: Auto (ext controls)
+INFO         | emuglConfig_init: vulkan_mode_selected:host gles_mode_selected:host
+INFO         | emuglConfig_get_vulkan_hardware_gpu_support_info: Found physical GPU 'Intel(R) Graphics (RPL-S)', type: VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU, apiVersion: 1.3.230, driverVersion: 22.3.6
+
+INFO         | emuglConfig_get_vulkan_hardware_gpu_support_info: Found physical GPU 'llvmpipe (LLVM 15.0.6, 256 bits)', type: VK_PHYSICAL_DEVICE_TYPE_CPU, apiVersion: 1.3.230, driverVersion: 0.0.1
+
+INFO         | Enabled VulkanAllocateHostMemory feature for gpu vendor Intel(R) Graphics (RPL-S) on Linux
+
+INFO         | Checking system compatibility:
+INFO         |   Checking: hasSufficientDiskSpace
+INFO         |      Ok: Disk space requirements to run avd: `Medium_Phone_API_36.1` are met
+INFO         |   Checking: hasSufficientHwGpu
+INFO         |      Ok: Hardware GPU requirements to run avd: `Medium_Phone_API_36.1` are passed
+INFO         |   Checking: hasSufficientSystem
+INFO         |      Ok: System requirements to run avd: `Medium_Phone_API_36.1` are met
+WARNING      | File System is not ext4, disable QuickbootFileBacked feature
+WARNING      | Emulator does not support more than 6 cores. Number of cores set to 6
+INFO         | Storing crashdata in: /tmp/android-zieloo/emu-crash-36.4.9.db, detection is enabled for process: 1919425
+INFO         | Initializing gfxstream backend
+INFO         | android_startOpenglesRenderer: gpu info
+INFO         | 
+INFO         | SharedLibrary::open for [/home/zieloo/Android/Sdk/emulator/qemu/linux-x86_64/lib64/vulkan/libvulkan.so]
+INFO         | SharedLibrary::open for [/home/zieloo/Android/Sdk/emulator/qemu/linux-x86_64/lib64/vulkan/libvulkan.so.1]
+INFO         | SharedLibrary::open for [/home/zieloo/Android/Sdk/emulator/lib64/vulkan/libvulkan.so]
+INFO         | Added library: /home/zieloo/Android/Sdk/emulator/lib64/vulkan/libvulkan.so
+INFO         | Selecting Vulkan device: Intel(R) Graphics (RPL-S), Version: 1.3.230
+INFO         | SharedLibrary::open for [libX11]
+INFO         | SharedLibrary::open for [libX11-xcb]
+INFO         | SharedLibrary::open for [libGL.so.1]
+WARNING      | Skip R5G6B5 support on Google (Intel)
+WARNING      | Skip R5G6B5 support on Google (Intel)
+WARNING      | Skip R5G6B5 support on Google (Intel)
+INFO         | Initializing VkEmulation features:
+INFO         |     glInteropSupported: false
+INFO         |     useDeferredCommands: true
+INFO         |     createResourceWithRequirements: true
+INFO         |     useVulkanComposition: false
+INFO         |     useVulkanNativeSwapchain: false
+INFO         |     enable guestRenderDoc: false
+INFO         |     ASTC LDR emulation mode: Gpu
+INFO         |     enable ETC2 emulation: true
+INFO         |     enable Ycbcr emulation: false
+INFO         |     guestVulkanOnly: false
+INFO         |     useDedicatedAllocations: false
+INFO         | Graphics Adapter Vendor Google (Intel)
+INFO         | Graphics Adapter Android Emulator OpenGL ES Translator (Mesa Intel(R) Graphics (RPL-S))
+INFO         | Graphics API Version OpenGL ES 3.0 (4.6 (Core Profile) Mesa 22.3.6)
+INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 
+INFO         | Graphics Device Extensions N/A
+INFO         | Disabling sparse binding feature support
+INFO         | Sending adb public key [QAAAAAGoWpv/pxoNAAYKvUOWlG8ZZb6UPNmC57MJzmPgxg87Q8RpI2IIE1mSDQXq+t70ub31BpBSAb7c5dco3u0DyNZMU6xWESvaisgiVXEyoFPIA9zXVAdpda35YPGB0v+eO9pZAG5hP1CaDAdPBk1G0Z9oBwwbPmUMcdwCuD5u6wTtsCpbQaQ+SJ864FMMflV/JmfCexTeRbEbixd90dPJow/wHtuIcArbO8o4pSbmXhdD751pyz9QZba6wn7CTJG98MakmFtsHwaR3pfOqaVmagpv2+wirYh6mSDmC+bqTp8kT8JLXykL0pNbQE94DmNCC8ScC5HA8tlU0mBCZEebpwquz6HaRM7oy23WKKKrJDuxCSJAk3b8BH5pHDrdIv7bJRuOOv723Fi6ray48XnDXAhRqUJFXZ/RS9fngRGzqzW/6+1OXb6Q/W4ZMWrMkdOYkDacO0ES/6HeBuhLgsumvECAUtI7a0qSspQjdgMelKAW8OncJCbKSx5Pc7Bp8iZxQJpOZCnWU/bpF89BARrBAwLAb7LwfQQFhF6t8QOuRZzudOpIdLiteGRT6/ziYhZX/lBU8I84PULvzbXR9kojbwVSDFfnBBrJb3eLMRWufMRM4zXvL4JhmQsgBpzi6WVxCqVSup8PpD1UJv0vHvAxEkash9TfB47MyoTlx3HTQA38THbGfwEAAQA= zieloo@unknown]
+INFO         | Userspace boot properties:
+INFO         |   androidboot.boot_devices=pci0000:00/0000:00:03.0 pci0000:00/0000:00:06.0
+INFO         |   androidboot.dalvik.vm.heapsize=512m
+INFO         |   androidboot.debug.hwui.renderer=skiagl
+INFO         |   androidboot.hardware=ranchu
+INFO         |   androidboot.hardware.gltransport=pipe
+INFO         |   androidboot.hardware.vulkan=ranchu
+INFO         |   androidboot.logcat=*:V
+INFO         |   androidboot.opengles.version=196608
+INFO         |   androidboot.qemu=1
+INFO         |   androidboot.qemu.adb.pubkey=QAAAAAGoWpv/pxoNAAYKvUOWlG8ZZb6UPNmC57MJzmPgxg87Q8RpI2IIE1mSDQXq+t70ub31BpBSAb7c5dco3u0DyNZMU6xWESvaisgiVXEyoFPIA9zXVAdpda35YPGB0v+eO9pZAG5hP1CaDAdPBk1G0Z9oBwwbPmUMcdwCuD5u6wTtsCpbQaQ+SJ864FMMflV/JmfCexTeRbEbixd90dPJow/wHtuIcArbO8o4pSbmXhdD751pyz9QZba6wn7CTJG98MakmFtsHwaR3pfOqaVmagpv2+wirYh6mSDmC+bqTp8kT8JLXykL0pNbQE94DmNCC8ScC5HA8tlU0mBCZEebpwquz6HaRM7oy23WKKKrJDuxCSJAk3b8BH5pHDrdIv7bJRuOOv723Fi6ray48XnDXAhRqUJFXZ/RS9fngRGzqzW/6+1OXb6Q/W4ZMWrMkdOYkDacO0ES/6HeBuhLgsumvECAUtI7a0qSspQjdgMelKAW8OncJCbKSx5Pc7Bp8iZxQJpOZCnWU/bpF89BARrBAwLAb7LwfQQFhF6t8QOuRZzudOpIdLiteGRT6/ziYhZX/lBU8I84PULvzbXR9kojbwVSDFfnBBrJb3eLMRWufMRM4zXvL4JhmQsgBpzi6WVxCqVSup8PpD1UJv0vHvAxEkash9TfB47MyoTlx3HTQA38THbGfwEAAQA= zieloo@unknown
+INFO         |   androidboot.qemu.avd_name=Medium_Phone_API_36.1
+INFO         |   androidboot.qemu.camera_hq_edge_processing=0
+INFO         |   androidboot.qemu.camera_protocol_ver=1
+INFO         |   androidboot.qemu.cpuvulkan.version=4202496
+INFO         |   androidboot.qemu.gltransport.drawFlushInterval=800
+INFO         |   androidboot.qemu.gltransport.name=pipe
+INFO         |   androidboot.qemu.hwcodec.avcdec=2
+INFO         |   androidboot.qemu.hwcodec.hevcdec=2
+INFO         |   androidboot.qemu.hwcodec.vpxdec=2
+INFO         |   androidboot.qemu.settings.system.screen_off_timeout=2147483647
+INFO         |   androidboot.qemu.skin=1080x2400
+INFO         |   androidboot.qemu.virtiowifi=1
+INFO         |   androidboot.qemu.vsync=60
+INFO         |   androidboot.serialno=EMULATOR36X4X9X0
+INFO         |   androidboot.vbmeta.digest=8c6ff42bff8696120e63308883e0cfad21d048439d53af334ec09bf5eb680f47
+INFO         |   androidboot.vbmeta.hash_alg=sha256
+INFO         |   androidboot.vbmeta.size=6720
+INFO         |   androidboot.veritymode=enforcing
+WARNING: cannnot unmap ptr 0x7f085dfc5000 as it is in the protected range from 0x7f085dfc5000 to 0x7f08de1c5000
+WARNING: cannnot unmap ptr 0x7f08de001000 as it is in the protected range from 0x7f085dfc5000 to 0x7f08de1c5000
+INFO         | Monitoring duration of emulator setup.
+WARNING      | The emulator now requires a signed jwt token for gRPC access! Use the -grpc flag if you really want an open unprotected grpc port
+INFO         | Using security allow list from: /home/zieloo/Android/Sdk/emulator/lib/emulator_access.json
+WARNING      | *** Basic token auth should only be used by android-studio ***
+INFO         | The active JSON Web Key Sets can be found here: /run/user/1000/avd/running/1919425/jwks/c526368e-780f-4b89-a748-6b739aaa9258/active.jwk
+INFO         | Scanning /run/user/1000/avd/running/1919425/jwks/c526368e-780f-4b89-a748-6b739aaa9258 for jwk keys.
+INFO         | Started GRPC server at 127.0.0.1:8554, security: Local, auth: +token
+INFO         | Advertising in: /run/user/1000/avd/running/pid_1919425.ini
+INFO         | Setting display: 0 configuration to: 1080x2400, dpi: 420x420 
+INFO         | setDisplayActiveConfig 0
+INFO         | Checking system compatibility:
+INFO         |   Checking: hasSufficientDiskSpace
+INFO         |      Ok: Disk space requirements to run avd: `Medium_Phone_API_36.1` are met
+INFO         |   Checking: hasSufficientHwGpu
+INFO         |      Ok: Hardware GPU requirements to run avd: `Medium_Phone_API_36.1` are passed
+INFO         |   Checking: hasSufficientSystem
+INFO         |      Ok: System requirements to run avd: `Medium_Phone_API_36.1` are met
+INFO         | Loading snapshot 'default_boot'...
+INFO         | Warning: QMetaObject::connectSlotsByName: No matching signal for on_rgbcSensorValueWidget_valueChanged() (:0, )
+INFO         | Warning: QMetaObject::connectSlotsByName: No matching signal for on_posture_valueChanged(int) (:0, )
+INFO         | Warning: QObject::connect: Cannot queue arguments of type 'std::vector<android::emulation::control::SnapshotInfo>'
+(Make sure 'std::vector<android::emulation::control::SnapshotInfo>' is registered using qRegisterMetaType().) (:0, )
+INFO         | AVD supportsNativeGLES=1, supportsGuestAngle=1
+INFO         | Guest Angle is still unstable for API > 35.
+INFO         | Created extended window in 373.749ms
+INFO         | Activated packet streamer for uwb emulation
+INFO         | Activated packet streamer for bluetooth emulation
+INFO         | Successfully loaded snapshot 'default_boot' using 3993 ms

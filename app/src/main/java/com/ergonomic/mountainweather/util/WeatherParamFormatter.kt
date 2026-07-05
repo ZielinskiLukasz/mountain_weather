@@ -44,8 +44,8 @@ object WeatherParamFormatter {
                 context.getString(R.string.param_temperature),
                 context.getString(
                     R.string.temp_max_min,
-                    weather.temperatureMax.toInt().toString(),
-                    weather.temperatureMin.toInt().toString()
+                    weather.temperatureMin.toInt().toString(),
+                    weather.temperatureMax.toInt().toString()
                 )
             )
         }

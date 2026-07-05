@@ -647,9 +647,23 @@ fun WeatherContent(
     onSelectDay: (String?) -> Unit,
     onHourlyPressChange: (Boolean) -> Unit = {}
 ) {
+    val currentHourWeatherCode = remember(hourlyForecast) {
+        val currentHour = java.time.LocalDateTime.now().hour
+        hourlyForecast.firstOrNull { entry ->
+            try {
+                java.time.LocalDateTime.parse(entry.time, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME).hour == currentHour
+            } catch (_: Exception) { false }
+        }?.weatherCode
+    }
+    val useHourlyCode = currentHourWeatherCode != null
     val weatherInfo = weatherCodeToInfo(
-        weather.weatherCode,
-        isDay = resolveIsDay(weather.isDay, weather.time, weather.sunrise, weather.sunset)
+        currentHourWeatherCode ?: weather.weatherCode,
+        isDay = resolveIsDay(
+            isDayFromApi = if (useHourlyCode) null else weather.isDay,
+            timeIso = if (useHourlyCode) null else weather.time,
+            sunriseIso = weather.sunrise,
+            sunsetIso = weather.sunset
+        )
     )
     val scrollState = rememberScrollState()
 
@@ -996,8 +1010,8 @@ fun buildDetailItems(
             WeatherParams.TEMPERATURE,
             "🌡️", stringResource(R.string.param_temperature),
             stringResource(R.string.temp_max_min,
-                weather.temperatureMax.toInt().toString(),
-                weather.temperatureMin.toInt().toString())
+                weather.temperatureMin.toInt().toString(),
+                weather.temperatureMax.toInt().toString())
         )
     }
     if (WeatherParams.WIND in enabled) {
@@ -1506,8 +1520,8 @@ fun DailyForecastItem(
         Text(
             text = stringResource(
                 R.string.temp_max_min,
-                item.temperatureMax.toInt().toString(),
-                item.temperatureMin.toInt().toString()
+                item.temperatureMin.toInt().toString(),
+                item.temperatureMax.toInt().toString()
             ),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold
