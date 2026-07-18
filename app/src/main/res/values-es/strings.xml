@@ -32,6 +32,16 @@
     <string name="widget_name_rain">Lluvia 24 h</string>
     <string name="widget_description_rain">Widget horizontal 3×1 con un gráfico de precipitación de las próximas 24 horas. Sigue la ubicación de la app principal.</string>
     <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_name_sun">Sol y UV</string>
+    <string name="widget_description_sun">Widget 2×1 minimalista: amanecer, atardecer, barra de progreso del día con un punto “ahora” e índice UV del día.</string>
+    <string name="sun_sunrise">Amanecer</string>
+    <string name="sun_sunset">Atardecer</string>
+    <string name="sun_uv_prefix">UV %1$s</string>
+    <string name="sun_uv_low">bajo</string>
+    <string name="sun_uv_moderate">moderado</string>
+    <string name="sun_uv_high">alto</string>
+    <string name="sun_uv_very_high">muy alto</string>
+    <string name="sun_uv_extreme">extremo</string>
     <string name="widget_config_title">Elegir ciudad</string>
     <string name="widget_config_follow_main">Seguir la app principal</string>
     <string name="widget_config_favorites">Ciudades favoritas</string>

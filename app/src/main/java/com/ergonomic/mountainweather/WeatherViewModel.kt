@@ -20,6 +20,7 @@ import com.ergonomic.mountainweather.data.sync.NetworkMonitor
 import com.ergonomic.mountainweather.data.sync.ResilientSyncManager
 import com.ergonomic.mountainweather.util.WeatherParams
 import com.ergonomic.mountainweather.widget.WeatherWidgetUpdater
+import com.ergonomic.mountainweather.widget.WidgetDataRequirements
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -483,13 +484,15 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val key = WeatherRepository.locationKey(state.latitude, state.longitude)
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
+            val extraDaily = WidgetDataRequirements.extraDailyFields(getApplication())
             val result = repository.refreshAll(
                 latitude = state.latitude,
                 longitude = state.longitude,
                 locationName = state.locationName,
                 enabledParams = settings.enabledCurrentParams,
                 showHourly = settings.showHourly,
-                dailyDays = settings.dailyForecastDays
+                dailyDays = settings.dailyForecastDays,
+                extraDailyFields = extraDaily
             )
             handleResult(result.weather)
             if (result.hourly.isNotEmpty()) {
@@ -509,8 +512,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val state = _uiState.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = it.weather == null, error = null) }
+            val extraDaily = WidgetDataRequirements.extraDailyFields(getApplication())
             val syncResult = syncManager.syncAll(
-                state.latitude, state.longitude, state.locationName, settings
+                state.latitude, state.longitude, state.locationName, settings,
+                extraDailyFields = extraDaily
             )
             syncResult.currentWeather?.let { handleResult(it) }
         }
@@ -556,9 +561,11 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         val key = WeatherRepository.locationKey(state.latitude, state.longitude)
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true, error = null) }
+            val extraDaily = WidgetDataRequirements.extraDailyFields(getApplication())
             if (settings.resilientSync) {
                 val syncResult = syncManager.syncAll(
-                    state.latitude, state.longitude, state.locationName, settings
+                    state.latitude, state.longitude, state.locationName, settings,
+                    extraDailyFields = extraDaily
                 )
                 syncResult.currentWeather?.let { handleResult(it) }
                 fetchForecasts(settings)
@@ -569,7 +576,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     locationName = state.locationName,
                     enabledParams = settings.enabledCurrentParams,
                     showHourly = settings.showHourly,
-                    dailyDays = settings.dailyForecastDays
+                    dailyDays = settings.dailyForecastDays,
+                    extraDailyFields = extraDaily
                 )
                 handleResult(result.weather)
                 if (result.hourly.isNotEmpty()) {

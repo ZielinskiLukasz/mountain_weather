@@ -1372,6 +1372,16 @@ fun HourlyForecastSection(
     }
 }
 
+/** WMO weather codes that indicate some form of precipitation. */
+private val precipitationCodes = setOf(
+    51, 53, 55, 56, 57,       // drizzle
+    61, 63, 65, 66, 67,       // rain
+    71, 73, 75, 77,           // snow
+    80, 81, 82,               // rain showers
+    85, 86,                   // snow showers
+    95, 96, 99                // thunderstorm
+)
+
 @Composable
 fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = false) {
     val hourData = remember(item.time) {
@@ -1384,7 +1394,15 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
     }
     val hour = hourData.first
     val isDay = resolveIsDay(timeIso = item.time)
-    val info = weatherCodeToInfo(item.weatherCode, isDay)
+    // When actual precipitation is 0 mm, override rain/snow/thunderstorm
+    // weather codes to a dry equivalent so the icon matches the data shown.
+    val effectiveCode = if (item.precipitation <= 0.0 && item.weatherCode in precipitationCodes) {
+        // Shower codes (80-82) imply partial cloud; everything else → overcast
+        if (item.weatherCode in 80..82) 2 else 3
+    } else {
+        item.weatherCode
+    }
+    val info = weatherCodeToInfo(effectiveCode, isDay)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

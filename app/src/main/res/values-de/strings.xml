@@ -32,6 +32,16 @@
     <string name="widget_name_rain">Regenleiste 24 Std.</string>
     <string name="widget_description_rain">Horizontales 3×1-Widget mit dem Niederschlagsverlauf der nächsten 24 Stunden. Folgt dem Standort der Haupt-App.</string>
     <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_name_sun">Sonne &amp; UV</string>
+    <string name="widget_description_sun">Minimalistisches 2×1-Widget: Sonnenaufgang, Sonnenuntergang, Tagesverlauf mit „Jetzt“-Punkt und heutiger UV-Index.</string>
+    <string name="sun_sunrise">Aufgang</string>
+    <string name="sun_sunset">Untergang</string>
+    <string name="sun_uv_prefix">UV %1$s</string>
+    <string name="sun_uv_low">niedrig</string>
+    <string name="sun_uv_moderate">mäßig</string>
+    <string name="sun_uv_high">hoch</string>
+    <string name="sun_uv_very_high">sehr hoch</string>
+    <string name="sun_uv_extreme">extrem</string>
     <string name="widget_config_title">Stadt wählen</string>
     <string name="widget_config_follow_main">Der App folgen</string>
     <string name="widget_config_favorites">Lieblingsstädte</string>

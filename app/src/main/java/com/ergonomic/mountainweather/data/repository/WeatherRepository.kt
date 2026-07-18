@@ -70,12 +70,13 @@ class WeatherRepository(
         latitude: Double,
         longitude: Double,
         locationName: String,
-        enabledParams: Set<String>
+        enabledParams: Set<String>,
+        extraDailyFields: Set<String> = emptySet()
     ): Result<WeatherEntity> {
         val key = locationKey(latitude, longitude)
         return try {
             val currentFields = buildCurrentQuery(enabledParams)
-            val dailyFields = buildDailyQuery(enabledParams)
+            val dailyFields = buildDailyQuery(enabledParams, extraDailyFields)
             val hourlyFields = buildHourlyQuery(enabledParams)
 
             val response = api.getEnrichedWeather(
@@ -170,7 +171,10 @@ class WeatherRepository(
         return fields.joinToString(",")
     }
 
-    private fun buildDailyQuery(enabledParams: Set<String>): String? {
+    private fun buildDailyQuery(
+        enabledParams: Set<String>,
+        extraDailyFields: Set<String> = emptySet()
+    ): String? {
         val fields = mutableListOf<String>()
         if (WeatherParams.TEMPERATURE in enabledParams) {
             fields.addAll(listOf("temperature_2m_max", "temperature_2m_min"))
@@ -185,6 +189,7 @@ class WeatherRepository(
         if (WeatherParams.SUNSHINE_DURATION in enabledParams) fields.add("sunshine_duration")
         if (WeatherParams.WIND_GUSTS_MAX in enabledParams) fields.add("wind_gusts_10m_max")
         if (WeatherParams.DOMINANT_WIND_DIR in enabledParams) fields.add("wind_direction_10m_dominant")
+        extraDailyFields.forEach { f -> if (f !in fields) fields.add(f) }
         return if (fields.isEmpty()) null else fields.joinToString(",")
     }
 
@@ -218,14 +223,21 @@ class WeatherRepository(
         locationName: String,
         enabledParams: Set<String>,
         showHourly: Boolean,
-        dailyDays: Int
+        dailyDays: Int,
+        extraDailyFields: Set<String> = emptySet()
     ): AllForecastResult {
         val key = locationKey(latitude, longitude)
-        val forecastDays = if (dailyDays > 0) dailyDays + 1 else if (showHourly) 1 else null
 
         val currentFields = buildCurrentQuery(enabledParams)
-        val enrichedDailyFields = buildDailyQuery(enabledParams)
+        val enrichedDailyFields = buildDailyQuery(enabledParams, extraDailyFields)
         val enrichedHourlyFields = buildHourlyQuery(enabledParams)
+
+        val forecastDays = when {
+            dailyDays > 0 -> dailyDays + 1
+            showHourly -> 1
+            enrichedDailyFields != null -> 1
+            else -> null
+        }
 
         val hourlyFields = if (showHourly) {
             val base = mutableListOf("temperature_2m", "weather_code", "precipitation")

@@ -9,6 +9,7 @@ import com.ergonomic.mountainweather.data.local.AppDatabase
 import com.ergonomic.mountainweather.data.repository.SettingsRepository
 import com.ergonomic.mountainweather.data.repository.WeatherRepository
 import com.ergonomic.mountainweather.widget.WeatherWidgetUpdater
+import com.ergonomic.mountainweather.widget.WidgetDataRequirements
 import kotlinx.coroutines.flow.first
 
 class WeatherSyncWorker(
@@ -26,13 +27,15 @@ class WeatherSyncWorker(
         val settings = settingsRepo.forecastSettings.first()
 
         val favorites = db.savedLocationDao().getFavorites()
+        val extraDaily = WidgetDataRequirements.extraDailyFields(applicationContext)
 
         var allOk = true
         for (location in favorites) {
             try {
                 repository.refreshEnrichedWeather(
                     location.latitude, location.longitude,
-                    location.name, settings.enabledCurrentParams
+                    location.name, settings.enabledCurrentParams,
+                    extraDailyFields = extraDaily
                 )
 
                 val days = settings.dailyForecastDays
@@ -59,7 +62,8 @@ class WeatherSyncWorker(
                 try {
                     repository.refreshEnrichedWeather(
                         saved.latitude, saved.longitude,
-                        saved.name, settings.enabledCurrentParams
+                        saved.name, settings.enabledCurrentParams,
+                        extraDailyFields = extraDaily
                     )
                     val days = settings.dailyForecastDays
                     val hourlyDays = if (days > 0) days + 1 else 1

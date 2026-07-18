@@ -3,7 +3,9 @@ package com.ergonomic.mountainweather.data.sync
 import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -41,5 +43,19 @@ object SyncScheduler {
 
     fun disable(context: Context) {
         WorkManager.getInstance(context).cancelUniqueWork(WeatherSyncWorker.WORK_NAME)
+    }
+
+    fun runOnce(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val request = OneTimeWorkRequestBuilder<WeatherSyncWorker>()
+            .setConstraints(constraints)
+            .build()
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "weather_oneshot_sync",
+            ExistingWorkPolicy.KEEP,
+            request
+        )
     }
 }

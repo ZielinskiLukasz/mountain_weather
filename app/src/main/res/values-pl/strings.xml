@@ -32,6 +32,16 @@
     <string name="widget_name_rain">Pasek opadów 24h</string>
     <string name="widget_description_rain">Poziomy widget 3×1 z prognozą opadów na najbliższe 24 godziny. Śledzi lokalizację z głównego ekranu apki.</string>
     <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_name_sun">Słońce i UV</string>
+    <string name="widget_description_sun">Minimalistyczny widget 2×1: wschód, zachód, pasek postępu dnia z kropką „teraz” i dzisiejszy indeks UV.</string>
+    <string name="sun_sunrise">Wschód</string>
+    <string name="sun_sunset">Zachód</string>
+    <string name="sun_uv_prefix">UV %1$s</string>
+    <string name="sun_uv_low">niski</string>
+    <string name="sun_uv_moderate">umiarkowany</string>
+    <string name="sun_uv_high">wysoki</string>
+    <string name="sun_uv_very_high">bardzo wysoki</string>
+    <string name="sun_uv_extreme">ekstremalny</string>
     <string name="widget_config_title">Wybierz miasto</string>
     <string name="widget_config_follow_main">Podążaj za główną apką</string>
     <string name="widget_config_favorites">Ulubione miasta</string>

@@ -32,6 +32,16 @@
     <string name="widget_name_rain">Rain bar 24h</string>
     <string name="widget_description_rain">Horizontal 3×1 bar chart of precipitation for the next 24 hours. Follows the main app location.</string>
     <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_name_sun">Sun &amp; UV</string>
+    <string name="widget_description_sun">Minimalist 2×1 day almanac: sunrise, sunset, day-progress with a “now” dot and today\'s UV index.</string>
+    <string name="sun_sunrise">Sunrise</string>
+    <string name="sun_sunset">Sunset</string>
+    <string name="sun_uv_prefix">UV %1$s</string>
+    <string name="sun_uv_low">low</string>
+    <string name="sun_uv_moderate">moderate</string>
+    <string name="sun_uv_high">high</string>
+    <string name="sun_uv_very_high">very high</string>
+    <string name="sun_uv_extreme">extreme</string>
     <string name="widget_config_title">Choose city</string>
     <string name="widget_config_follow_main">Follow the main app</string>
     <string name="widget_config_favorites">Favorite cities</string>

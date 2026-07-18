@@ -22,9 +22,10 @@ class ResilientSyncManager(
         latitude: Double,
         longitude: Double,
         locationName: String,
-        settings: ForecastSettings
+        settings: ForecastSettings,
+        extraDailyFields: Set<String> = emptySet()
     ): SyncResult {
-        val currentResult = syncCurrent(latitude, longitude, locationName, settings.enabledCurrentParams)
+        val currentResult = syncCurrent(latitude, longitude, locationName, settings.enabledCurrentParams, extraDailyFields)
 
         val hourlyDays = if (settings.dailyForecastDays > 0) settings.dailyForecastDays + 1 else 1
         val hourlyResult = if (settings.showHourly) {
@@ -43,17 +44,18 @@ class ResilientSyncManager(
         latitude: Double,
         longitude: Double,
         locationName: String,
-        enabledParams: Set<String>
+        enabledParams: Set<String>,
+        extraDailyFields: Set<String>
     ): Result<WeatherEntity> {
         return try {
             val result = circuitBreaker.execute {
                 retryPolicy.execute {
-                    repository.refreshEnrichedWeather(latitude, longitude, locationName, enabledParams).getOrThrow()
+                    repository.refreshEnrichedWeather(latitude, longitude, locationName, enabledParams, extraDailyFields).getOrThrow()
                 }
             }
             Result.success(result)
         } catch (e: Exception) {
-            repository.refreshEnrichedWeather(latitude, longitude, locationName, enabledParams)
+            repository.refreshEnrichedWeather(latitude, longitude, locationName, enabledParams, extraDailyFields)
         }
     }
 
