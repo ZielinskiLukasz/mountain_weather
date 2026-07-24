@@ -16,12 +16,12 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.ergonomic.mountainweather"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ergonomic.mountainweather"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 69
         versionName = "0.1.62"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
