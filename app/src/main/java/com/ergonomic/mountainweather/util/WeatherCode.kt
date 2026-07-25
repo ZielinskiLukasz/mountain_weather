@@ -10,6 +10,16 @@ data class WeatherInfo(
     @DrawableRes val iconRes: Int = 0
 )
 
+/** WMO weather codes that indicate some form of precipitation. */
+val PRECIPITATION_CODES = setOf(
+    51, 53, 55, 56, 57,       // drizzle
+    61, 63, 65, 66, 67,       // rain
+    71, 73, 75, 77,           // snow
+    80, 81, 82,               // rain showers
+    85, 86,                   // snow showers
+    95, 96, 99                // thunderstorm
+)
+
 fun weatherCodeToInfo(code: Int, isDay: Boolean = true): WeatherInfo = when (code) {
     0 -> if (isDay) WeatherInfo(R.string.wc_clear, "☀️", R.drawable.ic_weather_sun)
          else WeatherInfo(R.string.wc_clear, "🌙", R.drawable.ic_weather_night_cloudy)

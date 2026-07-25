@@ -270,9 +270,15 @@ class WeatherDailyWidget : GlanceAppWidget() {
         showCity: Boolean,
         tap: Action
     ) {
-        val info = weatherCodeToInfo(day.weatherCode, isDay = true)
+        // For today, use current-hour overrides so the widget matches the main screen.
+        val effectiveCode = day.currentWeatherCode ?: day.weatherCode
+        val effectiveIsDay = if (day.currentWeatherCode != null) day.currentIsDay else true
+        val info = weatherCodeToInfo(effectiveCode, isDay = effectiveIsDay)
         val iconResId = if (info.iconRes != 0) info.iconRes else R.drawable.ic_weather_overcast
         val dateLabel = WidgetDailyDateFormatter.format(context, day.date)
+
+        // For today, show current temp; for future days, show daily max.
+        val displayTemp = day.currentTemp ?: day.tempMax
 
         Column(
             modifier = GlanceModifier.padding(horizontal = 2.dp, vertical = 2.dp).clickable(tap),
@@ -285,7 +291,7 @@ class WeatherDailyWidget : GlanceAppWidget() {
                 modifier = GlanceModifier.size(sizes.iconDp.dp).clickable(tap)
             )
             Text(
-                text = "${day.tempMax.toInt()}\u00B0",
+                text = "${displayTemp.toInt()}\u00B0",
                 maxLines = 1,
                 modifier = GlanceModifier.clickable(tap),
                 style = TextStyle(

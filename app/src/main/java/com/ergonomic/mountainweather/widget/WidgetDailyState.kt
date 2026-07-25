@@ -25,7 +25,13 @@ data class DailyDaySnapshot(
     val date: String,
     val weatherCode: Int,
     val tempMax: Double,
-    val tempMin: Double
+    val tempMin: Double,
+    /** Current-hour weather code override for today (matches main screen). */
+    val currentWeatherCode: Int? = null,
+    /** Current temperature override for today (matches main screen). */
+    val currentTemp: Double? = null,
+    /** Whether it is currently day (used for icon selection when overriding). */
+    val currentIsDay: Boolean = true
 )
 
 /** Windowing and scroll math shared by [WeatherDailyWidget] and [CycleDailyAction]. */
