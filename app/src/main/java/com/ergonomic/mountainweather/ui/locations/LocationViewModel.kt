@@ -19,9 +19,11 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.update
@@ -45,6 +47,13 @@ data class SelectedLocation(
     val longitude: Double
 )
 
+/** Favorites + recent loaded together so the list never paints recent-first then prepends favorites. */
+data class SavedLists(
+    val favorites: List<SavedLocationEntity> = emptyList(),
+    val recent: List<SavedLocationEntity> = emptyList(),
+    val ready: Boolean = false
+)
+
 @OptIn(FlowPreview::class)
 class LocationViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -61,12 +70,20 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     private val _selectedLocation = MutableStateFlow<SelectedLocation?>(null)
     val selectedLocation: StateFlow<SelectedLocation?> = _selectedLocation
 
+    val savedLists: StateFlow<SavedLists> =
+        combine(
+            savedLocationRepo.observeFavorites(),
+            savedLocationRepo.observeRecent()
+        ) { favorites, recent ->
+            SavedLists(favorites = favorites, recent = recent, ready = true)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SavedLists())
+
     val favorites: StateFlow<List<SavedLocationEntity>> =
-        savedLocationRepo.observeFavorites()
+        savedLists.map { it.favorites }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val recentLocations: StateFlow<List<SavedLocationEntity>> =
-        savedLocationRepo.observeRecent()
+        savedLists.map { it.recent }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _queryFlow = MutableStateFlow("")
@@ -202,6 +219,13 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun selectSearchResult(result: GeocodingResult) {
+        // Navigate first; persist "recent" in the background so the list
+        // doesn't reorder under the user's finger before the screen closes.
+        _selectedLocation.value = SelectedLocation(
+            name = result.name,
+            latitude = result.latitude,
+            longitude = result.longitude
+        )
         viewModelScope.launch {
             savedLocationRepo.saveAsRecent(
                 name = result.name,
@@ -210,15 +234,15 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                 country = result.country,
                 region = result.region
             )
-            _selectedLocation.value = SelectedLocation(
-                name = result.name,
-                latitude = result.latitude,
-                longitude = result.longitude
-            )
         }
     }
 
     fun selectSavedLocation(location: SavedLocationEntity) {
+        _selectedLocation.value = SelectedLocation(
+            name = location.name,
+            latitude = location.latitude,
+            longitude = location.longitude
+        )
         viewModelScope.launch {
             savedLocationRepo.saveAsRecent(
                 name = location.name,
@@ -226,11 +250,6 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
                 longitude = location.longitude,
                 country = location.country,
                 region = location.region
-            )
-            _selectedLocation.value = SelectedLocation(
-                name = location.name,
-                latitude = location.latitude,
-                longitude = location.longitude
             )
         }
     }

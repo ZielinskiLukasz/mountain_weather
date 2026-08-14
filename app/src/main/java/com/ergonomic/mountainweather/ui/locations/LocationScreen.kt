@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -81,8 +82,10 @@ fun LocationScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val selected by viewModel.selectedLocation.collectAsState()
-    val favorites by viewModel.favorites.collectAsState()
-    val recent by viewModel.recentLocations.collectAsState()
+    val savedLists by viewModel.savedLists.collectAsState()
+    val favorites = savedLists.favorites
+    val recent = savedLists.recent
+    val listsReady = savedLists.ready
 
     LaunchedEffect(selected) {
         selected?.let {
@@ -247,15 +250,26 @@ fun LocationScreen(
                     }
                 }
                 else -> {
-                    SavedLocationsContent(
-                        favorites = favorites,
-                        recent = recent,
-                        onSelect = { viewModel.selectSavedLocation(it) },
-                        onToggleFavorite = { viewModel.toggleFavorite(it) },
-                        onDelete = { viewModel.deleteLocation(it) },
-                        onReorder = { viewModel.reorderFavorites(it) },
-                        onClearAllRecent = { viewModel.clearAllRecent() }
-                    )
+                    if (!listsReady) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        SavedLocationsContent(
+                            favorites = favorites,
+                            recent = recent,
+                            onSelect = { viewModel.selectSavedLocation(it) },
+                            onToggleFavorite = { viewModel.toggleFavorite(it) },
+                            onDelete = { viewModel.deleteLocation(it) },
+                            onReorder = { viewModel.reorderFavorites(it) },
+                            onClearAllRecent = { viewModel.clearAllRecent() }
+                        )
+                    }
                 }
             }
         }
@@ -323,8 +337,14 @@ fun SavedLocationsContent(
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
     val itemHeightPx = with(density) { 72.dp.toPx() }
+    val listState = rememberLazyListState()
 
-    LazyColumn {
+    // Always open with favorites (top of list) visible.
+    LaunchedEffect(Unit) {
+        listState.scrollToItem(0)
+    }
+
+    LazyColumn(state = listState) {
         if (orderedFavs.isNotEmpty()) {
             item(key = "fav_header") {
                 SectionHeader(stringResource(R.string.favorites))
