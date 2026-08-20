@@ -32,20 +32,15 @@ class WeatherSyncWorker(
         var allOk = true
         for (location in favorites) {
             try {
-                repository.refreshEnrichedWeather(
-                    location.latitude, location.longitude,
-                    location.name, settings.enabledCurrentParams,
+                repository.refreshAll(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                    locationName = location.name,
+                    enabledParams = settings.enabledCurrentParams,
+                    showHourly = settings.showHourly,
+                    dailyDays = settings.dailyForecastDays,
                     extraDailyFields = extraDaily
                 )
-
-                val days = settings.dailyForecastDays
-                val hourlyDays = if (days > 0) days + 1 else 1
-                if (settings.showHourly) {
-                    repository.refreshHourlyForecast(location.latitude, location.longitude, hourlyDays)
-                }
-                if (days > 0) {
-                    repository.refreshDailyForecast(location.latitude, location.longitude, days + 1)
-                }
             } catch (e: Exception) {
                 Log.w(TAG, "Sync failed for ${location.name}: ${e.message}")
                 allOk = false
@@ -60,19 +55,15 @@ class WeatherSyncWorker(
             }
             if (!alreadySynced) {
                 try {
-                    repository.refreshEnrichedWeather(
-                        saved.latitude, saved.longitude,
-                        saved.name, settings.enabledCurrentParams,
+                    repository.refreshAll(
+                        latitude = saved.latitude,
+                        longitude = saved.longitude,
+                        locationName = saved.name,
+                        enabledParams = settings.enabledCurrentParams,
+                        showHourly = settings.showHourly,
+                        dailyDays = settings.dailyForecastDays,
                         extraDailyFields = extraDaily
                     )
-                    val days = settings.dailyForecastDays
-                    val hourlyDays = if (days > 0) days + 1 else 1
-                    if (settings.showHourly) {
-                        repository.refreshHourlyForecast(saved.latitude, saved.longitude, hourlyDays)
-                    }
-                    if (days > 0) {
-                        repository.refreshDailyForecast(saved.latitude, saved.longitude, days + 1)
-                    }
                 } catch (e: Exception) {
                     Log.w(TAG, "Sync failed for last location ${saved.name}: ${e.message}")
                     allOk = false

@@ -201,7 +201,13 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             pages = listOf(currentPage) + favPages
             newIndex = 0
         }
-        _uiState.update { it.copy(locationPages = pages, currentPageIndex = newIndex) }
+        _uiState.update {
+            it.copy(
+                locationPages = pages,
+                currentPageIndex = newIndex,
+                locationSelectionVersion = it.locationSelectionVersion + 1
+            )
+        }
         preloadCacheForPages(pages)
     }
 
@@ -262,8 +268,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         }
         viewModelScope.launch {
             settingsRepo.saveLastLocation(page.name, page.latitude, page.longitude)
-            Log.d(TAG_WIDGET, "onPageChanged: saved lastLocation=${page.name}; calling refreshAll")
-            WeatherWidgetUpdater.refreshAll(getApplication())
         }
         observeCache()
         observeFavoriteStatus()
@@ -418,19 +422,18 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         cacheObserverJob = viewModelScope.launch {
             repository.observeCachedWeather(key).collect { cached ->
                 if (cached != null) {
+                    val stillCurrent = WeatherRepository.locationKey(
+                        _uiState.value.latitude, _uiState.value.longitude
+                    ) == key
                     val updatedMap = _uiState.value.weatherByLocation.toMutableMap()
                     updatedMap[key] = cached
-                    if (_uiState.value.isLoading && _uiState.value.weather == null) {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                weather = cached,
-                                locationName = cached.locationName,
-                                weatherByLocation = updatedMap
-                            )
-                        }
-                    } else {
-                        _uiState.update { it.copy(weatherByLocation = updatedMap) }
+                    _uiState.update {
+                        it.copy(
+                            isLoading = if (stillCurrent && it.weather == null) false else it.isLoading,
+                            weather = if (stillCurrent) cached else it.weather,
+                            locationName = if (stillCurrent) cached.locationName else it.locationName,
+                            weatherByLocation = updatedMap
+                        )
                     }
                 }
             }
@@ -505,6 +508,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 dMap[key] = result.daily
                 _uiState.update { it.copy(dailyForecast = result.daily, dailyByLocation = dMap) }
             }
+            refreshOtherFavorites(settings, extraDaily)
         }
     }
 
@@ -518,6 +522,7 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 extraDailyFields = extraDaily
             )
             syncResult.currentWeather?.let { handleResult(it) }
+            refreshOtherFavorites(settings, extraDaily)
         }
     }
 
@@ -591,6 +596,70 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                     _uiState.update { it.copy(dailyForecast = result.daily, dailyByLocation = dMap) }
                 }
             }
+            refreshOtherFavorites(settings, extraDaily)
+        }
+    }
+
+    private suspend fun refreshOtherFavorites(
+        settings: ForecastSettings,
+        extraDaily: Set<String>
+    ) {
+        val current = _uiState.value
+        val favorites = runCatching { db.savedLocationDao().getFavorites() }.getOrDefault(emptyList())
+        for (loc in favorites) {
+            val sameAsCurrent =
+                kotlin.math.abs(loc.latitude - current.latitude) < 0.005 &&
+                    kotlin.math.abs(loc.longitude - current.longitude) < 0.005
+            if (sameAsCurrent) continue
+            runCatching {
+                val result = repository.refreshAll(
+                    latitude = loc.latitude,
+                    longitude = loc.longitude,
+                    locationName = loc.name,
+                    enabledParams = settings.enabledCurrentParams,
+                    showHourly = settings.showHourly,
+                    dailyDays = settings.dailyForecastDays,
+                    extraDailyFields = extraDaily
+                )
+                applyForecastToState(
+                    latitude = loc.latitude,
+                    longitude = loc.longitude,
+                    weather = result.weather.getOrNull(),
+                    hourly = result.hourly,
+                    daily = result.daily
+                )
+            }
+        }
+        WeatherWidgetUpdater.refreshAll(getApplication())
+    }
+
+    private fun applyForecastToState(
+        latitude: Double,
+        longitude: Double,
+        weather: WeatherEntity?,
+        hourly: List<HourlyForecastEntity>,
+        daily: List<DailyForecastEntity>
+    ) {
+        val key = WeatherRepository.locationKey(latitude, longitude)
+        val state = _uiState.value
+        val isCurrent =
+            kotlin.math.abs(state.latitude - latitude) < 0.005 &&
+                kotlin.math.abs(state.longitude - longitude) < 0.005
+        val wMap = state.weatherByLocation.toMutableMap()
+        val hMap = state.hourlyByLocation.toMutableMap()
+        val dMap = state.dailyByLocation.toMutableMap()
+        if (weather != null) wMap[key] = weather
+        if (hourly.isNotEmpty()) hMap[key] = hourly
+        if (daily.isNotEmpty()) dMap[key] = daily
+        _uiState.update {
+            it.copy(
+                weatherByLocation = wMap,
+                hourlyByLocation = hMap,
+                dailyByLocation = dMap,
+                weather = if (isCurrent && weather != null) weather else it.weather,
+                hourlyForecast = if (isCurrent && hourly.isNotEmpty()) hourly else it.hourlyForecast,
+                dailyForecast = if (isCurrent && daily.isNotEmpty()) daily else it.dailyForecast
+            )
         }
     }
 

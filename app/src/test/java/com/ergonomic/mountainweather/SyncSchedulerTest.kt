@@ -8,7 +8,7 @@ class SyncSchedulerTest {
 
     @Test
     fun `interval options contains expected values`() {
-        val expected = listOf(0, 10, 30, 60, 180, 360, 720)
+        val expected = listOf(0, 15, 30, 60, 180, 360, 720)
         assertEquals(expected, SyncScheduler.INTERVAL_OPTIONS)
     }
 

@@ -14,7 +14,7 @@ object SyncScheduler {
 
     val INTERVAL_OPTIONS = listOf(0, 15, 30, 60, 180, 360, 720)
 
-    fun enable(context: Context, intervalMinutes: Int) {
+    fun enable(context: Context, intervalMinutes: Int, replaceExisting: Boolean = true) {
         if (intervalMinutes <= 0) {
             disable(context)
             return
@@ -31,14 +31,15 @@ object SyncScheduler {
             flexMinutes, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
-            .setInitialDelay(1, TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             WeatherSyncWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.UPDATE,
+            if (replaceExisting) ExistingPeriodicWorkPolicy.UPDATE
+            else ExistingPeriodicWorkPolicy.KEEP,
             request
         )
+        runOnce(context)
     }
 
     fun disable(context: Context) {

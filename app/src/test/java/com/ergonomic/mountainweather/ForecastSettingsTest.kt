@@ -31,9 +31,9 @@ class ForecastSettingsTest {
     }
 
     @Test
-    fun `default settings have background sync off`() {
+    fun `default settings have background sync every hour`() {
         val s = ForecastSettings()
-        assertEquals(0, s.syncIntervalMinutes)
+        assertEquals(60, s.syncIntervalMinutes)
     }
 
     @Test

@@ -186,7 +186,9 @@ class MainActivity : ComponentActivity() {
             val settings = settingsRepo.forecastSettings.first()
             if (settings.syncIntervalMinutes > 0) {
                 com.ergonomic.mountainweather.data.sync.SyncScheduler.enable(
-                    this@MainActivity, settings.syncIntervalMinutes
+                    this@MainActivity,
+                    settings.syncIntervalMinutes,
+                    replaceExisting = false
                 )
             }
         }
@@ -371,18 +373,7 @@ fun WeatherScreen(
             }
     }
 
-    LaunchedEffect(state.locationSelectionVersion) {
-        val target = state.currentPageIndex.coerceIn(0, pageCount - 1)
-        if (pagerState.currentPage != target) {
-            pagerState.scrollToPage(target)
-        }
-    }
-
-    // Snap the pager to the index the ViewModel computed after init (which reads
-    // lastLocation from DataStore and locates the matching favorite). Without
-    // this, opening the app from the widget always lands on page 0 instead of
-    // the city the widget currently displays.
-    LaunchedEffect(state.currentPageIndex, pageCount) {
+    LaunchedEffect(state.locationSelectionVersion, pageCount) {
         if (pageCount <= 0) return@LaunchedEffect
         val target = state.currentPageIndex.coerceIn(0, pageCount - 1)
         if (pagerState.currentPage != target) {
@@ -448,21 +439,23 @@ fun WeatherScreen(
                     HorizontalPager(
                         state = pagerState,
                         userScrollEnabled = !isHourlyPressed,
+                        beyondViewportPageCount = 1,
                         modifier = Modifier.fillMaxSize()
                     ) { pageIndex ->
                         val page = pages.getOrNull(pageIndex)
-                        val isActivePage = pageIndex == pagerState.settledPage
                         val locationKey = if (page != null)
                             com.ergonomic.mountainweather.data.repository.WeatherRepository.locationKey(page.latitude, page.longitude)
                         else null
-                        val pageWeather = locationKey?.let { state.weatherByLocation[it] } ?: state.weather
+                        val pageWeather = locationKey?.let { state.weatherByLocation[it] }
                         val pageHourly = locationKey?.let { state.hourlyByLocation[it] } ?: emptyList()
                         val pageDaily = locationKey?.let { state.dailyByLocation[it] } ?: emptyList()
                         val pageName = page?.name ?: state.locationName
+                        val isActivePage = pageIndex == pagerState.settledPage
                         val pageIsFavorite = if (isActivePage) state.isFavorite
                             else page?.isCurrent == false
 
-                        if (pageWeather != null) {
+                        key(locationKey ?: pageIndex) {
+                            if (pageWeather != null) {
                             WeatherContent(
                                 locationName = pageName,
                                 weather = pageWeather,
@@ -509,6 +502,7 @@ fun WeatherScreen(
                                     )
                                 }
                             }
+                        }
                         }
                     }
                 }

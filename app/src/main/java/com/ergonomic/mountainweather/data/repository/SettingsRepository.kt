@@ -26,7 +26,7 @@ data class ForecastSettings(
     val showDaily7: Boolean = false,
     val showDaily14: Boolean = false,
     val resilientSync: Boolean = false,
-    val syncIntervalMinutes: Int = 0,
+    val syncIntervalMinutes: Int = 60,
     val enabledCurrentParams: Set<String> = WeatherParams.DEFAULTS,
     val paramOrder: List<String> = WeatherParams.ALL.map { it.key },
     val themeMode: ThemeMode = ThemeMode.SYSTEM
@@ -67,7 +67,7 @@ class SettingsRepository(private val context: Context) {
             showDaily7 = prefs[Keys.SHOW_DAILY_7] ?: false,
             showDaily14 = prefs[Keys.SHOW_DAILY_14] ?: false,
             resilientSync = prefs[Keys.RESILIENT_SYNC] ?: false,
-            syncIntervalMinutes = prefs[Keys.SYNC_INTERVAL_MINUTES] ?: 0,
+            syncIntervalMinutes = prefs[Keys.SYNC_INTERVAL_MINUTES] ?: 60,
             enabledCurrentParams = prefs[Keys.ENABLED_CURRENT_PARAMS] ?: WeatherParams.DEFAULTS,
             paramOrder = prefs[Keys.PARAM_ORDER]?.split(",")?.filter { it.isNotBlank() }
                 ?: WeatherParams.ALL.map { it.key },
