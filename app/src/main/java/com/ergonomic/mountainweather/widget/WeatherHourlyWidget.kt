@@ -36,6 +36,7 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import com.ergonomic.mountainweather.MainActivity
 import com.ergonomic.mountainweather.R
+import com.ergonomic.mountainweather.util.dryEquivalentWeatherCode
 import com.ergonomic.mountainweather.util.resolveIsDay
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 
@@ -260,12 +261,7 @@ class WeatherHourlyWidget : GlanceAppWidget() {
         tap: Action
     ) {
         val isDay = resolveIsDay(timeIso = hour.time)
-        // Override precipitation codes when actual precipitation is 0 mm
-        val effectiveCode = if (hour.precipitation <= 0.0 && hour.weatherCode in PRECIPITATION_CODES) {
-            if (hour.weatherCode in 80..82) 2 else 3
-        } else {
-            hour.weatherCode
-        }
+        val effectiveCode = dryEquivalentWeatherCode(hour.weatherCode, hour.precipitation)
         val info = weatherCodeToInfo(effectiveCode, isDay)
         val iconResId = if (info.iconRes != 0) info.iconRes else R.drawable.ic_weather_overcast
         val label = WidgetHourlyWindow.formatHourLabel(hour.time)
@@ -394,14 +390,5 @@ class WeatherHourlyWidget : GlanceAppWidget() {
 
     companion object {
         private const val TAG = "WeatherHourlyWidget"
-        /** WMO weather codes that indicate some form of precipitation. */
-        private val PRECIPITATION_CODES = setOf(
-            51, 53, 55, 56, 57,       // drizzle
-            61, 63, 65, 66, 67,       // rain
-            71, 73, 75, 77,           // snow
-            80, 81, 82,               // rain showers
-            85, 86,                   // snow showers
-            95, 96, 99                // thunderstorm
-        )
     }
 }

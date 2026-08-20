@@ -110,6 +110,8 @@ import com.ergonomic.mountainweather.ui.theme.CardBorderLight
 import com.ergonomic.mountainweather.ui.theme.MountainWeatherTheme
 import com.ergonomic.mountainweather.util.WeatherParams
 import com.ergonomic.mountainweather.util.WeatherInfo
+import com.ergonomic.mountainweather.util.dryEquivalentWeatherCode
+import com.ergonomic.mountainweather.util.formatPrecipitationMm
 import com.ergonomic.mountainweather.util.resolveIsDay
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
@@ -451,6 +453,8 @@ fun WeatherScreen(
                         val pageDaily = locationKey?.let { state.dailyByLocation[it] } ?: emptyList()
                         val pageName = page?.name ?: state.locationName
                         val isActivePage = pageIndex == pagerState.settledPage
+                        val showDetails = isActivePage ||
+                            (pagerState.isScrollInProgress && pageIndex == pagerState.targetPage)
                         val pageIsFavorite = if (isActivePage) state.isFavorite
                             else page?.isCurrent == false
 
@@ -466,6 +470,7 @@ fun WeatherScreen(
                                 isFavorite = pageIsFavorite,
                                 selectedHourlyDate = state.selectedHourlyDate,
                                 gpsAltitude = state.gpsAltitude,
+                                showDetails = showDetails,
                                 onChangeLocation = onChangeLocation,
                                 onOpenSettings = onOpenSettings,
                                 onGpsLocate = {
@@ -633,6 +638,7 @@ fun WeatherContent(
     isFavorite: Boolean,
     selectedHourlyDate: String?,
     gpsAltitude: Double? = null,
+    showDetails: Boolean = true,
     onChangeLocation: () -> Unit,
     onOpenSettings: () -> Unit,
     onGpsLocate: () -> Unit,
@@ -665,7 +671,11 @@ fun WeatherContent(
     val cardBorder = if (MaterialTheme.colorScheme.background == com.ergonomic.mountainweather.ui.theme.BackgroundDark)
         CardBorderDark else CardBorderLight
 
-    val detailItems = buildDetailItems(weather, settings.enabledCurrentParams, settings.paramOrder, gpsAltitude)
+    val detailItems = if (showDetails) {
+        buildDetailItems(weather, settings.enabledCurrentParams, settings.paramOrder, gpsAltitude)
+    } else {
+        emptyList()
+    }
 
     Column(
         modifier = Modifier
@@ -738,77 +748,79 @@ fun WeatherContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (detailItems.isNotEmpty()) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, cardBorder, cardShape),
-                shape = cardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Box(modifier = Modifier.padding(12.dp)) {
-                    DraggableDetailGrid(
-                        items = detailItems,
-                        paramOrder = settings.paramOrder,
-                        onReorder = onReorder
+        if (showDetails) {
+            if (detailItems.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, cardBorder, cardShape),
+                    shape = cardShape,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Box(modifier = Modifier.padding(12.dp)) {
+                        DraggableDetailGrid(
+                            items = detailItems,
+                            paramOrder = settings.paramOrder,
+                            onReorder = onReorder
+                        )
+                    }
+                }
+            }
+
+            if (settings.showHourly && hourlyForecast.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                val todayStr = LocalDate.now().toString()
+                val filterDate = selectedHourlyDate ?: todayStr
+                val filteredHourly = hourlyForecast.filter { it.time.startsWith(filterDate) }
+                val displayHourly = filteredHourly.ifEmpty {
+                    hourlyForecast.filter { it.time.startsWith(todayStr) }
+                }
+                val effectiveDate = if (filteredHourly.isNotEmpty()) selectedHourlyDate else null
+                if (displayHourly.isNotEmpty()) {
+                    HourlyForecastSection(
+                        hourlyForecast = displayHourly,
+                        selectedDate = effectiveDate,
+                        onBackToToday = { onSelectDay(null) },
+                        noDataForDate = filteredHourly.isEmpty() && selectedHourlyDate != null,
+                        onPressChange = onHourlyPressChange
                     )
                 }
             }
-        }
 
-        if (settings.showHourly && hourlyForecast.isNotEmpty()) {
+            if (settings.dailyForecastDays > 0 && dailyForecast.isNotEmpty()) {
+                val maxDays = settings.dailyForecastDays
+                val today = LocalDate.now().toString()
+                val futureDays = dailyForecast.filter { it.date > today }.take(maxDays)
+                if (futureDays.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DailyForecastSection(
+                        dailyForecast = futureDays,
+                        selectedDate = selectedHourlyDate,
+                        showHourly = settings.showHourly,
+                        onDayClick = { date -> onSelectDay(if (date == selectedHourlyDate) null else date) }
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
-            val todayStr = LocalDate.now().toString()
-            val filterDate = selectedHourlyDate ?: todayStr
-            val filteredHourly = hourlyForecast.filter { it.time.startsWith(filterDate) }
-            val displayHourly = filteredHourly.ifEmpty {
-                hourlyForecast.filter { it.time.startsWith(todayStr) }
-            }
-            val effectiveDate = if (filteredHourly.isNotEmpty()) selectedHourlyDate else null
-            if (displayHourly.isNotEmpty()) {
-                HourlyForecastSection(
-                    hourlyForecast = displayHourly,
-                    selectedDate = effectiveDate,
-                    onBackToToday = { onSelectDay(null) },
-                    noDataForDate = filteredHourly.isEmpty() && selectedHourlyDate != null,
-                    onPressChange = onHourlyPressChange
+
+            val formattedTime = remember(weather.cachedAt) {
+                val dt = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(weather.cachedAt), ZoneId.systemDefault()
                 )
+                dt.format(DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy"))
             }
-        }
-
-        if (settings.dailyForecastDays > 0 && dailyForecast.isNotEmpty()) {
-            val maxDays = settings.dailyForecastDays
-            val today = LocalDate.now().toString()
-            val futureDays = dailyForecast.filter { it.date > today }.take(maxDays)
-            if (futureDays.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                DailyForecastSection(
-                    dailyForecast = futureDays,
-                    selectedDate = selectedHourlyDate,
-                    showHourly = settings.showHourly,
-                    onDayClick = { date -> onSelectDay(if (date == selectedHourlyDate) null else date) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        val formattedTime = remember(weather.cachedAt) {
-            val dt = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(weather.cachedAt), ZoneId.systemDefault()
+            Text(
+                text = stringResource(R.string.update_time, formattedTime),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center
             )
-            dt.format(DateTimeFormatter.ofPattern("HH:mm, dd.MM.yyyy"))
-        }
-        Text(
-            text = stringResource(R.string.update_time, formattedTime),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline,
-            textAlign = TextAlign.Center
-        )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+        }
     }
 }
 
@@ -1379,15 +1391,9 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
     }
     val hour = hourData.first
     val isDay = resolveIsDay(timeIso = item.time)
-    // When actual precipitation is 0 mm, override rain/snow/thunderstorm
-    // weather codes to a dry equivalent so the icon matches the data shown.
-    val effectiveCode = if (item.precipitation <= 0.0 && item.weatherCode in com.ergonomic.mountainweather.util.PRECIPITATION_CODES) {
-        // Shower codes (80-82) imply partial cloud; everything else → overcast
-        if (item.weatherCode in 80..82) 2 else 3
-    } else {
-        item.weatherCode
-    }
+    val effectiveCode = dryEquivalentWeatherCode(item.weatherCode, item.precipitation)
     val info = weatherCodeToInfo(effectiveCode, isDay)
+    val precipText = formatPrecipitationMm(item.precipitation)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1411,9 +1417,9 @@ fun HourlyForecastItem(item: HourlyForecastEntity, isCurrentHour: Boolean = fals
             textAlign = TextAlign.Center
         )
         Box(modifier = Modifier.height(16.dp), contentAlignment = Alignment.Center) {
-            if (item.precipitation > 0) {
+            if (precipText != null) {
                 Text(
-                    text = String.format(Locale.getDefault(), "%.1fmm", item.precipitation),
+                    text = precipText,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
@@ -1495,12 +1501,9 @@ fun DailyForecastItem(
             item.date
         }
     }
-    val effectiveCode = if (item.precipitationSum <= 0.0 && item.weatherCode in com.ergonomic.mountainweather.util.PRECIPITATION_CODES) {
-        if (item.weatherCode in 80..82) 2 else 3
-    } else {
-        item.weatherCode
-    }
+    val effectiveCode = dryEquivalentWeatherCode(item.weatherCode, item.precipitationSum)
     val info = weatherCodeToInfo(effectiveCode)
+    val precipText = formatPrecipitationMm(item.precipitationSum)
     val selectedBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
 
     Row(
@@ -1534,9 +1537,8 @@ fun DailyForecastItem(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold
         )
-        if (item.precipitationSum > 0) {
+        if (precipText != null) {
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-            val precipText = String.format(Locale.getDefault(), "%.1fmm", item.precipitationSum)
             Text(
                 text = precipText,
                 style = MaterialTheme.typography.labelSmall,

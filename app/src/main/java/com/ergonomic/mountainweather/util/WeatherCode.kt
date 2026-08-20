@@ -3,6 +3,8 @@ package com.ergonomic.mountainweather.util
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.ergonomic.mountainweather.R
+import java.util.Locale
+import kotlin.math.round
 
 data class WeatherInfo(
     @StringRes val descriptionRes: Int,
@@ -19,6 +21,28 @@ val PRECIPITATION_CODES = setOf(
     85, 86,                   // snow showers
     95, 96, 99                // thunderstorm
 )
+
+/**
+ * Open-Meteo `weather_code` can stay on rain/snow even when `precipitation` is 0.0.
+ * Use a dry equivalent so the icon matches the millimetres shown.
+ */
+fun dryEquivalentWeatherCode(weatherCode: Int, precipitationMm: Double): Int {
+    if (precipitationMm > 0.0 || weatherCode !in PRECIPITATION_CODES) return weatherCode
+    return if (weatherCode in 80..82) 2 else 3
+}
+
+/**
+ * Format precipitation for hourly/daily UI.
+ * - API 0.0 → null (hide mm; there was no rain)
+ * - API 0.01–0.049 → "0.1mm" (never show a rounded 0.0 when rain occurred)
+ * - otherwise one decimal, locale-aware
+ */
+fun formatPrecipitationMm(mm: Double, locale: Locale = Locale.getDefault()): String? {
+    if (mm <= 0.0) return null
+    val roundedTenths = round(mm * 10.0) / 10.0
+    val display = if (roundedTenths < 0.1) 0.1 else roundedTenths
+    return String.format(locale, "%.1fmm", display)
+}
 
 fun weatherCodeToInfo(code: Int, isDay: Boolean = true): WeatherInfo = when (code) {
     0 -> if (isDay) WeatherInfo(R.string.wc_clear, "☀️", R.drawable.ic_weather_sun)

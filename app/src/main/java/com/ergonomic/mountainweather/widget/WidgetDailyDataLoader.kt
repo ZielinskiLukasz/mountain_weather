@@ -9,6 +9,7 @@ import com.ergonomic.mountainweather.data.local.SavedLocationEntity
 import com.ergonomic.mountainweather.data.local.WeatherEntity
 import com.ergonomic.mountainweather.data.repository.SettingsRepository
 import com.ergonomic.mountainweather.data.repository.WeatherRepository
+import com.ergonomic.mountainweather.util.dryEquivalentWeatherCode
 import com.ergonomic.mountainweather.util.resolveIsDay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -169,11 +170,7 @@ object WidgetDailyDataLoader {
     }
 
     private fun DailyForecastEntity.toSnapshot(): DailyDaySnapshot {
-        val effectiveCode = if (precipitationSum <= 0.0 && weatherCode in com.ergonomic.mountainweather.util.PRECIPITATION_CODES) {
-            if (weatherCode in 80..82) 2 else 3
-        } else {
-            weatherCode
-        }
+        val effectiveCode = dryEquivalentWeatherCode(weatherCode, precipitationSum)
         return DailyDaySnapshot(
             date = date,
             weatherCode = effectiveCode,

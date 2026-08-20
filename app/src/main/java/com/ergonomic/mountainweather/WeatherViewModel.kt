@@ -28,6 +28,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -92,8 +93,8 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ForecastSettings())
 
     private var cacheObserverJob: Job? = null
-    private var hourlyObserverJob: Job? = null
-    private var dailyObserverJob: Job? = null
+    private var pagesDataJob: Job? = null
+    private var observedPageKeys: List<String> = emptyList()
     private var dailyFetchJob: Job? = null
     private var favoriteObserverJob: Job? = null
     private var favoritesListJob: Job? = null
@@ -209,29 +210,118 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             )
         }
         preloadCacheForPages(pages)
+        observePagesData(pages)
     }
 
     private fun preloadCacheForPages(pages: List<LocationPage>) {
         viewModelScope.launch {
-            val wMap = _uiState.value.weatherByLocation.toMutableMap()
-            val hMap = _uiState.value.hourlyByLocation.toMutableMap()
-            val dMap = _uiState.value.dailyByLocation.toMutableMap()
+            val state = _uiState.value
+            val wMap = state.weatherByLocation.toMutableMap()
+            val hMap = state.hourlyByLocation.toMutableMap()
+            val dMap = state.dailyByLocation.toMutableMap()
+            var changed = false
             for (page in pages) {
                 val key = WeatherRepository.locationKey(page.latitude, page.longitude)
                 if (key !in wMap) {
-                    db.weatherDao().getWeather(key)?.let { wMap[key] = it }
+                    db.weatherDao().getWeather(key)?.let {
+                        wMap[key] = it
+                        changed = true
+                    }
                 }
                 if (key !in hMap) {
                     val hourly = db.hourlyForecastDao().getAll(key)
-                    if (hourly.isNotEmpty()) hMap[key] = hourly
+                    if (hourly.isNotEmpty()) {
+                        hMap[key] = hourly
+                        changed = true
+                    }
                 }
                 if (key !in dMap) {
                     val daily = db.dailyForecastDao().getAll(key)
-                    if (daily.isNotEmpty()) dMap[key] = daily
+                    if (daily.isNotEmpty()) {
+                        dMap[key] = daily
+                        changed = true
+                    }
                 }
             }
-            _uiState.update {
-                it.copy(weatherByLocation = wMap, hourlyByLocation = hMap, dailyByLocation = dMap)
+            if (changed) {
+                _uiState.update {
+                    it.copy(weatherByLocation = wMap, hourlyByLocation = hMap, dailyByLocation = dMap)
+                }
+            }
+        }
+    }
+
+    private data class PageCacheEmission(
+        val key: String,
+        val weather: WeatherEntity?,
+        val hourly: List<HourlyForecastEntity>,
+        val daily: List<DailyForecastEntity>
+    )
+
+    /** Observe cache for every pager city once. Swiping must not resubscribe. */
+    private fun observePagesData(pages: List<LocationPage>) {
+        val keys = pages.map { WeatherRepository.locationKey(it.latitude, it.longitude) }.distinct()
+        if (keys == observedPageKeys && pagesDataJob?.isActive == true) return
+        observedPageKeys = keys
+        pagesDataJob?.cancel()
+        cacheObserverJob?.cancel()
+        if (keys.isEmpty()) return
+        pagesDataJob = viewModelScope.launch {
+            val flows = keys.map { key ->
+                combine(
+                    repository.observeCachedWeather(key),
+                    repository.observeHourlyForecast(key),
+                    repository.observeDailyForecast(key)
+                ) { weather, hourly, daily ->
+                    PageCacheEmission(key, weather, hourly, daily)
+                }
+            }
+            combine(flows) { emissions -> emissions.toList() }.collect { applyPageCacheEmissions(it) }
+        }
+    }
+
+    private fun applyPageCacheEmissions(emissions: List<PageCacheEmission>) {
+        _uiState.update { state ->
+            val wMap = state.weatherByLocation.toMutableMap()
+            val hMap = state.hourlyByLocation.toMutableMap()
+            val dMap = state.dailyByLocation.toMutableMap()
+            var mapsChanged = false
+            for (e in emissions) {
+                if (e.weather != null && wMap[e.key] != e.weather) {
+                    wMap[e.key] = e.weather
+                    mapsChanged = true
+                }
+                if (e.hourly.isNotEmpty() && hMap[e.key] != e.hourly) {
+                    hMap[e.key] = e.hourly
+                    mapsChanged = true
+                }
+                if (e.daily.isNotEmpty() && dMap[e.key] != e.daily) {
+                    dMap[e.key] = e.daily
+                    mapsChanged = true
+                }
+            }
+            val currentKey = WeatherRepository.locationKey(state.latitude, state.longitude)
+            val currentWeather = wMap[currentKey] ?: state.weather
+            val currentHourly = hMap[currentKey] ?: state.hourlyForecast
+            val currentDaily = dMap[currentKey] ?: state.dailyForecast
+            val loading = if (wMap[currentKey] != null) false else state.isLoading
+            if (!mapsChanged &&
+                currentWeather === state.weather &&
+                currentHourly === state.hourlyForecast &&
+                currentDaily === state.dailyForecast &&
+                loading == state.isLoading
+            ) {
+                state
+            } else {
+                state.copy(
+                    weatherByLocation = if (mapsChanged) wMap else state.weatherByLocation,
+                    hourlyByLocation = if (mapsChanged) hMap else state.hourlyByLocation,
+                    dailyByLocation = if (mapsChanged) dMap else state.dailyByLocation,
+                    weather = currentWeather,
+                    hourlyForecast = currentHourly,
+                    dailyForecast = currentDaily,
+                    isLoading = loading
+                )
             }
         }
     }
@@ -248,9 +338,12 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             "onPageChanged: idx=$pageIndex page=${page.name} " +
                 "(curState=${_uiState.value.locationName})"
         )
-        if (page.latitude == _uiState.value.latitude && page.longitude == _uiState.value.longitude) {
+        val state = _uiState.value
+        if (page.latitude == state.latitude && page.longitude == state.longitude) {
             Log.d(TAG_WIDGET, "onPageChanged: same location -> no save/refresh")
-            _uiState.update { it.copy(currentPageIndex = pageIndex) }
+            if (state.currentPageIndex != pageIndex) {
+                _uiState.update { it.copy(currentPageIndex = pageIndex) }
+            }
             return
         }
         val newKey = WeatherRepository.locationKey(page.latitude, page.longitude)
@@ -260,26 +353,22 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                 locationName = page.name,
                 latitude = page.latitude,
                 longitude = page.longitude,
-                hourlyForecast = it.hourlyByLocation[newKey] ?: emptyList(),
-                dailyForecast = it.dailyByLocation[newKey] ?: emptyList(),
-                isOfflineData = false,
+                weather = it.weatherByLocation[newKey] ?: it.weather,
+                isFavorite = !page.isCurrent,
                 error = null
             )
         }
         viewModelScope.launch {
             settingsRepo.saveLastLocation(page.name, page.latitude, page.longitude)
         }
-        observeCache()
         observeFavoriteStatus()
         val settings = forecastSettings.value
-        if (settings.showHourly) observeHourlyCache()
-        if (settings.dailyForecastDays > 0) observeDailyCache()
-
         val cachedHourly = _uiState.value.hourlyByLocation[newKey].orEmpty()
         val cachedDaily = _uiState.value.dailyByLocation[newKey].orEmpty()
+        val needsWeather = _uiState.value.weatherByLocation[newKey] == null
         val needsHourly = settings.showHourly && cachedHourly.isEmpty()
         val needsDaily = settings.dailyForecastDays > 0 && cachedDaily.isEmpty()
-        if (needsHourly || needsDaily) {
+        if (needsWeather || needsHourly || needsDaily) {
             fetchWeatherEnriched(settings)
         }
     }
@@ -300,14 +389,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         settingsJob?.cancel()
         settingsJob = viewModelScope.launch {
             settingsRepo.forecastSettings.collect { settings ->
-                if (settings.showHourly) observeHourlyCache() else {
-                    hourlyObserverJob?.cancel()
-                    _uiState.update { it.copy(hourlyForecast = emptyList()) }
-                }
-                if (settings.dailyForecastDays > 0) observeDailyCache() else {
-                    dailyObserverJob?.cancel()
-                    _uiState.update { it.copy(dailyForecast = emptyList()) }
-                }
                 val isFirst = lastEnabledParams == null
                 val paramsChanged = lastEnabledParams != settings.enabledCurrentParams
                 val forecastChanged = lastShowHourly != settings.showHourly
@@ -349,13 +430,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             settingsRepo.saveLastLocation(name, lat, lon)
             WeatherWidgetUpdater.refreshAll(getApplication())
         }
-        observeCache()
         observeFavoriteStatus()
         observeFavoritesList()
-        val settings = forecastSettings.value
-        if (settings.showHourly) observeHourlyCache()
-        if (settings.dailyForecastDays > 0) observeDailyCache()
-        fetchWeatherWithSettings(settings)
+        fetchWeatherWithSettings(forecastSettings.value)
     }
 
     private fun observeFavoriteStatus() {
@@ -364,7 +441,9 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
         favoriteObserverJob = viewModelScope.launch {
             savedLocationRepo.observeFavoriteByCoordinates(state.latitude, state.longitude)
                 .collect { isFav ->
-                    _uiState.update { it.copy(isFavorite = isFav) }
+                    _uiState.update { current ->
+                        if (current.isFavorite == isFav) current else current.copy(isFavorite = isFav)
+                    }
                 }
         }
     }
@@ -435,36 +514,6 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
                             weatherByLocation = updatedMap
                         )
                     }
-                }
-            }
-        }
-    }
-
-    private fun observeHourlyCache() {
-        hourlyObserverJob?.cancel()
-        val state = _uiState.value
-        val key = WeatherRepository.locationKey(state.latitude, state.longitude)
-        hourlyObserverJob = viewModelScope.launch {
-            repository.observeHourlyForecast(key).collect { hourly ->
-                if (hourly.isNotEmpty()) {
-                    val updatedMap = _uiState.value.hourlyByLocation.toMutableMap()
-                    updatedMap[key] = hourly
-                    _uiState.update { it.copy(hourlyForecast = hourly, hourlyByLocation = updatedMap) }
-                }
-            }
-        }
-    }
-
-    private fun observeDailyCache() {
-        dailyObserverJob?.cancel()
-        val state = _uiState.value
-        val key = WeatherRepository.locationKey(state.latitude, state.longitude)
-        dailyObserverJob = viewModelScope.launch {
-            repository.observeDailyForecast(key).collect { daily ->
-                if (daily.isNotEmpty()) {
-                    val updatedMap = _uiState.value.dailyByLocation.toMutableMap()
-                    updatedMap[key] = daily
-                    _uiState.update { it.copy(dailyForecast = daily, dailyByLocation = updatedMap) }
                 }
             }
         }

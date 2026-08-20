@@ -1,10 +1,13 @@
 package com.ergonomic.mountainweather
 
+import com.ergonomic.mountainweather.util.dryEquivalentWeatherCode
+import com.ergonomic.mountainweather.util.formatPrecipitationMm
 import com.ergonomic.mountainweather.util.resolveIsDay
 import com.ergonomic.mountainweather.util.weatherCodeToInfo
 import com.ergonomic.mountainweather.util.windDirectionToArrow
 import org.junit.Assert.*
 import org.junit.Test
+import java.util.Locale
 
 class WeatherCodeTest {
 
@@ -110,5 +113,29 @@ class WeatherCodeTest {
     @Test
     fun `wind direction southwest`() {
         assertEquals("↙ SW", windDirectionToArrow(225))
+    }
+
+    @Test
+    fun `zero precipitation hides millimetres`() {
+        assertNull(formatPrecipitationMm(0.0, Locale.US))
+        assertNull(formatPrecipitationMm(-0.0, Locale.US))
+    }
+
+    @Test
+    fun `trace precipitation displays as 0_1mm not 0_0`() {
+        assertEquals("0.1mm", formatPrecipitationMm(0.01, Locale.US))
+        assertEquals("0.1mm", formatPrecipitationMm(0.04, Locale.US))
+        assertEquals("0.1mm", formatPrecipitationMm(0.05, Locale.US))
+        assertEquals("0.1mm", formatPrecipitationMm(0.1, Locale.US))
+        assertEquals("0.2mm", formatPrecipitationMm(0.15, Locale.US))
+        assertEquals("1.2mm", formatPrecipitationMm(1.23, Locale.US))
+    }
+
+    @Test
+    fun `zero precipitation replaces rain icon with dry equivalent`() {
+        assertEquals(3, dryEquivalentWeatherCode(61, 0.0))
+        assertEquals(2, dryEquivalentWeatherCode(80, 0.0))
+        assertEquals(61, dryEquivalentWeatherCode(61, 0.01))
+        assertEquals(3, dryEquivalentWeatherCode(3, 0.0))
     }
 }
