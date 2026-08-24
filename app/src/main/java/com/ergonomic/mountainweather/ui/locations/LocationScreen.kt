@@ -70,6 +70,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ergonomic.mountainweather.R
 import com.ergonomic.mountainweather.data.GeocodingResult
 import com.ergonomic.mountainweather.data.local.SavedLocationEntity
+import com.ergonomic.mountainweather.util.findMatching
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -224,26 +225,42 @@ fun LocationScreen(
                     }
                 }
                 isSearchActive -> {
+                    val mergedPlaces = remember(state.placeResults, favorites, recent) {
+                        mergeSearchHits(state.placeResults, favorites, recent)
+                    }
+                    val mergedCities = remember(state.results, favorites, recent) {
+                        mergeSearchHits(state.results, favorites, recent)
+                    }
                     LazyColumn {
-                        if (state.placeResults.isNotEmpty()) {
+                        if (mergedPlaces.isNotEmpty()) {
                             item(key = "places_header") {
                                 SectionHeader(stringResource(R.string.search_places))
                             }
-                            items(state.placeResults, key = { "p_${it.id}" }) { result ->
+                            items(mergedPlaces, key = { "p_${it.result.id}" }) { hit ->
                                 SearchResultItem(
-                                    result = result,
-                                    onClick = { viewModel.selectSearchResult(result) }
+                                    result = hit.result,
+                                    saved = hit.saved,
+                                    onClick = {
+                                        val saved = hit.saved
+                                        if (saved != null) viewModel.selectSavedLocation(saved)
+                                        else viewModel.selectSearchResult(hit.result)
+                                    }
                                 )
                             }
                         }
-                        if (state.results.isNotEmpty()) {
+                        if (mergedCities.isNotEmpty()) {
                             item(key = "cities_header") {
                                 SectionHeader(stringResource(R.string.search_cities))
                             }
-                            items(state.results, key = { "c_${it.id}" }) { result ->
+                            items(mergedCities, key = { "c_${it.result.id}" }) { hit ->
                                 SearchResultItem(
-                                    result = result,
-                                    onClick = { viewModel.selectSearchResult(result) }
+                                    result = hit.result,
+                                    saved = hit.saved,
+                                    onClick = {
+                                        val saved = hit.saved
+                                        if (saved != null) viewModel.selectSavedLocation(saved)
+                                        else viewModel.selectSearchResult(hit.result)
+                                    }
                                 )
                             }
                         }
@@ -506,15 +523,54 @@ fun SavedLocationItem(
 }
 
 @Composable
-fun SearchResultItem(result: GeocodingResult, onClick: () -> Unit) {
+fun SearchResultItem(
+    result: GeocodingResult,
+    saved: SavedLocationEntity? = null,
+    onClick: () -> Unit
+) {
+    val title = saved?.name ?: result.name
+    val subtitleParts = if (saved != null) {
+        listOfNotNull(saved.region, saved.country)
+    } else {
+        listOfNotNull(result.region, result.country)
+    }
     ListItem(
-        headlineContent = { Text(result.name) },
+        headlineContent = { Text(title) },
         supportingContent = {
-            val parts = listOfNotNull(result.region, result.country)
-            if (parts.isNotEmpty()) {
-                Text(parts.joinToString(", "))
+            if (subtitleParts.isNotEmpty()) {
+                Text(subtitleParts.joinToString(", "))
             }
         },
+        trailingContent = if (saved?.isFavorite == true) {
+            {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else null,
         modifier = Modifier.clickable(onClick = onClick)
     )
+}
+
+private data class SearchHit(
+    val result: GeocodingResult,
+    val saved: SavedLocationEntity?
+)
+
+private fun mergeSearchHits(
+    results: List<GeocodingResult>,
+    favorites: List<SavedLocationEntity>,
+    recent: List<SavedLocationEntity>
+): List<SearchHit> {
+    val saved = favorites + recent
+    val usedIds = mutableSetOf<Long>()
+    return results.mapNotNull { result ->
+        val match = saved.findMatching(result.latitude, result.longitude, result.name, result.country)
+        if (match != null) {
+            if (!usedIds.add(match.id)) return@mapNotNull null
+        }
+        SearchHit(result, match)
+    }
 }

@@ -219,20 +219,27 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun selectSearchResult(result: GeocodingResult) {
-        // Navigate first; persist "recent" in the background so the list
-        // doesn't reorder under the user's finger before the screen closes.
-        _selectedLocation.value = SelectedLocation(
-            name = result.name,
-            latitude = result.latitude,
-            longitude = result.longitude
-        )
         viewModelScope.launch {
-            savedLocationRepo.saveAsRecent(
-                name = result.name,
+            val existing = savedLocationRepo.findExisting(
                 latitude = result.latitude,
                 longitude = result.longitude,
-                country = result.country,
-                region = result.region
+                name = result.name,
+                country = result.country
+            )
+            val name = existing?.name ?: result.name
+            val lat = existing?.latitude ?: result.latitude
+            val lon = existing?.longitude ?: result.longitude
+            _selectedLocation.value = SelectedLocation(
+                name = name,
+                latitude = lat,
+                longitude = lon
+            )
+            savedLocationRepo.saveAsRecent(
+                name = name,
+                latitude = lat,
+                longitude = lon,
+                country = existing?.country ?: result.country,
+                region = existing?.region ?: result.region
             )
         }
     }
@@ -306,15 +313,23 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
 
                 if (location != null) {
                     val name = resolveLocationName(location.latitude, location.longitude)
+                    val existing = savedLocationRepo.findExisting(
+                        location.latitude, location.longitude, name
+                    )
+                    val resolvedName = existing?.name ?: name
+                    val lat = existing?.latitude ?: location.latitude
+                    val lon = existing?.longitude ?: location.longitude
                     savedLocationRepo.saveAsRecent(
-                        name = name,
-                        latitude = location.latitude,
-                        longitude = location.longitude
+                        name = resolvedName,
+                        latitude = lat,
+                        longitude = lon,
+                        country = existing?.country,
+                        region = existing?.region
                     )
                     _selectedLocation.value = SelectedLocation(
-                        name = name,
-                        latitude = location.latitude,
-                        longitude = location.longitude
+                        name = resolvedName,
+                        latitude = lat,
+                        longitude = lon
                     )
                 } else {
                     _uiState.update {

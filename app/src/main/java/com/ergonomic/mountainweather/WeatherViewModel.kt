@@ -19,6 +19,7 @@ import com.ergonomic.mountainweather.data.repository.WeatherRepository
 import com.ergonomic.mountainweather.data.sync.NetworkMonitor
 import com.ergonomic.mountainweather.data.sync.ResilientSyncManager
 import com.ergonomic.mountainweather.util.WeatherParams
+import com.ergonomic.mountainweather.util.isSamePlace
 import com.ergonomic.mountainweather.widget.WeatherWidgetUpdater
 import com.ergonomic.mountainweather.widget.WidgetDataRequirements
 import com.google.android.gms.location.LocationServices
@@ -184,8 +185,10 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
             LocationPage(it.name, it.latitude, it.longitude)
         }
         val favIndex = favPages.indexOfFirst {
-            Math.abs(it.latitude - state.latitude) < 0.005 &&
-            Math.abs(it.longitude - state.longitude) < 0.005
+            isSamePlace(
+                it.latitude, it.longitude, it.name,
+                state.latitude, state.longitude, state.locationName
+            )
         }
         val pages: List<LocationPage>
         val newIndex: Int
@@ -404,9 +407,20 @@ class WeatherViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setLocation(name: String, lat: Double, lon: Double) {
+        viewModelScope.launch {
+            val existing = savedLocationRepo.findExisting(lat, lon, name)
+            applyLocation(
+                name = existing?.name ?: name,
+                lat = existing?.latitude ?: lat,
+                lon = existing?.longitude ?: lon
+            )
+        }
+    }
+
+    private fun applyLocation(name: String, lat: Double, lon: Double) {
         val currentPages = _uiState.value.locationPages
         val favIndex = currentPages.indexOfFirst {
-            Math.abs(it.latitude - lat) < 0.005 && Math.abs(it.longitude - lon) < 0.005
+            isSamePlace(it.latitude, it.longitude, it.name, lat, lon, name)
         }
         val pageIndex = if (favIndex >= 0) favIndex else 0
         _uiState.update {

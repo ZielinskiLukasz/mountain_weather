@@ -15,6 +15,9 @@ interface SavedLocationDao {
     @Query("SELECT * FROM saved_locations WHERE isFavorite = 1 ORDER BY sortOrder ASC, name ASC")
     suspend fun getFavorites(): List<SavedLocationEntity>
 
+    @Query("SELECT * FROM saved_locations")
+    suspend fun getAll(): List<SavedLocationEntity>
+
     @Query("UPDATE saved_locations SET sortOrder = :order WHERE id = :id")
     suspend fun updateSortOrder(id: Long, order: Int)
 
