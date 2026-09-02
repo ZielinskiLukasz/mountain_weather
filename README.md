@@ -15,7 +15,7 @@ Aplikacja pogodowa na Androida, nastawiona na użycie w górach i przy słabym z
 - Odporny sync (retry, circuit breaker) i okresowe odświeżanie ulubionych w tle
 - Widgety Glance: karuzela ulubionych, bieżąca pogoda, parametry, godzinówka, wielodniowa, przypięte miasto, pasek opadów 24h, słońce i UV
 
-Języki UI: angielski, polski, niemiecki, hiszpański.
+Języki UI: angielski, polski, niemiecki, hiszpański, rumuński.
 
 ## Dane
 
@@ -37,15 +37,17 @@ Prognoza, geokodowanie i jakość powietrza pochodzą z [Open-Meteo](https://ope
 ./gradlew :app:testDebugUnitTest
 ```
 
-Release (podpisany APK i AAB):
+Release (podpisany APK i AAB, domyślnie z R8):
 
 ```bash
-./bin/release.sh publish   # podbija versionName/versionCode, buduje APK+AAB
-./bin/release.sh apk       # tylko APK, bez podbijania wersji
-./bin/release.sh bundle    # tylko AAB
+./bin/release.sh publish          # podbija versionName/versionCode, buduje APK+AAB z R8
+./bin/release.sh apk              # tylko APK z R8, bez podbijania wersji
+./bin/release.sh bundle           # tylko AAB z R8
+./bin/release.sh bundle --no-r8   # AAB bez R8 (minify/shrink wyłączone)
+./bin/release.sh apk --no-r8      # APK bez R8
 ```
 
-Wersję podbija wyłącznie `publish`. Debug APK nie zmienia numeru wersji.
+Wersję podbija wyłącznie `publish`. Debug APK nie zmienia numeru wersji. AAB na Play idzie zawsze z R8, o ile nie podasz `--no-r8`.
 
 Podpis release wymaga lokalnego `keystore.properties` i pliku keystore (katalog `keystore/`). Oba są w `.gitignore` i nie trafiają do repozytorium.
 

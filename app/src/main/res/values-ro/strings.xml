@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vremea de munte</string>
+
+    <!-- Home screen -->
+    <string name="feels_like">Resimțită: %1$s°C</string>
+    <string name="loading_weather">Se încarcă vremea…</string>
+    <string name="pull_to_refresh_hint">Trage în jos pentru a încărca vremea</string>
+    <string name="update_time">Actualizat: %1$s</string>
+    <string name="offline_data">Date offline din: %1$s</string>
+    <string name="update_available">Versiune nouă disponibilă</string>
+    <string name="update_ready">Actualizare descărcată</string>
+    <string name="update_action">Actualizează</string>
+    <string name="update_install">Instalează</string>
+    <string name="update_downloading">Se descarcă actualizarea…</string>
+    <string name="update_dismiss">Închide</string>
+
+    <!-- Widgets -->
+    <string name="widget_name_minimal">Carusel favorite</string>
+    <string name="widget_description_minimal">Vizualizare compactă 1×1; atinge pentru a schimba favoritele. Mai lat: orașul anterior, curent și următor unul lângă altul.</string>
+    <string name="widget_name_daily">Prognoză pe mai multe zile</string>
+    <string name="widget_description_daily">Afișează azi și zilele următoare (mai multe când e mai lat). Atinge pentru a derula prognoza. Redimensionabil de la 1×1.</string>
+    <string name="widget_name_current">Un oraș favorit</string>
+    <string name="widget_description_current">Întotdeauna un singur oraș pe ecran. Atinge pentru a trece la următorul favorit.</string>
+    <string name="widget_name_params">Oraș + parametri</string>
+    <string name="widget_description_params">Un oraș; la redimensionare afișează parametrii activați în dreapta sau jos. Atinge pentru a schimba favoritele.</string>
+    <string name="widget_name_hourly">Prognoză orară</string>
+    <string name="widget_description_hourly">Bandă orară (4×1, redimensionabilă la 5×1+): orele următoare pentru orașul selectat. Atingerea deschide aplicația.</string>
+    <string name="widget_hourly_disabled">Activează prognoza orară din setări</string>
+    <string name="widget_name_compact">Oraș fixat</string>
+    <string name="widget_description_compact">Widget redimensionabil 2×1 / 2×2. Alege un oraș favorit pentru fiecare instanță sau lasă-l să urmeze aplicația principală.</string>
+    <string name="widget_name_rain">Precipitații 24h</string>
+    <string name="widget_description_rain">Grafic orizontal 3×1 cu precipitațiile din următoarele 24 de ore. Urmează locația din aplicația principală.</string>
+    <string name="widget_rain_total_mm">%1$s mm</string>
+    <string name="widget_name_sun">Soare și UV</string>
+    <string name="widget_description_sun">Widget minimalist 2×1: răsărit, apus, progresul zilei cu un punct „acum” și indicele UV de azi.</string>
+    <string name="sun_sunrise">Răsărit</string>
+    <string name="sun_sunset">Apus</string>
+    <string name="sun_uv_prefix">UV %1$s</string>
+    <string name="sun_uv_low">scăzut</string>
+    <string name="sun_uv_moderate">moderat</string>
+    <string name="sun_uv_high">ridicat</string>
+    <string name="sun_uv_very_high">foarte ridicat</string>
+    <string name="sun_uv_extreme">extrem</string>
+    <string name="widget_config_title">Alege orașul</string>
+    <string name="widget_config_follow_main">Urmează aplicația principală</string>
+    <string name="widget_config_favorites">Orașe favorite</string>
+    <string name="widget_config_save">Salvează</string>
+    <string name="widget_config_no_favorites">Nu există încă orașe favorite. Adaugă unul mai întâi în aplicație.</string>
+    <string name="widget_config_params">Parametri</string>
+    <string name="widget_config_params_hint">Alege până la %1$d elemente afișate sub temperatură.</string>
+    <string name="widget_config_theme">Temă</string>
+    <string name="widget_config_theme_system">Sistem</string>
+    <string name="widget_config_theme_light">Luminoasă</string>
+    <string name="widget_config_theme_dark">Întunecată</string>
+    <string name="widget_config_opacity">Opacitatea fundalului</string>
+    <string name="widget_config_opacity_label">%1$d%%</string>
+    <string name="widget_config_preview">Previzualizare</string>
+    <string name="widget_config_restore_defaults">Restaurează valorile implicite</string>
+    <string name="widget_day_today">Azi</string>
+    <string name="widget_day_tomorrow">Mâine</string>
+    <string name="widget_no_daily_data">Fără prognoză zilnică</string>
+    <string name="widget_no_data">Fără date</string>
+    <string name="widget_no_favorites">Adaugă un oraș favorit în aplicație</string>
+    <string name="widget_open_app">Deschide aplicația</string>
+
+    <!-- Detail card -->
+    <string name="temperature">Temperatură</string>
+    <string name="wind">Vânt</string>
+    <string name="humidity">Umiditate</string>
+    <string name="precipitation">Precipitații</string>
+    <string name="pressure">Presiune</string>
+
+    <!-- Weather param labels -->
+    <string name="param_temperature">Temp. min/max</string>
+    <string name="param_wind">Vânt</string>
+    <string name="param_humidity">Umiditate</string>
+    <string name="param_precipitation">Precipitații</string>
+    <string name="param_pressure">Presiune</string>
+    <string name="param_feels_like">Resimțită</string>
+    <string name="param_clouds">Nebulozitate</string>
+    <string name="param_wind_gusts">Rafale</string>
+    <string name="param_wind_dir">Dir. vânt</string>
+    <string name="param_snowfall">Ninsori</string>
+    <string name="param_rain">Ploaie</string>
+    <string name="param_sunrise_sunset">Răsărit/apus</string>
+    <string name="param_uv_index">Indice UV</string>
+    <string name="param_rain_sum">Total ploaie</string>
+    <string name="param_showers_sum">Total averse</string>
+    <string name="param_snowfall_sum">Total zăpadă</string>
+    <string name="param_precip_hours">Ore precip.</string>
+    <string name="param_precip_prob">Prob. precip.</string>
+    <string name="param_sunshine">Soare</string>
+    <string name="param_gusts_max">Rafale max.</string>
+    <string name="param_dom_wind">Vânt dom.</string>
+    <string name="param_dew_point">Punct de rouă</string>
+    <string name="param_visibility">Vizibilitate</string>
+    <string name="param_freezing_level">Izoterma 0°C</string>
+    <string name="param_aqi_eu">AQI (EU)</string>
+    <string name="param_aqi_us">AQI (US)</string>
+    <string name="param_pm25">PM2.5</string>
+    <string name="param_pm10">PM10</string>
+    <string name="param_ozone">Ozon</string>
+    <string name="param_elevation">Altitudine</string>
+    <string name="param_gps_altitude">Altitudine GPS</string>
+    <string name="gps_permission_for_altitude">Este necesară permisiunea de locație pentru altitudinea GPS</string>
+    <string name="weather_details">Detalii meteo</string>
+
+    <!-- Location screen -->
+    <string name="search_city">Oraș sau coordonate…</string>
+    <string name="use_gps">Folosește locația actuală</string>
+    <string name="no_results">Niciun rezultat</string>
+    <string name="search_places">Locuri</string>
+    <string name="search_cities">Orașe</string>
+    <string name="location_permission_needed">Este necesară permisiunea de locație pentru GPS</string>
+    <string name="gps_locating">Se determină locația…</string>
+    <string name="location_disabled_title">Locație dezactivată</string>
+    <string name="location_disabled_message">Serviciile de locație sunt dezactivate. Activează-le pentru a folosi poziționarea GPS.</string>
+    <string name="location_disabled_enable">Activează</string>
+    <string name="cancel">Anulează</string>
+
+    <!-- Saved locations -->
+    <string name="favorites">Favorite</string>
+    <string name="recent_locations">Recente</string>
+    <string name="clear_all_recent">Șterge tot</string>
+    <string name="clear_all_recent_confirm">Elimini toate locațiile din lista „Recente”? Favoritele nu sunt afectate.</string>
+    <string name="no_saved_locations">Nicio locație salvată</string>
+    <string name="added_to_favorites">Adăugat la favorite</string>
+    <string name="removed_from_favorites">Eliminat din favorite</string>
+    <string name="favorite_limit_reached">Maximum 10 locații favorite</string>
+    <string name="location_deleted">Locație ștearsă</string>
+
+    <!-- Forecasts -->
+    <string name="hourly_forecast">Prognoză orară</string>
+    <string name="daily_forecast">Prognoză zilnică</string>
+    <string name="today_label">Azi</string>
+    <string name="hourly_no_data">Nicio dată pentru această zi — trage pentru a reîmprospăta</string>
+    <string name="temp_max_min">%1$s° / %2$s°</string>
+
+    <!-- Settings -->
+    <string name="settings">Setări</string>
+    <string name="theme_section">Aspect</string>
+    <string name="theme_system">Sistem</string>
+    <string name="theme_light">Luminoasă</string>
+    <string name="theme_dark">Întunecată</string>
+    <string name="forecast_types">Tipuri de prognoză</string>
+    <string name="show_hourly_24h">Orară (24h)</string>
+    <string name="show_daily_3">Zilnică (3 zile)</string>
+    <string name="show_daily_5">Zilnică (5 zile)</string>
+    <string name="show_daily_7">Zilnică (7 zile)</string>
+    <string name="show_daily_14">Zilnică (14 zile)</string>
+    <string name="settings_info">Se descarcă doar prognozele selectate</string>
+    <string name="network_section">Rețea</string>
+    <string name="resilient_sync">Sincronizare rezistentă</string>
+    <string name="resilient_sync_desc">Reîncercare automată cu backoff exponențial și disjunctor pentru conexiuni instabile (munte, semnal slab)</string>
+    <string name="background_sync">Sincronizare în fundal</string>
+    <string name="background_sync_desc">Reîmprospătează periodic vremea pentru locațiile favorite în fundal (necesită rețea)</string>
+    <string name="sync_off">Oprit</string>
+    <string name="sync_15_min">La 15 min</string>
+    <string name="sync_30_min">La 30 min</string>
+    <string name="sync_1h">La 1 oră</string>
+    <string name="sync_3h">La 3 ore</string>
+    <string name="sync_6h">La 6 ore</string>
+    <string name="sync_12h">La 12 ore</string>
+
+    <!-- Error -->
+    <string name="connection_error">Fără conexiune</string>
+    <string name="connection_error_desc">Verifică conexiunea la internet și încearcă din nou. Datele meteo vor fi disponibile când revii online.</string>
+    <string name="api_error">Serviciu indisponibil</string>
+    <string name="api_error_desc">Serviciul meteo este temporar indisponibil. Problema se rezolvă de obicei în câteva minute. Încearcă din nou în scurt timp.</string>
+    <string name="retry">Încearcă din nou</string>
+    <string name="change_location_btn">Schimbă locația</string>
+    <string name="unknown_error">Eroare necunoscută</string>
+    <string name="refresh_error">Reîmprospătare eșuată</string>
+    <string name="refresh_error_snackbar">Nu s-a putut reîmprospăta — verifică conexiunea</string>
+    <string name="refresh_api_error_snackbar">Serviciul meteo temporar indisponibil</string>
+
+    <!-- Weather codes -->
+    <string name="wc_clear">Cer senin</string>
+    <string name="wc_mainly_clear">Predominant senin</string>
+    <string name="wc_partly_cloudy">Parțial noros</string>
+    <string name="wc_overcast">Înnorat</string>
+    <string name="wc_fog">Ceață</string>
+    <string name="wc_light_drizzle">Burniță slabă</string>
+    <string name="wc_moderate_drizzle">Burniță moderată</string>
+    <string name="wc_dense_drizzle">Burniță densă</string>
+    <string name="wc_freezing_drizzle">Burniță înghețată</string>
+    <string name="wc_light_rain">Ploaie slabă</string>
+    <string name="wc_moderate_rain">Ploaie moderată</string>
+    <string name="wc_heavy_rain">Ploaie puternică</string>
+    <string name="wc_freezing_rain">Ploaie înghețată</string>
+    <string name="wc_light_snow">Ninsoare slabă</string>
+    <string name="wc_moderate_snow">Ninsoare moderată</string>
+    <string name="wc_heavy_snow">Ninsoare abundantă</string>
+    <string name="wc_snow_grains">Grăunțe de zăpadă</string>
+    <string name="wc_light_showers">Averse slabe</string>
+    <string name="wc_moderate_showers">Averse moderate</string>
+    <string name="wc_violent_showers">Averse violente</string>
+    <string name="wc_light_snow_showers">Averse slabe de zăpadă</string>
+    <string name="wc_heavy_snow_showers">Averse abundente de zăpadă</string>
+    <string name="wc_thunderstorm">Furtună</string>
+    <string name="wc_thunderstorm_hail">Furtună cu grindină</string>
+    <string name="wc_unknown">Necunoscut</string>
+</resources>

@@ -22,8 +22,8 @@ android {
         applicationId = "com.ergonomic.mountainweather"
         minSdk = 26
         targetSdk = 36
-        versionCode = 78
-        versionName = "0.1.71"
+        versionCode = 79
+        versionName = "0.1.72"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -47,6 +47,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        create("releaseNoR8") {
+            initWith(getByName("release"))
+            matchingFallbacks += "release"
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 
